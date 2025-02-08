@@ -1,0 +1,125 @@
+/* General styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: url('pic1.jpg') no-repeat center center fixed; /* Add your image URL here */
+    background-size: cover;
+    position: relative;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center; /* Horizontally center the register box */
+    align-items: center; /* Vertically center the register box */
+}
+
+/* Dim effect overlay */
+body::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* Adjust opacity for dim effect */
+    z-index: -1;
+}
+
+/* Container styling */
+.register-container {
+    background: #ffffff;
+    padding: 2rem; /* Adjust padding for better spacing */
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column; /* Align the form elements in column */
+    align-items: center; /* Center all form elements horizontally */
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Title */
+h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+/* Input fields */
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: 0.3s;
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+/* Focus effect for inputs */
+input:focus {
+    border-color: #4facfe;
+    outline: none;
+    box-shadow: 0px 0px 8px rgba(79, 172, 254, 0.5);
+}
+
+/* Button styling */
+button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Hover effect for button */
+button:hover {
+    background: linear-gradient(to right, #00c6ff, #0072ff);
+    transform: translateY(-2px);
+}
+
+/* Animation for fade-in effect */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Register link styling */
+.register-link {
+    color: #4facfe;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .register-container {
+        width: 90%;
+        padding: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    input, button {
+        font-size: 1rem;
+    }
+}
