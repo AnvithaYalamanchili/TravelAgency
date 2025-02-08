@@ -44,7 +44,7 @@ body::after {
     font-size: 3rem; /* Larger font size */
     color: white;
     position: absolute;
-    top: -120px; /* Move text further from the box */
+    top: -80px; /* Move text further from the box */
     left: 50%;
     transform: translateX(-50%);
     letter-spacing: 3px;

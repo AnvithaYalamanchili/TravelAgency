@@ -9,19 +9,21 @@ body {
     display: flex;
     justify-content: center; /* Horizontally center the register box */
     align-items: center; /* Vertically center the register box */
+    overflow: hidden;
 }
 
 /* Dim effect overlay */
-body::after {
-    content: '';
-    position: absolute;
+.dim-overlay {
+    position: fixed; 
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.3); /* Adjust opacity for dim effect */
-    z-index: -1;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.3); 
+    z-index: 10; 
+    overflow:hidden;
 }
+
 
 /* Container styling */
 .register-container {
@@ -36,6 +38,8 @@ body::after {
     flex-direction: column; /* Align the form elements in column */
     align-items: center; /* Center all form elements horizontally */
     animation: fadeIn 0.5s ease-in-out;
+    box-sizing: border-box; 
+    min-height: 450px;
 }
 
 /* Title */
@@ -85,6 +89,14 @@ button:hover {
     transform: translateY(-2px);
 }
 
+.error-text {
+    color: red;
+    font-size: 14px;
+    height: 16px; /* Reserve space for errors */
+    margin-top: 1px;
+    margin-bottom: 5px;
+    display: block; /* Ensure it takes up space */
+}  
 /* Animation for fade-in effect */
 @keyframes fadeIn {
     from {
