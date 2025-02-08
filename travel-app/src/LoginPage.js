@@ -8,7 +8,6 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
 
-  // Email validation regex
   const validateEmail = (email) => {
     return /\S+@\S+\.\S+/.test(email);
   };
@@ -16,19 +15,16 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Clear previous errors
     setErrors({});
 
     let formErrors = {};
 
-    // Validate email
     if (!email.trim()) {
       formErrors.email = "Email is required";
     } else if (!validateEmail(email)) {
       formErrors.email = "Invalid email format";
     }
 
-    // Validate password
     if (!password.trim()) {
       formErrors.password = "Password is required";
     } else if (password.length < 6) {
@@ -51,7 +47,7 @@ const LoginPage = () => {
 
   return (
     <div className="login-container">
-      <h2>Login</h2>
+      <h2 style={{'color':'white'}}>Login</h2>
       <form onSubmit={handleLogin}>
         <input
           type="email"
@@ -71,7 +67,7 @@ const LoginPage = () => {
 
         <button type="submit">Login</button>
       </form>
-      <p>
+      <p style={{'color':'white'}}>
         Not a user?{' '}
         <Link to="/register" className="register-link">Register</Link>
       </p>

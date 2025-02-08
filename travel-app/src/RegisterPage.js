@@ -66,7 +66,7 @@ const RegisterPage = () => {
 
   return (
     <div className="register-container">
-      <h2>Register</h2>
+      <h2 style={{'color':'white'}}>Register</h2>
       <form onSubmit={handleRegister}>
         <input
           type="text"
@@ -110,7 +110,7 @@ const RegisterPage = () => {
 
         <button type="submit">Register</button>
       </form>
-      <p>
+      <p style={{'color':'white'}}>
         Already have an account?{' '}
         <a href="/login" className="register-link">Login here</a>
       </p>

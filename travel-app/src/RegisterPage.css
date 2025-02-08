@@ -24,10 +24,10 @@ body {
     overflow:hidden;
 }
 
-
-/* Container styling */
+/* Container styling (glass effect) */
 .register-container {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+    backdrop-filter: blur(10px); /* Add blur effect */
     padding: 2rem; /* Adjust padding for better spacing */
     border-radius: 12px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
@@ -42,6 +42,19 @@ body {
     min-height: 450px;
 }
 
+.register-container input {
+    background: rgba(255, 255, 255, 0.1); /* Semi-transparent white background */
+    border: 2px solid rgba(255, 255, 255, 0.3); /* Light border */
+    padding: 10px;
+    border-radius: 8px;
+    color: white; /* Text color */
+    font-size: 16px;
+    backdrop-filter: blur(10px); /* Apply blur effect */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+    width: 100%;
+    max-width: 350px;
+    margin-bottom: 1rem;
+}
 /* Title */
 h2 {
     margin-bottom: 1.5rem;
@@ -94,9 +107,10 @@ button:hover {
     font-size: 14px;
     height: 16px; /* Reserve space for errors */
     margin-top: 1px;
-    margin-bottom: 5px;
+    margin-bottom: 1px;
     display: block; /* Ensure it takes up space */
-}  
+}
+
 /* Animation for fade-in effect */
 @keyframes fadeIn {
     from {
