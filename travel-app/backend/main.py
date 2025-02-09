@@ -24,6 +24,12 @@ class User(BaseModel):
     username: str
     password: str
 
+class LoginUser(BaseModel):
+    email: str
+    password: str
+
+
+
 @app.post("/register")
 async def register(user: User):
     connection = get_db_connection()  # Get DB connection from 'database.py'
@@ -55,7 +61,7 @@ async def register(user: User):
         connection.close()
 
 @app.post("/login")
-async def login(user: User):
+async def login(user: LoginUser):
     connection = get_db_connection()  # Get DB connection from 'database.py'
     cursor = connection.cursor()
 
@@ -63,7 +69,8 @@ async def login(user: User):
         cursor.execute("SELECT * FROM users WHERE email = %s", (user.email,))
         existing_user = cursor.fetchone()
         
-        if not existing_user or not bcrypt.checkpw(user.password.encode('utf-8'), existing_user[5].encode('utf-8')):  # Assuming password is at index 5
+        stored_password = existing_user[5].encode('utf-8')  # Ensure stored hash is in bytes
+        if not existing_user or not bcrypt.checkpw(user.password.encode('utf-8'), stored_password):
             raise HTTPException(status_code=401, detail="Invalid credentials.")
         
         return {"message": "Login successful!"}
