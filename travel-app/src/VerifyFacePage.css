@@ -1,0 +1,174 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Body Style */
+body {
+  background: url('face.jpeg') no-repeat center center fixed; /* Background Image */
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
+  color: #fff; /* Default text color set to white for better contrast */
+  font-size: 16px;
+}
+
+/* Container Style - Black Box */
+.container {
+  background: rgba(0, 0, 0, 0.8); /* Black with slight transparency */
+  border-radius: 15px;
+  padding: 50px 70px; /* Larger padding for spacious look */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Darker shadow for a high-end feel */
+  width: 100%;
+  max-width: 650px;
+  text-align: center;
+  position: relative;
+  backdrop-filter: blur(10px); /* Adding a blurred background effect */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Light border for contrast */
+}
+
+/* Title Style */
+h1 {
+  font-size: 2.5rem;
+  color: #fff; /* White title */
+  margin-bottom: 25px;
+  font-weight: 700; /* Bold title */
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Description */
+p {
+  font-size: 1rem;
+  color: #bbb; /* Slightly lighter gray text for description */
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+/* Upload Section */
+.upload-section {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.upload-button {
+  background-color: #5c6bc0;
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.upload-button:hover {
+  background-color: #3f51b5;
+}
+
+.upload-button:active {
+  transform: scale(0.98);
+}
+
+.upload-input {
+  display: none;
+}
+
+/* Preview Section */
+.preview {
+  margin-top: 20px;
+  background: #333; /* Dark background for preview area */
+  padding: 15px;
+  border-radius: 12px;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.preview img {
+  max-width: 100%;
+  max-height: 250px;
+  border-radius: 12px;
+  border: 3px solid #444;
+}
+
+/* Verification Button */
+.verification-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 18px 35px;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  margin-top: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.verification-button:hover {
+  background-color: #388e3c;
+}
+
+.verification-button:active {
+  transform: scale(0.98);
+}
+
+/* Loading Spinner */
+.spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+}
+
+.spinner div {
+  width: 20px;
+  height: 20px;
+  margin: 3px;
+  border-radius: 50%;
+  background: #4caf50;
+  animation: spin 1.2s infinite ease-in-out;
+}
+
+.spinner div:nth-child(1) {
+  animation-delay: -0.4s;
+}
+
+.spinner div:nth-child(2) {
+  animation-delay: -0.2s;
+}
+
+.spinner div:nth-child(3) {
+  animation-delay: 0s;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Success / Error Messages */
+.message {
+  margin-top: 30px;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.success {
+  color: #388e3c;
+}
+
+.error {
+  color: #d32f2f;
+}

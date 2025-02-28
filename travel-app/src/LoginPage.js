@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import './LoginPage.css';
+import './LoginPage.css'; // Ensure this CSS file contains the updated styles
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -46,31 +46,33 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-container">
-      <h2 style={{'color':'white'}}>Login</h2>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        {errors.email && <p className="error-text">{errors.email}</p>}
+    <div className="login-page-background"> {/* Add this wrapper div */}
+      <div className="login-container">
+        <h2 style={{ color: 'white' }}>Login</h2>
+        <form onSubmit={handleLogin}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          {errors.email && <p className="error-text">{errors.email}</p>}
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        {errors.password && <p className="error-text">{errors.password}</p>}
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {errors.password && <p className="error-text">{errors.password}</p>}
 
-        <button type="submit">Login</button>
-      </form>
-      <p style={{'color':'white'}}>
-        Not a user?{' '}
-        <Link to="/register" className="register-link">Register</Link>
-      </p>
+          <button type="submit">Login</button>
+        </form>
+        <p style={{ color: 'white' }}>
+          Not a user?{' '}
+          <Link to="/register" className="register-link">Register</Link>
+        </p>
+      </div>
     </div>
   );
 };

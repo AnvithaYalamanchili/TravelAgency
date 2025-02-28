@@ -5,12 +5,12 @@ import logo from "./logo.png"; // Ensure the logo is in your project
 
 // Array of Background Images
 const images = [
-  "images/bg1.jpg",
-  "images/bg2.jpg",
-  "images/bg3.jpg",
-  "images/bg4.jpg",
-  "images/bg5.jpg",
-  "images/bg6.jpg"
+  "/bg1.jpg",
+  "/bg2.jpg",
+  "/bg3.jpg",
+  "/bg4.jpg",
+  "/bg5.jpg",
+  "/bg6.jpg"
 ];
 
 const LandingPage = () => {

@@ -1,7 +1,9 @@
+
 /* Landing Page Container */
 .landing-container {
     text-align: center;
     color: white;
+    width: 100vw;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -201,8 +203,8 @@
 }
 
 .about-images img {
-    width: 200px;
-    height: 150px;
+    width: 100px;
+    height: auto;
     border-radius: 5px;
 }
 
