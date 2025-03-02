@@ -7,17 +7,16 @@
 }
 
 /* Body Style */
-body {
-  background: url('face.jpeg') no-repeat center center fixed; /* Background Image */
+/*body {
   background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   padding: 20px;
-  color: #fff; /* Default text color set to white for better contrast */
+  color: #fff; 
   font-size: 16px;
-}
+}*/
 
 /* Container Style - Black Box */
 .container {

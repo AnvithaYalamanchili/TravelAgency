@@ -85,7 +85,7 @@ const RegisterPage = () => {
           <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
           
           {/* Submit button */}
-          <button type="submit">Register</button>
+          <button className='register-btn' type="submit">Register</button>
         </form>
 
         <p style={{ color: 'white' }}>

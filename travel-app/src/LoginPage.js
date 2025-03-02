@@ -1,37 +1,26 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import './LoginPage.css'; // Ensure this CSS file contains the updated styles
+import './LoginPage.css'; 
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
 
-  const validateEmail = (email) => {
-    return /\S+@\S+\.\S+/.test(email);
-  };
+  const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     setErrors({});
-
     let formErrors = {};
 
-    if (!email.trim()) {
-      formErrors.email = "Email is required";
-    } else if (!validateEmail(email)) {
-      formErrors.email = "Invalid email format";
-    }
+    if (!email.trim()) formErrors.email = "Email is required";
+    else if (!validateEmail(email)) formErrors.email = "Invalid email format";
 
-    if (!password.trim()) {
-      formErrors.password = "Password is required";
-    } else if (password.length < 6) {
-      formErrors.password = "Password must be at least 6 characters";
-    }
+    if (!password.trim()) formErrors.password = "Password is required";
+    else if (password.length < 6) formErrors.password = "Password must be at least 6 characters";
 
-    // If there are errors, set them and return
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
       return;
@@ -46,31 +35,33 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-page-background"> {/* Add this wrapper div */}
+    <div className="login-page-background">
       <div className="login-container">
-        <h2 style={{ color: 'white' }}>Login</h2>
+        <h2 className='login'>Login</h2>
         <form onSubmit={handleLogin}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          {errors.email && <p className="error-text">{errors.email}</p>}
+  <input
+    type="email"
+    className="login-input"
+    placeholder="Email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+  />
+  {errors.email && <p className="error-text">{errors.email}</p>}
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {errors.password && <p className="error-text">{errors.password}</p>}
+  <input
+    type="password"
+    className="login-input"
+    placeholder="Password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+  />
+  {errors.password && <p className="error-text">{errors.password}</p>}
 
-          <button type="submit">Login</button>
-        </form>
-        <p style={{ color: 'white' }}>
-          Not a user?{' '}
-          <Link to="/register" className="register-link">Register</Link>
+  <button className="submit-btn" type="submit">Login</button>
+</form>
+
+        <p>
+          Not a user? <Link to="/register" className="register-link">Register</Link>
         </p>
       </div>
     </div>

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./LandingPage.css";
-import logo from "./logo.png"; // Ensure the logo is in your project
-
 // Array of Background Images
 const images = [
   "/bg1.jpg",
@@ -49,7 +47,7 @@ const LandingPage = () => {
       <nav className="top-menu">
         {/* Logo on the left */}
         <div className="logo">
-          <img src={logo} alt="Logo" />
+          <img src="./logo.png" alt="Logo" />
         </div>
 
         {/* Menu items on the right */}
