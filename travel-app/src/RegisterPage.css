@@ -17,8 +17,10 @@
 }
 
 .register-container {
-  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
   padding: 40px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   width: 400px;
   text-align: center;
@@ -28,21 +30,22 @@
 h2 {
   font-size: 28px;
   margin-bottom: 20px;
-  color: #fff;
+  color: #000000;
 }
 
 .info-text {
   font-size: 14px;
-  color: #ccc;
+  color: black;  /* Changed text color to black */
   margin-bottom: 20px;
 }
 
+
 input[type="text"], input[type="email"], input[type="password"], input[type="date"] {
   width: 100%;
-  padding: 12px;
-  margin: 10px 0;
+  padding: 8px;
+  margin: 1px 0;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 3px;
   font-size: 16px;
   background-color: #f7f7f7;
 }

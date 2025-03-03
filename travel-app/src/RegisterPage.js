@@ -41,39 +41,28 @@ const RegisterPage = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    console.log("Register button clicked!"); // Debugging
     if (!validateForm()) return;
-  
-    console.log("Form is validated, making API request...");
-    try {
-      const response = await axios.post('http://127.0.0.1:8000/register', 
-          { 
-              first_name: firstName,
-              last_name: lastName,
-              dob,
-              passport_number: passportNumber,
-              email,
-              username, 
-              password 
-          }, 
-          { headers: { "Content-Type": "application/json" } }
-      );
-      alert('Registration Successful!');
-      sessionStorage.setItem("firstName", firstName);
-      sessionStorage.setItem("lastName", lastName);
-      sessionStorage.setItem("dob", dob);
-      sessionStorage.setItem("passportNumber", passportNumber);
-      navigate('/verify-face');
-    } catch (error) {
-      alert('Registration Failed!');
-      console.error('Error:', error.response ? error.response.data.detail : error.message);
-    }
-  };
+
+    // Store user details temporarily in sessionStorage
+    sessionStorage.setItem("userDetails", JSON.stringify({
+        first_name: firstName,
+        last_name: lastName,
+        dob,
+        passport_number: passportNumber,
+        email,
+        username,
+        password
+    }));
+
+    alert("Proceed to face verification.");
+    navigate('/verify-face');  // Redirect to face verification
+};
+
 
   return (
     <div className="register-page-background">
       <div className="register-container">
-        <h2 style={{ color: 'white' }}>Register</h2>
+        <h2 style={{ color: 'Black' }}>Register</h2>
         <p className="info-text">Please enter your details exactly as in your passport.</p>
         <form onSubmit={handleRegister}>
           <input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
@@ -88,7 +77,7 @@ const RegisterPage = () => {
           <button className='register-btn' type="submit">Register</button>
         </form>
 
-        <p style={{ color: 'white' }}>
+        <p style={{ color: 'Black' }}>
           Already have an account? <a href="/login" className="register-link">Login here</a>
         </p>
       </div>

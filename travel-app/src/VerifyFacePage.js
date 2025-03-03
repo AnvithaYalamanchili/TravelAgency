@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import './VerifyFacePage.css';
+import { useNavigate } from 'react-router-dom';
 
 const VerifyFacePage = () => {
   const [passportImage, setPassportImage] = useState(null);
@@ -9,7 +10,7 @@ const VerifyFacePage = () => {
   const [isCameraActive, setIsCameraActive] = useState(false);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-
+  const navigate = useNavigate();
   // Handle file input for passport image
   const handleFileChange = (event) => {
     setPassportImage(event.target.files[0]);
@@ -49,11 +50,10 @@ const VerifyFacePage = () => {
     }
   };
 
-  // Verify face against uploaded images
   const handleVerify = async () => {
     if (!passportImage || !selfieImage) {
-      alert("Please upload both images.");
-      return;
+        alert("Please upload both images.");
+        return;
     }
 
     const formData = new FormData();
@@ -61,20 +61,38 @@ const VerifyFacePage = () => {
     formData.append("selfie_image", selfieImage);
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/verify-face", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+        const response = await axios.post("http://127.0.0.1:8000/verify-face", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
 
-      alert(response.data.message);
-      setVerificationStatus(response.data.verified);
+        if (response.data.verified) {
+            alert("Face verification successful! Completing registration...");
 
-      // Store verification status in sessionStorage (temporary)
-      sessionStorage.setItem("isVerified", response.data.verified);
+            // Retrieve user details from sessionStorage
+            const userDetails = JSON.parse(sessionStorage.getItem("userDetails"));
+
+            if (!userDetails) {
+                alert("No user data found. Please register again.");
+                return;
+            }
+
+            // Send user data to backend for final registration
+            await axios.post("http://127.0.0.1:8000/register", userDetails, {
+                headers: { "Content-Type": "application/json" },
+            });
+
+            alert("Registration completed successfully!");
+            sessionStorage.removeItem("userDetails");  // Clear stored data after successful registration
+            navigate('/login'); // Redirect to the next page
+        } else {
+            alert("Face verification failed. Please try again.");
+        }
     } catch (error) {
-      alert("Verification failed.");
-      console.error("Verification error:", error.response ? error.response.data : error.message);
+        alert("Verification failed.");
+        console.error("Verification error:", error.response ? error.response.data : error.message);
     }
-  };
+};
+
 
   // Ensure the camera is started only after component mounts
   useEffect(() => {

@@ -42,7 +42,7 @@
     font-style: italic;
     font-weight: 900;
     font-size: 3rem;
-    color: white;
+    color: rgb(0, 0, 0);
     position: absolute;
     top: -80px;
     left: 50%;
@@ -78,7 +78,7 @@
     border-radius: 8px;
     font-size: 1rem;
     background: rgba(255,255,255,0.1);
-    color: white;
+    color: black;
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     transition: 0.3s;

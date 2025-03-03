@@ -5,6 +5,8 @@ import RegisterPage from "./RegisterPage";
 import VerifyFacePage from "./VerifyFacePage"; // Import Face Verification Page
 import Dashboard from "./Dashboard"; // Import Dashboard Page
 import HomePage from "./HomePage";
+import TravelPreferences from "./TravelPreferences";
+
 const App = () => {
   return (
     <Router>
@@ -15,6 +17,7 @@ const App = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-face" element={<VerifyFacePage />} />  {/* Face Verification Page */}
         <Route path="/dashboard" element={<Dashboard />} />  {/* Dashboard Page */}
+        <Route path="/travel-preferences" element={<TravelPreferences />} />  {/* Travel Preferences Page */}
       </Routes>
     </Router>
   );
