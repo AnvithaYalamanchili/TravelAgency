@@ -1,11 +1,11 @@
 import React from "react";
 import "./HomePage.css";
-import Sidebar from "./SideBar";
-import { FaBell, FaUser ,FaInfoCircle} from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation, Autoplay } from "swiper/modules";
+import { useNavigate } from "react-router-dom";
+import Layout from "./Layout"; // Import Layout component
 
 const HeroSection = () => {
   return (
@@ -29,11 +29,17 @@ const HeroSection = () => {
 };
 
 const TripCard = ({ title, image }) => {
+  const navigate = useNavigate();
+  const handleBookNow = () => {
+  navigate(`/trip/${title.toLowerCase().replace(/\s+/g, '')}`);
+};
+
+
   return (
     <div className="trip-card">
       <img src={image} alt={title} />
       <h3>{title}</h3>
-      <button className="trip-button">Book now</button>
+      <button className="trip-button" onClick={handleBookNow}>Book now</button>
     </div>
   );
 };
@@ -52,34 +58,13 @@ const internationalTrips = [
 
 const HomePage = () => {
   return (
-    <div className="home-container">
-      {/* Sidebar */}
-      <Sidebar />
-
-      <div className="main-content">
-        {/* Navbar */}
-        <nav>
-  <img style={{ height: '100px' }} src="./logo.png" alt="" />
-  <div style={{ display: 'flex', alignItems: 'center', height: '50px', marginLeft: '100px' }}>
-    <FaInfoCircle style={{ color: '#F8C923', fontSize: '30px', marginRight: '5px' }} />
-    <p style={{ fontSize: '15px', padding: '5px 10px', whiteSpace: 'nowrap', margin: '0' }}>About Us</p>
-<button className="book-now-btn-nav">
-  Book Now
-</button>
-    <FaBell style={{ color: '#F8C923', fontSize: '30px', marginLeft: '50px' }} />
-    
-  </div>
-
-  <div className="search-div">
-    <input type="text" placeholder="Search" />
-    <FaUser style={{ color: '#F8C923', fontSize: '30px', marginLeft: '70px' }} />
-  </div>
-</nav>
+    <Layout> 
+      <div className="home-container">
         <HeroSection />
 
         {/* Popular Trips */}
         <section className="trip-section">
-          <h2 style={{'color':'black','textAlign':'center'}}>Popular Trips</h2>
+          <h2 style={{ color: 'black', textAlign: 'center' }}>Popular Trips</h2>
           <div className="trip-container">
             {trips.map((trip) => (
               <TripCard key={trip.title} {...trip} />
@@ -89,7 +74,7 @@ const HomePage = () => {
 
         {/* International Trips */}
         <section className="trip-section">
-          <h2 style={{'color':'black','textAlign':'center'}}>Popular International Trips</h2>
+          <h2 style={{ color: 'black', textAlign: 'center' }}>Popular International Trips</h2>
           <div className="trip-container">
             {internationalTrips.map((trip) => (
               <TripCard key={trip.title} {...trip} />
@@ -102,7 +87,7 @@ const HomePage = () => {
           <p>&copy; 2025 Voyagers. All rights reserved.</p>
         </footer>
       </div>
-    </div>
+    </Layout>
   );
 };
 
