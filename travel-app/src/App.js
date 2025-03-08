@@ -7,6 +7,8 @@ import Dashboard from "./Dashboard"; // Import Dashboard Page
 import HomePage from "./HomePage";
 import TravelPreferences from "./TravelPreferences";
 import TripPage from "./TripPage";
+import AdminRegisterPage from "./AdminRegister";
+import AdminLoginPage from "./AdminLogin";
 
 const App = () => {
   return (
@@ -20,6 +22,9 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard />} />  {/* Dashboard Page */}
         <Route path="/travel-preferences" element={<TravelPreferences />} />  {/* Travel Preferences Page */}
         <Route path="/trip/:destination" element={<TripPage/>}/>
+        <Route path="/admin-register" element={<AdminRegisterPage/>}/>
+        <Route path="/admin-login" element={<AdminLoginPage/>}/>
+
       </Routes>
     </Router>
   );

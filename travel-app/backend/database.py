@@ -20,13 +20,12 @@
 
 import mysql.connector
 
-# Function to establish a connection to MySQL
 def get_db_connection():
     try:
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="Root@123",
+            password="Venu@66691",
             database="travel_db"
         )
         print("✅ Database connection successful!")
@@ -35,7 +34,6 @@ def get_db_connection():
         print(f"❌ Error: {err}")
         return None
 
-# Function to create tables
 def create_tables():
     connection = get_db_connection()
     if not connection:

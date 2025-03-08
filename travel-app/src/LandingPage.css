@@ -53,7 +53,12 @@
     cursor: pointer;
 }
 
+
+
 .about-btn:hover {
+    background: #00c6ff;
+}
+.admin-btn:hover{
     background: #00c6ff;
 }
 
@@ -206,6 +211,18 @@
     width: 100px;
     height: auto;
     border-radius: 5px;
+}
+
+.admin-btn{
+    color: white;
+  padding: 12px 25px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  text-decoration: none; /* Remove underline */
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+  margin-left: 20px; /* Add some space between buttons */
 }
 
 

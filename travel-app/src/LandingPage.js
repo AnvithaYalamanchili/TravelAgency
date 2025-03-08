@@ -60,6 +60,10 @@ const LandingPage = () => {
             About Us
           </button>
 
+          <Link to="/admin-login" className="admin-btn">
+            Admin Login
+          </Link>
+
           {/* Dropdown for Login & Register */}
           <div className="dropdown">
             <button

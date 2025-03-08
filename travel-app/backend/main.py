@@ -257,6 +257,15 @@ class TravelPreferences(BaseModel):
     shared_accommodation: str
     trip_planning: str
 
+class Admin(BaseModel):
+    first_name: str
+    last_name:str
+    dob:str
+    email:str
+    username:str
+    password:str
+
+
 @app.get("/")
 async def docs_redirect():
     """Redirect to API documentation."""
@@ -386,6 +395,49 @@ async def save_travel_preferences(preferences: TravelPreferences):
     except Exception as e:
         logging.error(f"Error saving preferences: {e}")
         raise HTTPException(status_code=500, detail="Error saving preferences")
+
+    finally:
+        cursor.close()
+        connection.close()
+
+@app.post("/admin-register")
+async def register_admin(admin: Admin):
+    connection = get_db_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Database connection failed.")
+
+    cursor = connection.cursor()
+
+    try:
+        # Check if admin already exists
+        cursor.execute("SELECT admin_id FROM admins WHERE email = %s OR username = %s", (admin.email, admin.username))
+        if cursor.fetchone():
+            raise HTTPException(status_code=400, detail="Admin already exists.")
+
+        # Hash password
+        hashed_password = bcrypt.hashpw(admin.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+        # Insert admin (admin_id is auto-incremented)
+        cursor.execute(
+            """INSERT INTO admins (first_name, last_name, email, username, password, dob) 
+               VALUES (%s, %s, %s, %s, %s, %s)""",
+            (admin.first_name, admin.last_name, admin.email, admin.username, hashed_password, admin.dob)
+        )
+        connection.commit()
+
+        # Retrieve the newly inserted admin ID
+        cursor.execute("SELECT admin_id, created_at FROM admins WHERE email = %s", (admin.email,))
+        new_admin = cursor.fetchone()
+
+        return {
+            "message": "Admin registration successful!",
+            "admin_id": new_admin[0],
+            "created_at": new_admin[1],
+        }
+
+    except Exception as e:
+        logging.error(f"Error during admin registration: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
     finally:
         cursor.close()
