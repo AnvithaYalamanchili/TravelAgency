@@ -25,7 +25,7 @@ def get_db_connection():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="Venu@66691",
+            password="Root@123",
             database="travel_db"
         )
         print("✅ Database connection successful!")

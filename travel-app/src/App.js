@@ -2,13 +2,14 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import LandingPage from "./LandingPage";
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
-import VerifyFacePage from "./VerifyFacePage"; // Import Face Verification Page
-import Dashboard from "./Dashboard"; // Import Dashboard Page
+import VerifyFacePage from "./VerifyFacePage";
+import Dashboard from "./Dashboard"; 
 import HomePage from "./HomePage";
 import TravelPreferences from "./TravelPreferences";
 import TripPage from "./TripPage";
 import AdminRegisterPage from "./AdminRegister";
 import AdminLoginPage from "./AdminLogin";
+import Admindashboard from "./admindashboard";
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/trip/:destination" element={<TripPage/>}/>
         <Route path="/admin-register" element={<AdminRegisterPage/>}/>
         <Route path="/admin-login" element={<AdminLoginPage/>}/>
+        <Route path="/admin-dashboard" element={<Admindashboard/>}/>
 
       </Routes>
     </Router>
