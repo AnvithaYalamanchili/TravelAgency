@@ -37,3 +37,58 @@
   overflow-y: auto;
   padding: 20px;
 }
+
+.welcome-message {
+  font-size: 30px; /* Bigger welcome message */
+  font-weight: bold;
+  color: #F8C923;
+  margin-left: 10px;
+}
+
+.logout-btn {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 3px 6px; /* Smaller button */
+  margin-left: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.logout-btn:hover {
+  background-color: #cc0000;
+}
+
+/* About Us Button Styling */
+.about-us-button {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #F8C923;
+  color: white;
+  font-size: 15px;
+  border-radius: 25px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  border: none;
+}
+
+.about-us-button:hover {
+  background-color: #F2A500;
+  transform: scale(1.05);
+}
+
+.about-us-button:active {
+  background-color: #D68A00;
+}
+
+.about-us-button svg {
+  margin-right: 5px;
+}
+
+.about-us-button:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+}

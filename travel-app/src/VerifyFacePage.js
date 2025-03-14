@@ -11,6 +11,7 @@ const VerifyFacePage = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const navigate = useNavigate();
+
   // Handle file input for passport image
   const handleFileChange = (event) => {
     setPassportImage(event.target.files[0]);
@@ -52,47 +53,52 @@ const VerifyFacePage = () => {
 
   const handleVerify = async () => {
     if (!passportImage || !selfieImage) {
-        alert("Please upload both images.");
-        return;
+      alert("Please upload both images.");
+      return;
     }
-
+  
     const formData = new FormData();
     formData.append("passport_image", passportImage);
     formData.append("selfie_image", selfieImage);
-
+  
     try {
-        const response = await axios.post("http://127.0.0.1:8000/verify-face", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-        });
-
-        if (response.data.verified) {
-            alert("Face verification successful! Completing registration...");
-
-            // Retrieve user details from sessionStorage
-            const userDetails = JSON.parse(sessionStorage.getItem("userDetails"));
-
-            if (!userDetails) {
-                alert("No user data found. Please register again.");
-                return;
-            }
-
-            // Send user data to backend for final registration
-            await axios.post("http://127.0.0.1:8000/register", userDetails, {
-                headers: { "Content-Type": "application/json" },
-            });
-
-            alert("Registration completed successfully!");
-            sessionStorage.removeItem("userDetails");  // Clear stored data after successful registration
-            navigate('/login'); // Redirect to the next page
-        } else {
-            alert("Face verification failed. Please try again.");
+      const response = await axios.post("http://127.0.0.1:8000/verify-face", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      
+      if (response.data.verified) {
+        alert("Face verification successful! Completing registration...");
+    
+        const userDetails = JSON.parse(sessionStorage.getItem("userDetails"));
+    
+        if (!userDetails) {
+          alert("No user data found. Please register again.");
+          return;
         }
+    
+        // Send user data to backend for final registration
+        const registrationResponse = await axios.post("http://127.0.0.1:8000/register", userDetails, {
+          headers: { "Content-Type": "application/json" },
+        });
+    
+        const user_id = registrationResponse.data.user_id;
+        
+        // Store user_id in localStorage
+        localStorage.setItem("user_id", String(user_id));
+    
+        alert("Registration completed successfully!");
+        
+        // Navigate to travel preferences page without userId in URL
+        navigate("/travel-preferences");
+      } else {
+        alert("Face verification failed. Please try again.");
+      }
     } catch (error) {
-        alert("Verification failed.");
-        console.error("Verification error:", error.response ? error.response.data : error.message);
+      alert("Verification failed.");
+      console.error("Verification error:", error.response ? error.response.data : error.message);
     }
-};
-
+  };
+  
 
   // Ensure the camera is started only after component mounts
   useEffect(() => {
@@ -112,6 +118,7 @@ const VerifyFacePage = () => {
   return (
     <div className="container">
       <h1>Face Verification</h1>
+
       {/* Passport Image Upload */}
       <div>
         <input type="file" accept="image/*" onChange={handleFileChange} />
@@ -146,3 +153,4 @@ const VerifyFacePage = () => {
 };
 
 export default VerifyFacePage;
+

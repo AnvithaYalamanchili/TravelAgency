@@ -66,7 +66,7 @@ const AdminLoginPage = () => {
         </form>
 
         <p>
-          Not an admin? <Link to="/register" className="register-link">Register</Link>
+          Not an admin? <Link to="/admin-register" className="register-link">Register</Link>
         </p>
       </div>
     </div>

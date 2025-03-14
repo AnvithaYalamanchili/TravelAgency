@@ -215,6 +215,12 @@ import face_recognition
 import numpy as np
 import io
 import logging
+from sklearn.preprocessing import LabelEncoder
+import numpy as np
+from fastapi import HTTPException
+from sklearn.metrics.pairwise import cosine_similarity
+import logging
+
 
 app = FastAPI(title="Voyagers")
 logging.basicConfig(level=logging.INFO)
@@ -257,6 +263,7 @@ class TravelPreferences(BaseModel):
     shared_accommodation: str
     trip_planning: str
 
+
 class Admin(BaseModel):
     first_name: str
     last_name:str
@@ -264,7 +271,7 @@ class Admin(BaseModel):
     email:str
     username:str
     password:str
-
+    
 
 @app.get("/")
 async def docs_redirect():
@@ -296,7 +303,11 @@ async def register(user: User):
         )
         connection.commit()
 
-        return {"message": "Registration successful!"}
+        # Get the user_id of the newly inserted user
+        cursor.execute("SELECT LAST_INSERT_ID()")
+        user_id = cursor.fetchone()[0]
+
+        return {"message": "Registration successful!", "user_id": user_id}
 
     except Exception as e:
         logging.error(f"Error during registration: {e}")
@@ -315,18 +326,19 @@ async def login(user: LoginUser):
     cursor = connection.cursor()
 
     try:
-        cursor.execute("SELECT user_id, password FROM users WHERE email = %s", (user.email,))
+        cursor.execute("SELECT user_id, first_name, password FROM users WHERE email = %s", (user.email,))
         existing_user = cursor.fetchone()
 
         if not existing_user:
             raise HTTPException(status_code=401, detail="Invalid credentials.")
 
-        user_id, stored_password = existing_user
+        user_id, first_name, stored_password = existing_user
 
         if not bcrypt.checkpw(user.password.encode('utf-8'), stored_password.encode('utf-8')):
             raise HTTPException(status_code=401, detail="Invalid credentials.")
 
-        return {"message": "Login successful!", "user_id": user_id}
+        # Send the user's first name and user_id along with the login response
+        return {"message": "Login successful!", "user_id": user_id, "first_name": first_name}
 
     except Exception as e:
         logging.error(f"Error during login: {e}")
@@ -335,6 +347,7 @@ async def login(user: LoginUser):
     finally:
         cursor.close()
         connection.close()
+
 
 @app.post("/verify-face")
 async def verify_face(passport_image: UploadFile = File(...), selfie_image: UploadFile = File(...)):
@@ -363,25 +376,34 @@ async def verify_face(passport_image: UploadFile = File(...), selfie_image: Uplo
         logging.error(f"Error processing images: {e}")
         raise HTTPException(status_code=500, detail="Error processing images")
 
+
 @app.post("/travel-preferences")
 async def save_travel_preferences(preferences: TravelPreferences):
     connection = get_db_connection()
-    if not connection:
-        raise HTTPException(status_code=500, detail="Database connection failed.")
-
     cursor = connection.cursor()
 
     try:
-        # Check if preferences already exist
-        cursor.execute("SELECT id FROM travel_preferences WHERE user_id = %s", (preferences.user_id,))
-        if cursor.fetchone():
+        logging.info(f"Saving preferences for User ID: {preferences.user_id}")
+
+        # Check if the user exists in the 'users' table
+        cursor.execute("SELECT * FROM users WHERE user_id = %s", (preferences.user_id,))
+        user = cursor.fetchone()
+
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found.")
+
+        # Check if preferences already exist for this user
+        cursor.execute("SELECT * FROM travel_preferences WHERE user_id = %s", (preferences.user_id,))
+        existing_preferences = cursor.fetchone()
+
+        if existing_preferences:
             raise HTTPException(status_code=400, detail="Preferences already saved for this user.")
 
-        # Insert preferences
+        # Insert preferences into database
         cursor.execute(
             """INSERT INTO travel_preferences 
                (user_id, vacation_type, trip_duration, budget, accommodation, travel_style, activities,
-                social_interaction, sleep_schedule, sustainability, companion, shared_accommodation, trip_planning) 
+               social_interaction, sleep_schedule, sustainability, companion, shared_accommodation, trip_planning) 
                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
             (preferences.user_id, preferences.vacation_type, preferences.trip_duration, preferences.budget,
              preferences.accommodation, preferences.travel_style, preferences.activities,
@@ -394,11 +416,147 @@ async def save_travel_preferences(preferences: TravelPreferences):
 
     except Exception as e:
         logging.error(f"Error saving preferences: {e}")
-        raise HTTPException(status_code=500, detail="Error saving preferences")
+        raise HTTPException(status_code=500, detail=f"Error saving preferences: {e}")
 
     finally:
         cursor.close()
         connection.close()
+
+
+@app.get("/matched-users/{user_id}")
+async def get_matched_users(user_id: int):
+    connection = get_db_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Database connection failed.")
+
+    cursor = connection.cursor()
+
+    try:
+        # Fetch the logged-in user's details along with their travel preferences
+        cursor.execute("""
+            SELECT u.user_id, u.first_name, u.last_name, tp.vacation_type, tp.trip_duration, tp.budget,
+                   tp.accommodation, tp.travel_style, tp.activities, tp.social_interaction, tp.sleep_schedule,
+                   tp.sustainability, tp.companion, tp.shared_accommodation, tp.trip_planning
+            FROM users u
+            JOIN travel_preferences tp ON u.user_id = tp.user_id
+            WHERE u.user_id = %s
+        """, (user_id,))
+        logged_in_user = cursor.fetchone()
+
+        if not logged_in_user:
+            raise HTTPException(status_code=404, detail="User preferences not found.")
+
+        # Map the logged-in user data to a dictionary
+        logged_in_user_dict = {
+            "user_id": logged_in_user[0],  # user_id
+            "first_name": logged_in_user[1],  # first_name
+            "last_name": logged_in_user[2],  # last_name
+            "vacation_type": logged_in_user[3],  # vacation_type
+            "trip_duration": logged_in_user[4],  # trip_duration
+            "budget": logged_in_user[5],  # budget
+            "accommodation": logged_in_user[6],  # accommodation
+            "travel_style": logged_in_user[7],  # travel_style
+            "activities": logged_in_user[8],  # activities
+            "social_interaction": logged_in_user[9],  # social_interaction
+            "sleep_schedule": logged_in_user[10],  # sleep_schedule
+            "sustainability": logged_in_user[11],  # sustainability
+            "companion": logged_in_user[12],  # companion
+            "shared_accommodation": logged_in_user[13],  # shared_accommodation
+            "trip_planning": logged_in_user[14],  # trip_planning
+        }
+
+        # Preprocess the logged-in user's preferences
+        logged_in_user_processed = preprocess_preferences(logged_in_user_dict)
+
+        # Prepare data for similarity calculation
+        logged_in_preferences = np.array(list(logged_in_user_processed.values())[3:])  # Exclude user_id, first_name, last_name
+
+        # Fetch other users' details along with their preferences
+        cursor.execute("""
+            SELECT u.user_id, u.first_name, u.last_name, tp.vacation_type, tp.trip_duration, tp.budget,
+                   tp.accommodation, tp.travel_style, tp.activities, tp.social_interaction, tp.sleep_schedule,
+                   tp.sustainability, tp.companion, tp.shared_accommodation, tp.trip_planning
+            FROM users u
+            JOIN travel_preferences tp ON u.user_id = tp.user_id
+            WHERE u.user_id != %s
+        """, (user_id,))
+        other_users = cursor.fetchall()
+
+        matched_users = []
+
+        # Loop through other users and calculate similarity
+        for user in other_users:
+            user_dict = {
+                "user_id": user[0],  # user_id
+                "first_name": user[1],  # first_name
+                "last_name": user[2],  # last_name
+                "vacation_type": user[3],
+                "trip_duration": user[4],
+                "budget": user[5],
+                "accommodation": user[6],
+                "travel_style": user[7],
+                "activities": user[8],
+                "social_interaction": user[9],
+                "sleep_schedule": user[10],
+                "sustainability": user[11],
+                "companion": user[12],
+                "shared_accommodation": user[13],
+                "trip_planning": user[14],
+            }
+
+            # Preprocess the other user's preferences
+            user_processed = preprocess_preferences(user_dict)
+
+            # Prepare user preferences for similarity calculation
+            user_preferences = np.array(list(user_processed.values())[3:])  # Exclude user_id, first_name, last_name
+            similarity = cosine_similarity([logged_in_preferences], [user_preferences])[0][0]
+
+            matched_users.append({
+                "user_id": user[0],
+                "first_name": user[1],
+                "last_name": user[2],
+                "similarity_score": similarity
+            })
+
+        # Sort matched users based on similarity score
+        matched_users.sort(key=lambda x: x["similarity_score"], reverse=True)
+
+        # Return the top 5 matched users
+        return matched_users[:10]
+
+    except Exception as e:
+        logging.error(f"Error fetching matched users: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+
+le = LabelEncoder()
+
+def preprocess_preferences(preferences):
+    categorical_columns = [
+        'vacation_type', 'accommodation', 'travel_style', 'activities', 'social_interaction',
+        'sleep_schedule', 'sustainability', 'companion', 'shared_accommodation', 'trip_planning', 'trip_duration', 'budget'
+    ]
+
+    for col in categorical_columns:
+        if preferences.get(col) is not None:  
+            all_values = get_all_possible_values_from_db(col) 
+            le.fit(all_values)  
+            preferences[col] = le.transform([preferences[col]])[0]  
+
+    return preferences
+
+def get_all_possible_values_from_db(column):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute(f"SELECT DISTINCT {column} FROM travel_preferences")
+    values = [row[0] for row in cursor.fetchall()]
+    cursor.close()
+    connection.close()
+    return values
+
+
+
 
 @app.post("/admin-register")
 async def register_admin(admin: Admin):
@@ -442,6 +600,10 @@ async def register_admin(admin: Admin):
     finally:
         cursor.close()
         connection.close()
+
+
+
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, log_level="debug", reload=True)

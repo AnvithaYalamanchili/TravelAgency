@@ -23,6 +23,7 @@
   width: 100%;
 }
 
+/* Remove the underline from the text */
 .sidebar-menu li {
   padding: 15px;
   display: flex;
@@ -30,12 +31,15 @@
   gap: 10px;
   font-size: 16px;
   cursor: pointer;
+  text-decoration: none; /* Remove underline */
 }
 
 .sidebar-menu li:hover {
   background-color: #f8c923;
   color: white;
 }
+
+
 
 .home-container {
   display: flex;
@@ -54,8 +58,9 @@
   justify-content: center;
 }
 
+/* When sidebar is collapsed, hide the text */
 .collapsed .sidebar-menu li .sidebar-text {
-  display: none; /* Hide text when collapsed */
+  display: none;
 }
 
 .collapsed + .main-content {

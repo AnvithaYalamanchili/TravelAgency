@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom'; // Use 'useNavigate' hook for navigation
+import { Link, useNavigate } from 'react-router-dom'; 
 import './LoginPage.css'; 
 
 const LoginPage = () => {
@@ -11,7 +11,6 @@ const LoginPage = () => {
 
   const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
 
-  
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrors({});
@@ -32,17 +31,19 @@ const LoginPage = () => {
       const response = await axios.post('http://127.0.0.1:8000/login', { email, password });
       alert('Login Successful!');
   
-      // Assuming the response contains the user_id
-      const user_id = response.data.user_id; // Modify backend to return user_id
+      // Assuming the response contains the first name and user ID
+      const { user_id, first_name } = response.data; // Modify backend to return user_id and first_name
       localStorage.setItem('user_id', user_id); // Store user_id in local storage
+      localStorage.setItem('first_name', first_name); // Store first_name in local storage
       console.log("User ID stored in localStorage: ", localStorage.getItem('user_id'));
+      console.log("User First Name stored in localStorage: ", localStorage.getItem('first_name'));
   
-      // Redirect to travel preferences page using navigate
-      navigate('/travel-preferences');
+      // Redirect to the home page
+      navigate('/home');
     } catch (error) {
       alert('Login Failed!');
     }
-  };  
+  };
   
 
   return (

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./HomePage.css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -31,9 +31,8 @@ const HeroSection = () => {
 const TripCard = ({ title, image }) => {
   const navigate = useNavigate();
   const handleBookNow = () => {
-  navigate(`/trip/${title.toLowerCase().replace(/\s+/g, '')}`);
-};
-
+    navigate(`/trip/${title.toLowerCase().replace(/\s+/g, '')}`);
+  };
 
   return (
     <div className="trip-card">
@@ -57,8 +56,17 @@ const internationalTrips = [
 ];
 
 const HomePage = () => {
+  const [userId, setUserId] = useState("");
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('user_id');  // Retrieve user_id from localStorage
+    if (storedUserId) {
+      setUserId(storedUserId);  // Set user_id in state
+    }
+  }, []); 
+
   return (
-    <Layout> 
+    <Layout>
       <div className="home-container">
         <HeroSection />
 

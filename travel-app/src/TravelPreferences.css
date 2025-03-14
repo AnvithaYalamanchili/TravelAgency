@@ -1,95 +1,103 @@
 .preferences-container {
-    width: 70%;
-    margin: 0 auto;
-    padding: 2rem;
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  h2 {
-    text-align: center;
-    color: #333;
-    font-size: 2rem;
-    margin-bottom: 2rem;
-  }
-  
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  
-  label {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #555;
-  }
-  
-  select {
-    padding: 0.8rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #fff;
-    width: 100%;
-    transition: border-color 0.3s ease-in-out;
-  }
-  
-  select:focus {
-    border-color: #007bff;
-    outline: none;
-  }
-  
-  button {
+  width: 70%;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #555;
+}
+.message {
+  padding: 10px;
+  margin-top: 20px;
+  background-color: #4CAF50;
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+}
+
+select {
+  padding: 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+  width: 100%;
+  transition: border-color 0.3s ease-in-out;
+}
+
+select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+button {
+  padding: 1rem;
+  font-size: 1.2rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+button:focus {
+  outline: none;
+}
+
+form select:disabled {
+  background-color: #f0f0f0;
+}
+
+.preferences-container .form-group {
+  margin-bottom: 20px;
+}
+
+@media screen and (max-width: 768px) {
+  .preferences-container {
+    width: 90%;
     padding: 1rem;
-    font-size: 1.2rem;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    width: 100%;
   }
-  
-  button:hover {
-    background-color: #0056b3;
+
+  h2 {
+    font-size: 1.5rem;
   }
-  
-  button:focus {
-    outline: none;
+
+  label {
+    font-size: 1rem;
   }
-  
-  form select:disabled {
-    background-color: #f0f0f0;
+
+  select {
+    padding: 0.6rem;
   }
-  
-  .preferences-container .form-group {
-    margin-bottom: 20px;
+
+  button {
+    font-size: 1rem;
+    padding: 0.8rem;
   }
-  
-  @media screen and (max-width: 768px) {
-    .preferences-container {
-      width: 90%;
-      padding: 1rem;
-    }
-  
-    h2 {
-      font-size: 1.5rem;
-    }
-  
-    label {
-      font-size: 1rem;
-    }
-  
-    select {
-      padding: 0.6rem;
-    }
-  
-    button {
-      font-size: 1rem;
-      padding: 0.8rem;
-    }
-  }
-  
+}
+

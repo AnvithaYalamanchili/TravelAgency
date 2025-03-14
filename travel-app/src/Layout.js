@@ -1,9 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "./SideBar";
 import { FaBell, FaUser, FaInfoCircle } from "react-icons/fa";
-import { Link } from "react-router-dom"; // For navigation links
+import { Link, useNavigate } from "react-router-dom";
 
 const Layout = ({ children }) => {
+  const [userName, setUserName] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedName = localStorage.getItem("first_name");
+    if (storedName) {
+      setUserName(storedName);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
   return (
     <div className="home-container">
       {/* Sidebar */}
@@ -12,19 +27,23 @@ const Layout = ({ children }) => {
       <div className="main-content">
         {/* Navbar */}
         <nav>
-          <img style={{ height: '100px' }} src="/logo.png" alt="" />
+          <img style={{ height: '100px' }} src="/logo.png" alt="logo" />
           <div style={{ display: 'flex', alignItems: 'center', height: '50px', marginLeft: '100px' }}>
             <FaInfoCircle style={{ color: '#F8C923', fontSize: '30px', marginRight: '5px' }} />
             <Link to="/about" style={{ fontSize: '15px', padding: '5px 10px', whiteSpace: 'nowrap', margin: '0' }}>About Us</Link>
-            <button className="book-now-btn-nav">
-              Book Now
-            </button>
+            <button className="book-now-btn-nav">Book Now</button>
             <FaBell style={{ color: '#F8C923', fontSize: '30px', marginLeft: '50px' }} />
           </div>
 
           <div className="search-div">
             <input type="text" placeholder="Search" />
-            <FaUser style={{ color: '#F8C923', fontSize: '30px', marginLeft: '70px' }} />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <FaUser style={{ color: '#F8C923', fontSize: '40px', marginLeft: '70px' }} />
+              {userName && (
+                <span className="welcome-message">Welcome, {userName}!</span>
+              )}
+              <button onClick={handleLogout} className="logout-btn">Logout</button>
+            </div>
           </div>
         </nav>
 

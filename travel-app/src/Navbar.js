@@ -1,8 +1,17 @@
-// Navbar.js
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaBell, FaUser, FaInfoCircle } from "react-icons/fa";
 
 const Navbar = () => {
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const storedName = localStorage.getItem('first_name');
+    if (storedName) {
+      setUserName(storedName);
+    }
+    console.log("User's first name from localStorage:", storedName); // Debugging line
+  }, []);
+
   return (
     <nav>
       <img style={{ height: '100px' }} src="./logo.png" alt="logo" />
@@ -15,7 +24,10 @@ const Navbar = () => {
 
       <div className="search-div">
         <input type="text" placeholder="Search" />
-        <FaUser style={{ color: '#F8C923', fontSize: '30px', marginLeft: '70px' }} />
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <FaUser style={{ color: '#F8C923', fontSize: '30px', marginLeft: '70px' }} />
+          {userName && <span style={{ marginLeft: '10px', color: '#F8C923' }}>{userName}</span>}
+        </div>
       </div>
     </nav>
   );

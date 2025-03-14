@@ -7,6 +7,7 @@ import Dashboard from "./Dashboard";
 import HomePage from "./HomePage";
 import TravelPreferences from "./TravelPreferences";
 import TripPage from "./TripPage";
+import MatchedUsers from "./MatchedUsers"; // Import Matched Users Page
 import AdminRegisterPage from "./AdminRegister";
 import AdminLoginPage from "./AdminLogin";
 import Admindashboard from "./admindashboard";
@@ -22,7 +23,8 @@ const App = () => {
         <Route path="/verify-face" element={<VerifyFacePage />} />  {/* Face Verification Page */}
         <Route path="/dashboard" element={<Dashboard />} />  {/* Dashboard Page */}
         <Route path="/travel-preferences" element={<TravelPreferences />} />  {/* Travel Preferences Page */}
-        <Route path="/trip/:destination" element={<TripPage/>}/>
+        <Route path="/trip/:destination" element={<TripPage/>} />
+        <Route path="/matched-users" element={<MatchedUsers />} /> {/* Matched Users Page */}
         <Route path="/admin-register" element={<AdminRegisterPage/>}/>
         <Route path="/admin-login" element={<AdminLoginPage/>}/>
         <Route path="/admin-dashboard" element={<Admindashboard/>}/>

@@ -53,7 +53,7 @@ const RegisterPage = () => {
         username,
         password
     }));
-
+   
     alert("Proceed to face verification.");
     navigate('/verify-face');  // Redirect to face verification
 };

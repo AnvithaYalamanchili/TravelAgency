@@ -32,20 +32,24 @@ nav {
   top: 0;
   width: 100%;
   z-index: 1000;
+  min-height: 100px;
+}
+ 
+nav img {
+  height: 120px; /* Increase height */
+  width: auto; /* Maintain aspect ratio */
+  max-height: 150px; /* Prevent excessive growth */
 }
 
-nav img {
-  height: 80px;
-}
 
 .nav-icons {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
 }
 
 .nav-icons p {
-  font-size: 16px;
+  font-size: 20px;
   color: #444;
   cursor: pointer;
 }
@@ -57,7 +61,7 @@ nav img {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .book-now-btn-nav:hover {
@@ -67,7 +71,8 @@ nav img {
 .search-div {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  margin: 10px;
 }
 
 .search-div input {
@@ -75,8 +80,9 @@ nav img {
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 14px;
-  width: 200px;
+  width: 250px; /* Increase width */
 }
+
 
 /* Hero Section */
 .hero-section {
@@ -191,3 +197,29 @@ nav img {
   margin-top: 30px;
   font-size: 14px;
 }
+
+.logout-btn {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 3px 8px; /* Adjust padding for a smaller button */
+  margin-left: 10px;
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 14px; /* Reduce font size */
+  width: auto; /* Allow it to fit the content */
+  min-width: 60px; /* Set a reasonable minimum width */
+}
+
+.logout-btn:hover {
+  background-color: #cc0000;
+}
+
+
+.welcome-message {
+  font-size: 23px; /* Bigger welcome message */
+  font-weight: bold;
+  color: #F8C923;
+  margin-left: 10px;
+}
+

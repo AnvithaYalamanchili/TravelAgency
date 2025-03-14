@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './TravelPreferences.css';
 import { useNavigate } from 'react-router-dom';
@@ -18,10 +18,22 @@ const TravelPreferences = () => {
     sharedAccommodation: '',
     tripPlanning: ''
   });
-  
+
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
-  const userId = localStorage.getItem('user_id');
+  
+  // State for user_id
+  const [userId, setUserId] = useState('');
+
+  // Use useEffect to retrieve user_id from localStorage only on mount
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('user_id');
+    if (!storedUserId) {
+      setMessage('User is not logged in.');
+      return;
+    }
+    setUserId(storedUserId);
+  }, []);  // Empty dependency array ensures this runs only once after component mounts
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -33,15 +45,15 @@ const TravelPreferences = () => {
 
   const handlePreferencesSubmit = async (e) => {
     e.preventDefault();
-    
-    // Check if userId exists in localStorage
+  
     if (!userId) {
       setMessage('User is not logged in.');
       return;
     }
-
+  
+    // Ensure backend expects snake_case instead of camelCase
     const preferencesData = {
-      user_id: userId, // Include the user_id
+      user_id: Number(userId),
       vacation_type: preferences.vacationType,
       trip_duration: preferences.tripDuration,
       budget: preferences.budget,
@@ -55,13 +67,22 @@ const TravelPreferences = () => {
       shared_accommodation: preferences.sharedAccommodation,
       trip_planning: preferences.tripPlanning,
     };
-    console.log("preferencesData being sent:", preferencesData);
+  
+    console.log("Preferences data being sent:", preferencesData);
+  
     try {
-      const response = await axios.post('http://127.0.0.1:8000/travel-preferences', preferencesData);
-      setMessage('Preferences saved successfully!');
-      navigate('/home');
+      await axios.post('http://127.0.0.1:8000/travel-preferences', preferencesData);
+      
+      // Set success message
+      setMessage('Your preferences have been saved successfully! Redirecting to the Login page...');
+  
+      // Redirect after 2 seconds to the home page
+      setTimeout(() => {
+        navigate('/login'); // Replace with the actual home page route if different
+      }, 2000);
+  
     } catch (error) {
-      setMessage('Failed to save preferences');
+      setMessage('Failed to save preferences. Please try again.');
     }
   };
   
@@ -184,3 +205,5 @@ const TravelPreferences = () => {
 };
 
 export default TravelPreferences;
+
+

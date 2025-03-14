@@ -1,0 +1,107 @@
+/* Container and General Layout */
+.matched-users-page {
+  padding: 40px;
+  background-color: #f4f7fa;
+  min-height: 100vh;
+  font-family: 'Roboto', sans-serif;
+}
+
+.title {
+  font-size: 36px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+/* Error Message */
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: center;
+}
+
+/* Matched Users List */
+.matched-users-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.user-card {
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  padding: 20px;
+  width: 250px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.user-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Avatar Styling */
+.user-avatar {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #eee;
+}
+
+/* User Details */
+.user-details {
+  text-align: center;
+}
+
+.user-details h3 {
+  font-size: 22px;
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.matching-score {
+  font-size: 16px;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+.express-interest-btn {
+  background-color: #007BFF;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 30px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.express-interest-btn:hover {
+  background-color: #0056b3;
+}
+
+.express-interest-btn:focus {
+  outline: none;
+}
+
+@media (max-width: 768px) {
+  .matched-users-list {
+    flex-direction: column;
+    align-items: center;
+  }
+}
