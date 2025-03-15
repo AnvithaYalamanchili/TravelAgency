@@ -24,7 +24,7 @@ const AdminLoginPage = () => {
   
     try {
       // Send the login request with username and password
-      const response = await axios.post('http://127.0.0.1:8000/admin/login', { username, password });
+      const response = await axios.post('http://127.0.0.1:8000/admin-login', { username, password });
       alert('Login Successful!');
   
       // Assuming the response contains the admin_id
@@ -65,9 +65,9 @@ const AdminLoginPage = () => {
           <button className="submit-btn" type="submit">Login</button>
         </form>
 
-        <p>
+        {/* <p>
           Not an admin? <Link to="/admin-register" className="register-link">Register</Link>
-        </p>
+        </p> */}
       </div>
     </div>
   );

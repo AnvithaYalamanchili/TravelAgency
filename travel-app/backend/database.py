@@ -93,6 +93,59 @@ def create_tables():
         );
         """
 
+        create_locations_table = """
+        CREATE TABLE locations (
+            location_id INT AUTO_INCREMENT,
+            location_name VARCHAR(255) NOT NULL,
+            image VARCHAR(255) NOT NULL, -- Stores the image file path or URL
+            description TEXT NOT NULL,
+            PRIMARY KEY (location_id)
+        );
+        """
+
+        create_places_table = """
+        CREATE TABLE IF NOT EXISTS places (
+            place_id INT AUTO_INCREMENT PRIMARY KEY,
+            location_id INT NOT NULL,
+            place_name VARCHAR(255) NOT NULL,
+            image VARCHAR(255) NOT NULL, -- Stores the image file path or URL
+            place_overview TEXT NOT NULL,
+            features TEXT NOT NULL,
+            vacation_type VARCHAR(255),
+            trip_duration VARCHAR(255),
+            budget VARCHAR(255),
+            accommodation VARCHAR(255),
+            activities TEXT,
+            social_interaction VARCHAR(255),
+            time_to_visit VARCHAR(255),
+            FOREIGN KEY (location_id) REFERENCES locations(location_id) ON DELETE CASCADE
+        );
+        """
+
+        create_user_interactions_table = """
+        CREATE TABLE user_interactions (
+            interaction_id INT PRIMARY KEY AUTO_INCREMENT,
+            user_id INT NOT NULL,
+            place_id INT NOT NULL,
+            interaction_type ENUM('like', 'book', 'rate') NOT NULL,
+            interaction_value FLOAT DEFAULT NULL,  -- For ratings (e.g., 4.5 stars)
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+            FOREIGN KEY (place_id) REFERENCES places(place_id) ON DELETE CASCADE
+        );    
+        """
+
+        create_user_interactions_table = """
+        CREATE TABLE matched_users (
+            match_id INT PRIMARY KEY AUTO_INCREMENT,
+            user_id INT NOT NULL,
+            matched_user_id INT NOT NULL,
+            similarity_score FLOAT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+            FOREIGN KEY (matched_user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+            UNIQUE(user_id, matched_user_id)  -- Ensures one unique match per user pair
+        );
+        """
+
         # Execute table creation queries
         cursor.execute(create_users_table)
         print("✅ Users table created or already exists.")
@@ -102,6 +155,16 @@ def create_tables():
 
         cursor.execute(create_travel_preferences_table)
         print("✅ Travelpreferences table created or already exists.")
+
+        cursor.execute(create_locations_table)
+        print("✅ Locations table created or already exists.")
+
+        cursor.execute(create_places_table)
+        print("✅ Places table created or already exists.")
+
+        cursor.execute(create_user_interactions_table)
+        print("✅ User Interactions table created or already exists.")
+
 
         # Commit changes
         connection.commit()

@@ -127,7 +127,7 @@ const placesData = {
       { name: "Uluru", price: 300, image: "/uluru.jpg" }
     ],
     otherPlaces: [
-      { name: "Gold Coast", price: 250, image: "/golacoast.jpg" },
+      { name: "Gold Coast", price: 250, image: "/goldcoast.jpg" },
       { name: "Tasmania", price: 280, image: "/tasmania.jpg" },
       { name: "Queensland", price: 300, image: "/queensland.jpg" },
       { name: "Philip Island", price: 300, image: "/philip.jpeg" },

@@ -1,0 +1,40 @@
+.locations-container {
+    padding: 40px 20px;
+    text-align: center;
+  }
+  
+  .locations-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .location-card {
+    width: 250px;
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .location-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .location-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .location-card h3 {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #333;
+  }
+  

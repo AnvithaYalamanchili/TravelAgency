@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./Sidebar.css";
-import { FaHome, FaLanguage, FaUserFriends, FaBars } from "react-icons/fa";
+import { FaHome, FaLanguage, FaUserFriends, FaMapMarkedAlt, FaBars } from "react-icons/fa";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -33,6 +33,11 @@ const Sidebar = () => {
         <li>
           <Link to={`/matched-users?user_id=${userId}`}> {/* Pass user_id as query parameter */}
             <FaUserFriends style={{ color: '#e6a700' }} /> <span className="sidebar-text">Travel Mate</span>
+          </Link>
+        </li>
+        <li>
+          <Link to={`/Locations`}> {/* Pass user_id as query parameter */}
+            <FaMapMarkedAlt style={{ color: '#e6a700' }} /> <span className="sidebar-text">Travel Recommendations</span>
           </Link>
         </li>
       </ul>

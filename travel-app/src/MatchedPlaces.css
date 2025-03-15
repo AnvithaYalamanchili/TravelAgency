@@ -1,0 +1,60 @@
+.matched-places-container {
+    padding: 40px 20px;
+    text-align: center;
+  }
+  
+  .matched-places-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .matched-place-card {
+    width: 300px;
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .matched-place-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .matched-place-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .matched-place-card h3 {
+    margin: 10px 0;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .matched-place-card p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+  
+  .view-details-button {
+    background-color: #f8c923;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .view-details-button:hover {
+    background-color: #e6a700;
+  }
+  
