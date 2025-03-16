@@ -1,31 +1,48 @@
-/* General styles */
-* {
+body, html {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-
-body, html {
-  overflow-x: hidden;
   width: 100%;
-  font-family: 'Arial', sans-serif;
-  background-color: #f9f9f9;
+  height: 100%; /* Ensure full viewport height */
+  box-sizing: border-box; /* Include padding and border in element's width and height */
 }
 
-/* Main Container */
+.layout {
+  display: flex;
+  height: 100vh; /* Ensure the layout takes up full viewport height */
+  overflow: hidden; /* Prevents scrollbars from appearing */
+}
+
+
 .home-container {
   display: flex;
   flex-direction: column;
+  flex: 1;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100vh; /* Ensure full viewport height */
+  margin: 0;
+  padding: 0; /* Remove any padding */
+  box-sizing: border-box; /* Ensure padding is included in width/height */
 }
+
+/* Main Content Area */
+.main-content {
+  flex: 1;
+  margin-left: 150px; /* Adjust to accommodate sidebar width */
+  margin-right: 0; /* Ensure no right margin */
+  padding: 0; /* Remove any padding */
+  transition: margin-left 0.3s ease;
+  width: calc(100% - 200px); /* Adjust width for the sidebar */
+  box-sizing: border-box; /* Include padding and borders in the element’s width */
+}
+
+
 
 /* Navbar */
 nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 30px;
+  padding: 15px 20px; /* Adjust padding to make the navbar slightly smaller */
   background-color: white;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
   position: sticky;
@@ -34,13 +51,12 @@ nav {
   z-index: 1000;
   min-height: 100px;
 }
- 
+
 nav img {
   height: 120px; /* Increase height */
   width: auto; /* Maintain aspect ratio */
   max-height: 150px; /* Prevent excessive growth */
 }
-
 
 .nav-icons {
   display: flex;
@@ -80,21 +96,87 @@ nav img {
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 14px;
-  width: 250px; /* Increase width */
+  width: 200px; /* Reduce the width of the search input */
 }
+
+/* Sidebar */
+.sidebar {
+  width: 200px; /* Set a fixed width for the sidebar */
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: white; /* Set background color to white */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  transition: width 0.3s ease; /* Smooth transition for width */
+  z-index: 1000;
+}
+
+.sidebar.collapsed {
+  width: 60px; /* Shrink sidebar when collapsed */
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar-menu li {
+  padding: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.sidebar-text {
+  margin-left: 10px;
+  font-size: 16px;
+  color: #333;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar.collapsed .sidebar-text {
+  opacity: 0; /* Hide text when sidebar is collapsed */
+}
+
+.sidebar .menu-icon {
+  font-size: 30px;
+  cursor: pointer;
+}
+
+/* Adjust link styling */
+.sidebar-menu li a {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Sidebar Menu Item */
+.sidebar-menu li:hover {
+  background-color: #f8c923;
+  color: white;
+}
+
+.sidebar-menu li:hover .sidebar-text {
+  color: white;
+}
+
+
+/* Main Content */
 
 
 /* Hero Section */
 .hero-section {
   position: relative;
   width: 100%;
-  height: 500px;
+  height: 400px; /* Decrease height */
   overflow: hidden;
 }
 
 .hero-section img {
   width: 100%;
-  height: 500px;
+  height: 400px; /* Adjust image height */
   object-fit: cover;
 }
 
@@ -198,6 +280,7 @@ nav img {
   font-size: 14px;
 }
 
+/* Logout Button */
 .logout-btn {
   background-color: #ff4d4d;
   color: white;
@@ -215,11 +298,9 @@ nav img {
   background-color: #cc0000;
 }
 
-
 .welcome-message {
   font-size: 23px; /* Bigger welcome message */
   font-weight: bold;
   color: #F8C923;
   margin-left: 10px;
 }
-

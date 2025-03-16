@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "./SideBar";
 import { FaBell, FaUser, FaInfoCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import logo from './logo.jpeg';
 
 const Layout = ({ children }) => {
-  const [userName, setUserName] = useState("");
-  const navigate = useNavigate();
+const [userName, setUserName] = useState("");
+const navigate = useNavigate();
+
 
   useEffect(() => {
     const storedName = localStorage.getItem("first_name");
@@ -27,7 +29,8 @@ const Layout = ({ children }) => {
       <div className="main-content">
         {/* Navbar */}
         <nav>
-          <img style={{ height: '100px' }} src="/logo.png" alt="logo" />
+        <img style={{ height: '100px' }} src={logo} alt="logo" />
+
           <div style={{ display: 'flex', alignItems: 'center', height: '50px', marginLeft: '100px' }}>
             <FaInfoCircle style={{ color: '#F8C923', fontSize: '30px', marginRight: '5px' }} />
             <Link to="/about" style={{ fontSize: '15px', padding: '5px 10px', whiteSpace: 'nowrap', margin: '0' }}>About Us</Link>

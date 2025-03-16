@@ -1,74 +1,102 @@
+/* Sidebar */
 .sidebar {
-  width: 200px;
+  width: 250px;
   height: 100vh;
-  background-color: #fff;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  background-color: white !important; /* Keep White Background */
+  color: #e6a700 !important; /* Yellow Text */
   position: fixed;
   left: 0;
   top: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  transition: width 0.3s ease-in-out; /* Smooth transition for collapsing */
+  z-index: 1000;
+  overflow: hidden;
 }
 
+/* When Sidebar is Collapsed */
+.sidebar.collapsed {
+  width: 80px; /* Keep only icons visible */
+}
+
+/* Sidebar Header */
 .sidebar-header {
-  font-size: 24px;
+  display: flex;
+  justify-content: flex-end;
   margin-bottom: 20px;
 }
 
-.sidebar-menu {
-  list-style: none;
-  padding: 0;
-  width: 100%;
+/* Menu Toggle Icon */
+.menu-icon {
+  font-size: 30px;
+  cursor: pointer;
 }
 
-/* Remove the underline from the text */
+/* Sidebar Menu */
+.sidebar-menu {
+  list-style-type: none;
+  padding: 0;
+}
+
+/* Sidebar Menu Items */
 .sidebar-menu li {
-  padding: 15px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 16px;
+  padding: 12px 15px;
   cursor: pointer;
-  text-decoration: none; /* Remove underline */
+  font-size: 16px;
+  transition: all 0.3s ease-in-out;
+  border-radius: 8px;
 }
 
 .sidebar-menu li:hover {
-  background-color: #f8c923;
-  color: white;
+  background-color: #f5f5f5; /* Light gray on hover */
 }
 
-
-
-.home-container {
-  display: flex;
+/* Sidebar Icons */
+.sidebar-menu li svg {
+  font-size: 22px;
+  color: #e6a700; /* Yellow Icons */
 }
 
+/* Sidebar Text */
+.sidebar-menu li .sidebar-text {
+  margin-left: 10px;
+  color: #e6a700; /* Yellow Text */
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Hide Text When Sidebar is Collapsed */
+.sidebar.collapsed .sidebar-text {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Adjust Main Content When Sidebar is Minimized */
 .main-content {
-  margin-left: 200px; /* Offset for sidebar */
-  padding: 20px;
+  margin-left: 200px;
+  padding: 30px;
+  transition: margin-left 0.3s ease-in-out;
 }
 
-.collapsed {
-  width: 60px;
+.sidebar.collapsed + .main-content {
+  margin-left: 80px; /* Expand Home Screen */
 }
 
-.collapsed .sidebar-menu li {
-  justify-content: center;
-}
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
 
-/* When sidebar is collapsed, hide the text */
-.collapsed .sidebar-menu li .sidebar-text {
-  display: none;
-}
+  .sidebar.collapsed {
+    width: 60px;
+  }
 
-.collapsed + .main-content {
-  margin-left: 60px; /* Adjust main content margin when sidebar is collapsed */
-}
-
-.menu-icon {
-  cursor: pointer;
-  font-size: 24px;
-  margin-bottom: 10px;
+  .sidebar.collapsed + .main-content {
+    margin-left: 60px;
+  }
 }
