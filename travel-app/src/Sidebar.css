@@ -1,6 +1,6 @@
 /* Sidebar */
 .sidebar {
-  width: 250px;
+  width: 80px; /* Default collapsed width */
   height: 100vh;
   background-color: white !important; /* Keep White Background */
   color: #e6a700 !important; /* Yellow Text */
@@ -10,14 +10,19 @@
   padding-top: 20px;
   padding-left: 20px;
   padding-right: 20px;
-  transition: width 0.3s ease-in-out; /* Smooth transition for collapsing */
+  transition: width 0.3s ease-in-out; /* Smooth transition for expanding */
   z-index: 1000;
   overflow: hidden;
+  white-space: nowrap;
 }
 
-/* When Sidebar is Collapsed */
-.sidebar.collapsed {
-  width: 80px; /* Keep only icons visible */
+body {
+  overflow-x: hidden; /* Prevents horizontal scrollbar */
+}
+
+/* Sidebar Expanded on Hover */
+.sidebar.expanded {
+  width: 250px; /* Expanded width */
 }
 
 /* Sidebar Header */
@@ -77,14 +82,15 @@
 
 /* Adjust Main Content When Sidebar is Minimized */
 .main-content {
-  margin-left: 200px;
+  margin-left: 220px; /* Increase this value to add more gap */
   padding: 30px;
   transition: margin-left 0.3s ease-in-out;
 }
 
 .sidebar.collapsed + .main-content {
-  margin-left: 80px; /* Expand Home Screen */
+  margin-left: 100px; /* Increase this to ensure proper spacing */
 }
+
 
 /* Responsive Design */
 @media (max-width: 768px) {

@@ -4,8 +4,8 @@ import {
   PieChart, Pie, Cell, Legend 
 } from "recharts";
 import { Search,Bell, Home,Settings, Users } from "lucide-react";
-import { analyticsData, financialData, travelHistory, ongoingTrips } from "./admindata"; // Import ongoing trips
-import './adminstyles.css'; // Import the custom CSS file
+import { analyticsData, financialData, travelHistory, ongoingTrips } from "./admindata"; 
+import './adminstyles.css'; 
 
 // Colors for Pie Chart
 const COLORS = ["#4CAF50", "#FFC107", "#F44336"];

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom'; // Use 'useNavigate' hook for navigation
+import { Link, useNavigate } from 'react-router-dom'; 
 import './LoginPage.css'; 
 
 const AdminLoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
-  const navigate = useNavigate(); // Initialize 'useNavigate' hook for navigation
+  const navigate = useNavigate(); 
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,23 +21,17 @@ const AdminLoginPage = () => {
       setErrors(formErrors);
       return;
     }
-  
-    try {
-      // Send the login request with username and password
-      const response = await axios.post('http://127.0.0.1:8000/admin-login', { username, password });
-      alert('Login Successful!');
-  
-      // Assuming the response contains the admin_id
-      const admin_id = response.data.admin_id; // Modify backend to return admin_id
-      localStorage.setItem('admin_id', admin_id); // Store admin_id in local storage
-      console.log("Admin ID stored in localStorage: ", localStorage.getItem('admin_id'));
-  
-      // Redirect to the admin dashboard page using navigate
-      navigate('/admin-dashboard');
-    } catch (error) {
-      alert('Login Failed! Please check your credentials.');
-    }
-  };  
+    const adminUsername = "admin";
+  const adminPassword = "Admin@123";
+   if (username === adminUsername && password === adminPassword) {
+
+    localStorage.setItem("admin_authenticated", "true");
+
+    navigate("/admin-dashboard"); 
+  } else {
+    alert("Login Failed! Incorrect username or password.");
+  }
+}; 
 
   return (
     <div className="login-page-background">
@@ -65,9 +59,7 @@ const AdminLoginPage = () => {
           <button className="submit-btn" type="submit">Login</button>
         </form>
 
-        {/* <p>
-          Not an admin? <Link to="/admin-register" className="register-link">Register</Link>
-        </p> */}
+        
       </div>
     </div>
   );

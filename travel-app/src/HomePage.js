@@ -5,7 +5,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation, Autoplay } from "swiper/modules";
 import { useNavigate } from "react-router-dom";
-import Layout from "./Layout"; // Import Layout component
+import Layout from "./Layout"; 
 
 const HeroSection = () => {
   return (
@@ -21,9 +21,7 @@ const HeroSection = () => {
           <img src="./scenary.jpg" alt="Scenic view" />
         </SwiperSlide>
       </Swiper>
-      <div className="hero-text">
-        Find Your Travel Mate and Explore the World Together...
-      </div>
+      
     </div>
   );
 };
@@ -31,6 +29,7 @@ const HeroSection = () => {
 const TripCard = ({ title, image }) => {
   const navigate = useNavigate();
   const handleBookNow = () => {
+     window.scrollTo(0, 0);
     navigate(`/trip/${title.toLowerCase().replace(/\s+/g, '')}`);
   };
 
