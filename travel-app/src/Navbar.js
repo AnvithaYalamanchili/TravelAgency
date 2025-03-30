@@ -14,7 +14,7 @@ const Navbar = () => {
 
   return (
     <nav>
-      <img style={{ height: '100px' }} src="./logo.png" alt="logo" />
+      <img style={{ height: '100px' }} src="./mylogo.jpeg" alt="logo" />
       <div style={{ display: 'flex', alignItems: 'center', height: '50px', marginLeft: '100px' }}>
         <FaInfoCircle style={{ color: '#F8C923', fontSize: '30px', marginRight: '5px' }} />
         <p style={{ fontSize: '15px', padding: '5px 10px', whiteSpace: 'nowrap', margin: '0' }}>About Us</p>

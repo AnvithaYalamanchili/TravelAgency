@@ -10,7 +10,7 @@
   position: fixed;  /* Fix the background to stay in place when scrolling */
   top: 0;
   left: 0;
-  z-index: -1;    /* Ensure it stays behind the rest of the content */
+  z-index: 1;    /* Ensure it stays behind the rest of the content */
   display: flex;   /* Flexbox for centering the content */
   justify-content: center; /* Center horizontally */
   align-items: center;     /* Center vertically */
