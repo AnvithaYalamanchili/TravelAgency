@@ -13,6 +13,8 @@ import AdminLoginPage from "./AdminLogin";
 import Admindashboard from "./admindashboard";
 import Locations from "./Locations";
 import MatchedPlaces from "./MatchedPlaces";
+import PlaceDetails from "./PlaceDetails";
+import LanguageTranslator from "./LanguageTranslator";
 
 
 const App = () => {
@@ -33,7 +35,10 @@ const App = () => {
         <Route path="/MatchedPlaces/:location_id" element={<MatchedPlaces />} />
         <Route path="/admin-login" element={<AdminLoginPage/>}/>
         <Route path="/admin-dashboard" element={<Admindashboard/>}/>
+        <Route path="/places/:stateName" element={<PlaceDetails />} />
+        <Route path="/lang" element={<LanguageTranslator/>}/>
 
+        
       </Routes>
     </Router>
   );

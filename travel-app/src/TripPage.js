@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -7,10 +7,27 @@ import { Navigation, Autoplay } from "swiper/modules";
 import Layout from "./Layout";
 import placesData from "./placesData";
 import "./TripPage.css";
+import { useNavigate } from "react-router-dom";
+
+
 
 const TripPage = () => {
   const { destination } = useParams();
   const trip = placesData[destination];
+  const streetViewRef = useRef(null);
+  const navigate = useNavigate(); 
+  const [showStreetView, setShowStreetView] = useState(false);
+  const [selectedPlace, setSelectedPlace] = useState(null); // Track the selected place for 360° view
+
+  useEffect(() => {
+    if (showStreetView && window.google && selectedPlace) {
+      const streetView = new window.google.maps.StreetViewPanorama(streetViewRef.current, {
+        position: { lat: selectedPlace.lat, lng: selectedPlace.lon },
+        pov: { heading: 165, pitch: 0 },
+        zoom: 1,
+      });
+    }
+  }, [showStreetView, selectedPlace]);
 
   if (!trip) {
     return (
@@ -19,6 +36,17 @@ const TripPage = () => {
       </Layout>
     );
   }
+
+  const handleStreetViewClick = (place) => {
+    setSelectedPlace(place);
+    setShowStreetView(true);
+  };
+
+
+  const handleNavigate = (place) => {
+  navigate(`/places/${place.name}`); // Redirect to another page dynamically
+};
+
 
   return (
     <Layout>
@@ -64,6 +92,9 @@ const TripPage = () => {
             <div key={index} className="place-card">
               <img src={place.image} alt={place.name} className="place-image" />
               <p>{place.name} - <strong>${place.price}</strong></p>
+              <button className="select-button" onClick={() => handleNavigate(place)}>
+  View Details
+</button>
             </div>
           ))}
         </div>
@@ -75,14 +106,30 @@ const TripPage = () => {
             <div key={index} className="place-card">
               <img src={place.image} alt={place.name} className="place-image" />
               <p>{place.name} - <strong>${place.price}</strong></p>
-              <button className="select-button">Add</button>
+              <button className="select-button" onClick={() => handleNavigate(place)}>
+  View Details
+</button>
             </div>
           ))}
         </div>
+
+        {/* Floating Button for 360° View */}
+        <button className="floating-button" onClick={() => setShowStreetView(true)}>
+          360° View
+        </button>
+
+        {/* Modal for Street View */}
+        {showStreetView && selectedPlace && (
+          <div className="street-view-modal">
+            <div className="modal-content">
+              <span className="close-button" onClick={() => setShowStreetView(false)}>&times;</span>
+              <div ref={streetViewRef} className="street-view-container"></div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );
 };
-
 
 export default TripPage;

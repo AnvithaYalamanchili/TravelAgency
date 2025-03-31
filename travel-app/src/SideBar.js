@@ -32,8 +32,10 @@ const Sidebar = () => {
 </li>
 
         <li>
-          <FaLanguage style={{ color: "#e6a700" }} />
-          {isSidebarHovered && <span className="sidebar-text">Translator</span>}
+          <Link to="/lang" className="sidebar-link">
+    <FaLanguage style={{ color: "#e6a700" }} />
+    {isSidebarHovered && <span className="sidebar-text">Translator</span>}
+  </Link>
         </li>
         <li>
           <Link to={`/matched-users?user_id=${userId}`}>

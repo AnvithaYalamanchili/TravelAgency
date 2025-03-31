@@ -1,28 +1,36 @@
 /* Sidebar */
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* Prevents horizontal scrollbar */
+  margin: 0;
+  padding: 0;
+}
+
 .sidebar {
   width: 80px; /* Default collapsed width */
   height: 100vh;
-  background-color: white !important; /* Keep White Background */
-  color: #e6a700 !important; /* Yellow Text */
-  position: fixed;
+  background-color: white !important;
+  color: #e6a700 !important;
+  position: fixed; /* Ensure sidebar stays fixed */
   left: 0;
   top: 0;
   padding-top: 20px;
   padding-left: 20px;
   padding-right: 20px;
-  transition: width 0.3s ease-in-out; /* Smooth transition for expanding */
-  z-index: 1000;
+  transition: width 0.3s ease-in-out;
+  z-index: 1100;
   overflow: hidden;
   white-space: nowrap;
 }
 
-body {
-  overflow-x: hidden; /* Prevents horizontal scrollbar */
-}
+
 
 /* Sidebar Expanded on Hover */
 .sidebar.expanded {
   width: 250px; /* Expanded width */
+  z-index: 1100;
 }
 
 /* Sidebar Header */
@@ -82,27 +90,35 @@ body {
 
 /* Adjust Main Content When Sidebar is Minimized */
 .main-content {
-  margin-left: 220px; /* Increase this value to add more gap */
+  margin-left: 80px; /* Set a static margin to prevent shifting */
   padding: 30px;
-  transition: margin-left 0.3s ease-in-out;
+  transition: none; /* Remove transition to avoid unwanted shifts */
+  width: calc(100% - 80px);
 }
 
 .sidebar.collapsed + .main-content {
-  margin-left: 100px; /* Increase this to ensure proper spacing */
+  margin-left: 80px; /* Increase this to ensure proper spacing */
 }
 
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .sidebar {
-    width: 200px;
+    width: 80px;
   }
 
   .sidebar.collapsed {
     width: 60px;
   }
 
+   .sidebar.expanded {
+    width: 250px;
+  }
+
   .sidebar.collapsed + .main-content {
     margin-left: 60px;
+  }
+  .main-content {
+    margin-left: 80px; /* Keep it fixed */
   }
 }

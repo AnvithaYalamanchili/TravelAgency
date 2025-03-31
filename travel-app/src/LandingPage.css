@@ -25,22 +25,23 @@
     align-items: center;
     justify-content: space-between; /* Pushes elements apart */
     background: black;
-    padding: 15px 30px;
+    padding: 10px 20px;
     z-index: 1000;
+    height:30px;
 }
 
 /* Wrapper for menu items on the right */
 .menu-items {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
     margin-right: 200px;
 }
 
 /* Logo */
 .logo img {
-    width: 120px;
-    height: auto;
+    width: 170px;
+    height:150px;
 }
 
 /* About Us Button */

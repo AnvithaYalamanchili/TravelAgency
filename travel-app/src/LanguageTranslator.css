@@ -1,0 +1,158 @@
+/* Container styles */
+.language-translator-container {
+  text-align: center;
+  padding: 30px;
+  max-width: 900px;
+  margin: 50px auto;
+  background: linear-gradient(135deg, #f8f9fa, #e3e7eb);
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover effect */
+.language-translator-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Title styling */
+.language-translator-container h2 {
+  font-size: 2.2rem;
+  margin-bottom: 20px;
+  color: #333;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* Layout for text boxes: side by side */
+.text-box-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+/* Textarea styling */
+.language-translator-container textarea {
+  width: 48%;
+  padding: 14px;
+  font-size: 1.1rem;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  min-height: 140px;
+  background-color: #ffffff;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  resize: none;
+}
+
+.language-translator-container textarea:focus {
+  border-color: #f8c923;
+  background-color: #fdfdff;
+  box-shadow: 0 0 10px rgba(108, 92, 231, 0.2);
+}
+
+/* Dropdown styles */
+.dropdown-container {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 20px;
+}
+
+.language-translator-container select {
+  padding: 10px;
+  font-size: 1rem;
+  border: 2px solid #f8c923;
+  border-radius: 8px;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.language-translator-container select:focus {
+  border-color: #dfcb13;
+  background-color: #f7f7ff;
+}
+
+/* Translate button: centered below */
+.translate-button {
+  display: block;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #f8c923, #f7a81e); /* Gradient background */
+  color: white;
+  font-size: 1.2rem;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 25px; /* Rounded corners */
+  cursor: pointer;
+  transition: all 0.3s ease; /* Smooth transition for hover and active states */
+  width: 200px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+.translate-button:hover {
+  background: linear-gradient(135deg, #f7a81e, #f8c923); /* Hover effect: reversed gradient */
+  transform: scale(1.05); /* Slight zoom effect on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+}
+
+.virtual-keyboard-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;  /* Adjust as needed */
+  width: 100%;  /* Or a specific width */
+}
+
+.text-area {
+  width: 100%;
+  height: 100px;  /* Adjust as needed */
+}
+
+.voice-button {
+  background: linear-gradient(135deg, #f7a81e, #f8c923); /* Gradient background */
+  color: white;
+  font-size: 1.1rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 50px; /* Rounded pill shape */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+.voice-button:hover {
+  background: linear-gradient(135deg, #f7a81e, #f8c923); /* Hover effect: reversed gradient */
+  transform: scale(1.05); /* Slight zoom effect on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
+}
+
+.voice-button:active {
+  transform: scale(0.98); /* Slight shrink effect on active press */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* Smaller shadow on active press */
+}
+
+/* Styling for buttons container */
+.voice-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .text-box-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .language-translator-container textarea {
+    width: 100%;
+  }
+}

@@ -8,7 +8,6 @@
   background-color: white;  
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   transition: width 0.3s ease;
-  z-index: 1000; 
   overflow: hidden; /* Hide overflowing content */
 }
 
@@ -79,10 +78,10 @@
   background-color: white;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   position: fixed;
-  width: calc(100% - 60px); /* Adjust width for collapsed sidebar */
+   width: 100%; /* Adjust width for collapsed sidebar */
   top: 0;
-  left: 60px;
-  z-index: 999; 
+  left: 0;
+  z-index: 900; 
   transition: left 0.3s ease, width 0.3s ease;
 }
 

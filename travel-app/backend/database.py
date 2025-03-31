@@ -18,6 +18,7 @@
 
 
 
+
 import mysql.connector
 
 def get_db_connection():
@@ -25,7 +26,7 @@ def get_db_connection():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="Root@123",
+            password="Venu@66691",
             database="travel_db"
         )
         print("✅ Database connection successful!")
@@ -56,9 +57,10 @@ def create_tables():
             passport_number VARCHAR(100) UNIQUE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
             PRIMARY KEY (user_id)
-        );
+        ) ENGINE=InnoDB;
         """
 
+        # Admins Table
         create_admins_table = """
         CREATE TABLE IF NOT EXISTS admins (
             admin_id INT NOT NULL AUTO_INCREMENT,
@@ -70,45 +72,51 @@ def create_tables():
             dob DATE NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
             PRIMARY KEY (admin_id)
-        );
+        ) ENGINE=InnoDB;
         """
 
+        # Travel Preferences Table
         create_travel_preferences_table = """
-        CREATE TABLE IF NOT EXISTS travel_preferences (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            user_id INT NOT NULL,
-            vacation_type VARCHAR(255),
-            trip_duration VARCHAR(255),
-            budget VARCHAR(255),
-            accommodation VARCHAR(255),
-            travel_style VARCHAR(255),
-            activities TEXT,
-            social_interaction VARCHAR(255),
-            sleep_schedule VARCHAR(255),
-            sustainability VARCHAR(255),
-            companion VARCHAR(255),
-            shared_accommodation VARCHAR(255),
-            trip_planning VARCHAR(255),
-            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-        );
-        """
+CREATE TABLE IF NOT EXISTS travel_preferences (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    vacation_type VARCHAR(255),
+    trip_duration VARCHAR(255),
+    budget VARCHAR(255),
+    accommodation VARCHAR(255),
+    travel_style VARCHAR(255),
+    activities TEXT,
+    social_interaction VARCHAR(255),
+    sleep_schedule VARCHAR(255),
+    sustainability VARCHAR(255),
+    companion VARCHAR(255),
+    shared_accommodation VARCHAR(255),
+    trip_planning VARCHAR(255),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
 
+"""
+
+    
+
+        # Locations Table
         create_locations_table = """
-        CREATE TABLE locations (
+        CREATE TABLE IF NOT EXISTS locations (
             location_id INT AUTO_INCREMENT,
             location_name VARCHAR(255) NOT NULL,
-            image VARCHAR(255) NOT NULL, -- Stores the image file path or URL
+            image VARCHAR(255) NOT NULL,
             description TEXT NOT NULL,
             PRIMARY KEY (location_id)
-        );
+        ) ENGINE=InnoDB;
         """
 
+        # Places Table
         create_places_table = """
         CREATE TABLE IF NOT EXISTS places (
             place_id INT AUTO_INCREMENT PRIMARY KEY,
             location_id INT NOT NULL,
             place_name VARCHAR(255) NOT NULL,
-            image VARCHAR(255) NOT NULL, -- Stores the image file path or URL
+            image VARCHAR(255) NOT NULL,
             place_overview TEXT NOT NULL,
             features TEXT NOT NULL,
             vacation_type VARCHAR(255),
@@ -119,31 +127,33 @@ def create_tables():
             social_interaction VARCHAR(255),
             time_to_visit VARCHAR(255),
             FOREIGN KEY (location_id) REFERENCES locations(location_id) ON DELETE CASCADE
-        );
+        ) ENGINE=InnoDB;
         """
 
+        # User Interactions Table
         create_user_interactions_table = """
-        CREATE TABLE user_interactions (
+        CREATE TABLE IF NOT EXISTS user_interactions (
             interaction_id INT PRIMARY KEY AUTO_INCREMENT,
             user_id INT NOT NULL,
             place_id INT NOT NULL,
             interaction_type ENUM('like', 'book', 'rate') NOT NULL,
-            interaction_value FLOAT DEFAULT NULL,  -- For ratings (e.g., 4.5 stars)
+            interaction_value FLOAT DEFAULT NULL,
             FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
             FOREIGN KEY (place_id) REFERENCES places(place_id) ON DELETE CASCADE
-        );    
+        ) ENGINE=InnoDB;
         """
 
-        create_user_interactions_table = """
-        CREATE TABLE matched_users (
+        # Matched Users Table
+        create_matched_users_table = """
+        CREATE TABLE IF NOT EXISTS matched_users (
             match_id INT PRIMARY KEY AUTO_INCREMENT,
             user_id INT NOT NULL,
             matched_user_id INT NOT NULL,
             similarity_score FLOAT NOT NULL,
             FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
             FOREIGN KEY (matched_user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-            UNIQUE(user_id, matched_user_id)  -- Ensures one unique match per user pair
-        );
+            UNIQUE(user_id, matched_user_id)
+        ) ENGINE=InnoDB;
         """
 
         # Execute table creation queries
@@ -154,7 +164,7 @@ def create_tables():
         print("✅ Admins table created or already exists.")
 
         cursor.execute(create_travel_preferences_table)
-        print("✅ Travelpreferences table created or already exists.")
+        print("✅ Travel Preferences table created or already exists.")
 
         cursor.execute(create_locations_table)
         print("✅ Locations table created or already exists.")
@@ -165,6 +175,8 @@ def create_tables():
         cursor.execute(create_user_interactions_table)
         print("✅ User Interactions table created or already exists.")
 
+        cursor.execute(create_matched_users_table)
+        print("✅ Matched Users table created or already exists.")
 
         # Commit changes
         connection.commit()

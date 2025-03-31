@@ -1,6 +1,4 @@
 /* General page styling */
-
-
 .register-page-background {
   background-image: url('pic1.jpg'); /* Add an image path if you'd like */
   background-size: cover;
@@ -10,7 +8,7 @@
   position: fixed;  /* Fix the background to stay in place when scrolling */
   top: 0;
   left: 0;
-  z-index: -1;    /* Ensure it stays behind the rest of the content */
+  z-index: 1;    /* Ensure it stays behind the rest of the content */
   display: flex;   /* Flexbox for centering the content */
   justify-content: center; /* Center horizontally */
   align-items: center;     /* Center vertically */
@@ -39,7 +37,6 @@ h2 {
   margin-bottom: 20px;
 }
 
-
 input[type="text"], input[type="email"], input[type="password"], input[type="date"] {
   width: 100%;
   padding: 8px;
@@ -57,20 +54,20 @@ input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focu
 
 .register-btn {
   width: 100%;
-    padding: 12px;
-    background: linear-gradient(to right, #4facfe, #00f2fe);
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-size: 1.2rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
+  padding: 12px;
+  background: linear-gradient(to right, #4facfe, #00f2fe);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .register-btn:hover {
   background: linear-gradient(to right, #00c6ff, #0072ff);
-    transform: translateY(-2px);
+  transform: translateY(-2px);
 }
 
 .register-link {
