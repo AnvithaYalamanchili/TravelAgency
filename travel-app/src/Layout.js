@@ -28,7 +28,7 @@ const navigate = useNavigate();
       <div className="main-content">
         {/* Navbar */}
         <nav>
-        <img style={{ height: '100px' ,backgroundColor:"transparent" }} src="/logo.png" alt="logo" />
+        <img style={{ height: '120px' ,backgroundColor:"transparent" }} src="./mylogo.jpeg" alt="logo" />
 
           <div style={{ display: 'flex', alignItems: 'center', height: '50px', marginLeft: '100px' }}>
             <FaInfoCircle style={{ color: '#F8C923', fontSize: '30px', marginRight: '5px' }} />

@@ -1,208 +1,3 @@
-# from fastapi import FastAPI, HTTPException, UploadFile, File, Form
-# from fastapi.middleware.cors import CORSMiddleware
-# from pydantic import BaseModel
-# import mysql.connector
-# from database import get_db_connection  # Assuming this function is defined in 'database.py'
-# import bcrypt
-# import face_recognition
-# import numpy as np
-# import io
-# import logging
-
-# app = FastAPI()
-# logging.basicConfig(level=logging.INFO)
-# # Add CORS middleware to allow requests from specific origins
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["http://localhost:3000"],  # Only allow your frontend to communicate
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
-
-
-
-# class TravelPreferences(BaseModel):
-#     user_id: int
-#     vacation_type: str
-#     trip_duration: str
-#     budget: str
-#     accommodation: str
-#     travel_style: str
-#     activities: str
-#     social_interaction: str
-#     sleep_schedule: str
-#     sustainability: str
-#     companion: str
-#     shared_accommodation: str
-#     trip_planning: str
-
-
-# # Define the user model (registration)
-# class User(BaseModel):
-#     first_name: str
-#     last_name: str
-#     dob: str  # Date of Birth (YYYY-MM-DD)
-#     passport_number: str
-#     email: str
-#     username: str
-#     password: str
-
-# class LoginUser(BaseModel):
-#     email: str
-#     password: str
-
-# @app.get("/")
-# def read_root():
-#     return {"message": "Welcome to the Travel App Backend"}
-
-# @app.post("/register")
-# async def register(user: User):
-#     connection = get_db_connection()
-#     cursor = connection.cursor()
-
-#     try:
-#         # Check if user already exists
-#         cursor.execute("SELECT * FROM users WHERE email = %s", (user.email,))
-#         existing_user = cursor.fetchone()
-#         if existing_user:
-#             raise HTTPException(status_code=400, detail="User already exists.")
-        
-#         # Hash password
-#         hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
-
-#         # Insert user into database **only after successful face verification**
-#         cursor.execute(
-#             """INSERT INTO users 
-#                (first_name, last_name, dob, passport_number, email, username, password) 
-#                VALUES (%s, %s, %s, %s, %s, %s, %s)""",
-#             (user.first_name, user.last_name, user.dob, user.passport_number, user.email, user.username, hashed_password)
-#         )
-#         connection.commit()
-
-#         return {"message": "Registration successful!"}
-    
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"Error during registration: {e}")
-    
-#     finally:
-#         cursor.close()
-#         connection.close()
-
-
-
-# @app.post("/login")
-# async def login(user: LoginUser):
-#     connection = get_db_connection()  # Get DB connection from 'database.py'
-#     cursor = connection.cursor()
-
-#     try:
-#         cursor.execute("SELECT * FROM users WHERE email = %s", (user.email,))
-#         existing_user = cursor.fetchone()
-
-#         if not existing_user:
-#             raise HTTPException(status_code=401, detail="Invalid credentials.")
-
-#         # Extract user_id and password
-#         user_id = existing_user[0]  # Assuming user_id is the first column in your 'users' table
-#         stored_password = existing_user[7].encode('utf-8')  # Now password is at index 7 (based on your schema)
-
-#         if not bcrypt.checkpw(user.password.encode('utf-8'), stored_password):
-#             raise HTTPException(status_code=401, detail="Invalid credentials.")
-
-#         # Log the user ID
-#         logging.info(f"User ID: {user_id}")
-
-#         # Return user_id as part of the response
-#         return {"message": "Login successful!", "user_id": user_id}
-
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"Error during login: {e}")
-
-#     finally:
-#         cursor.close()
-#         connection.close()
-
-
-
-
-# @app.post("/verify-face")
-# async def verify_face(passport_image: UploadFile = File(...), selfie_image: UploadFile = File(...)):
-#     try:
-#         # Read images as bytes
-#         passport_bytes = await passport_image.read()
-#         selfie_bytes = await selfie_image.read()
-
-#         # Load images into face_recognition
-#         passport_img = face_recognition.load_image_file(io.BytesIO(passport_bytes))
-#         selfie_img = face_recognition.load_image_file(io.BytesIO(selfie_bytes))
-
-#         # Get face encodings
-#         passport_encoding = face_recognition.face_encodings(passport_img)
-#         selfie_encoding = face_recognition.face_encodings(selfie_img)
-
-#         # Ensure faces were detected
-#         if len(passport_encoding) == 0 or len(selfie_encoding) == 0:
-#             raise HTTPException(status_code=400, detail="No face detected in one or both images.")
-
-#         # Compare faces
-#         match = face_recognition.compare_faces([passport_encoding[0]], selfie_encoding[0])[0]
-
-#         # Explicitly convert numpy.bool_ to Python boolean
-#         match = bool(match)
-
-#         return {"message": "Face verification successful!" if match else "Face verification failed!", "verified": match}
-
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=f"Error processing images: {e}")
-
-
-# @app.post("/travel-preferences")
-# async def save_travel_preferences(preferences: TravelPreferences):
-#     connection = get_db_connection()
-#     cursor = connection.cursor()
-
-#     try:
-#         # Log the user_id for debugging
-#         logging.info(f"Saving preferences for User ID: {preferences.user_id}")
-
-#         # Check if preferences already exist for this user
-#         cursor.execute("SELECT * FROM travel_preferences WHERE user_id = %s", (preferences.user_id,))
-#         existing_preferences = cursor.fetchone()
-
-#         if existing_preferences:
-#             raise HTTPException(status_code=400, detail="Preferences already saved for this user.")
-
-#         # Insert the preferences along with the user ID
-#         cursor.execute(
-#          """INSERT INTO travel_preferences 
-#             (user_id, vacation_type, trip_duration, budget, accommodation, travel_style, activities,
-#             social_interaction, sleep_schedule, sustainability, companion, shared_accommodation, trip_planning) 
-#             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-#         (preferences.user_id, preferences.vacation_type, preferences.trip_duration, preferences.budget,
-#         preferences.accommodation, preferences.travel_style, preferences.activities,
-#         preferences.social_interaction, preferences.sleep_schedule, preferences.sustainability,
-#         preferences.companion, preferences.shared_accommodation, preferences.trip_planning)
-#         )
-
-#         connection.commit()
-#         return {"message": "Travel preferences saved successfully!"}
-
-#     except Exception as e:
-#         logging.error(f"Error saving preferences: {e}")  # Log error for debugging
-#         raise HTTPException(status_code=500, detail=f"Error saving preferences: {e}")
-    
-#     finally:
-#         cursor.close()
-#         connection.close()
-
-
-
-
-
-
-
-
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -306,6 +101,310 @@ class InteractionInput(BaseModel):
     interaction_type: str  # 'like', 'book', or 'rate'
     interaction_value: float = None  # Optional (only for ratings)
 
+
+# Add these to your existing models
+class ChatMessage(BaseModel):
+    sender_id: int
+    receiver_id: int
+    message: str
+    timestamp: str = None  # Will be set server-side
+
+class ChatRoom(BaseModel):
+    user1_id: int
+    user2_id: int
+
+# Add these endpoints to your FastAPI app
+# Add these models
+class InterestRequest(BaseModel):
+    sender_id: int
+    receiver_id: int
+    status: str
+
+# Add these endpoints
+@app.post("/interest-requests")
+async def send_interest_request(request: InterestRequest):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    try:
+        # Check if request already exists
+        cursor.execute("""
+            SELECT 1 FROM interest_requests 
+            WHERE sender_id = %s AND receiver_id = %s
+        """, (request.sender_id, request.receiver_id))
+        
+        if cursor.fetchone():
+            raise HTTPException(status_code=400, detail="Request already sent")
+            
+        # Insert new request
+        cursor.execute("""
+            INSERT INTO interest_requests (sender_id, receiver_id, status)
+            VALUES (%s, %s, %s)
+        """, (request.sender_id, request.receiver_id, request.status))
+        
+        connection.commit()
+        return {"status": "success", "message": "Interest request sent"}
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        connection.close()
+
+from enum import Enum
+from fastapi import Body
+
+class StatusEnum(str, Enum):
+    accepted = "accepted"
+    declined = "declined"
+
+@app.put("/interest-requests/{request_id}")
+async def update_interest_request(
+    request_id: int, 
+    status: StatusEnum = Body(..., embed=True)  # Expects {"status": "accepted/declined"}
+):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    try:
+        # Get the original request details with FOR UPDATE lock
+        cursor.execute("""
+            SELECT sender_id, receiver_id, status 
+            FROM interest_requests 
+            WHERE request_id = %s
+            FOR UPDATE
+        """, (request_id,))
+        request = cursor.fetchone()
+        
+        if not request:
+            raise HTTPException(status_code=404, detail="Request not found")
+            
+        sender_id, receiver_id, current_status = request
+        
+        # Only proceed if current status is pending
+        if current_status != 'pending':
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot modify already {current_status} request"
+            )
+        
+        # Update the original request
+        cursor.execute("""
+            UPDATE interest_requests 
+            SET status = %s 
+            WHERE request_id = %s
+        """, (status, request_id))
+        
+        # ONLY create reverse record if status is accepted
+        if status == "accepted":
+            try:
+                cursor.execute("""
+                    INSERT INTO interest_requests 
+                    (sender_id, receiver_id, status)
+                    VALUES (%s, %s, 'accepted')
+                """, (receiver_id, sender_id))
+            except Exception as e:
+                if "Duplicate entry" in str(e):
+                    cursor.execute("""
+                        UPDATE interest_requests
+                        SET status = 'accepted'
+                        WHERE sender_id = %s AND receiver_id = %s
+                    """, (receiver_id, sender_id))
+                else:
+                    raise
+        
+        connection.commit()
+        return {"status": "success", "message": f"Request {status}"}
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        connection.close()
+
+@app.get("/interest-requests/received/{user_id}")
+async def get_received_requests(user_id: int):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    
+    try:
+        cursor.execute("""
+            SELECT r.*, u.first_name, u.last_name 
+            FROM interest_requests r
+            JOIN users u ON r.sender_id = u.user_id
+            WHERE r.receiver_id = %s AND r.status = 'pending'
+        """, (user_id,))
+        
+        requests = cursor.fetchall()
+        return {"requests": requests}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        connection.close()
+
+@app.get("/interest-requests/status/{user1_id}/{user2_id}")
+async def get_request_status(user1_id: int, user2_id: int):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    
+    try:
+        # Check for any accepted connection between these users
+        cursor.execute("""
+            SELECT * FROM interest_requests 
+            WHERE ((sender_id = %s AND receiver_id = %s)
+            OR (sender_id = %s AND receiver_id = %s))
+            AND status = 'accepted'
+        """, (user1_id, user2_id, user2_id, user1_id))
+        
+        accepted_request = cursor.fetchone()  # This consumes the result
+        
+        if accepted_request:
+            # Make sure to consume any remaining results
+            while cursor.fetchone() is not None:
+                pass
+            return {
+                "request": {
+                    "status": "accepted",
+                    "isReceiver": accepted_request['receiver_id'] == user1_id
+                }
+            }
+        
+        # If no accepted connection, check for pending requests
+        cursor.execute("""
+            SELECT * FROM interest_requests 
+            WHERE (sender_id = %s AND receiver_id = %s)
+            OR (sender_id = %s AND receiver_id = %s)
+        """, (user1_id, user2_id, user2_id, user1_id))
+        
+        request = cursor.fetchone()  # Consume the result
+        # Consume any remaining results
+        while cursor.fetchone() is not None:
+            pass
+            
+        return {"request": request}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        connection.close()
+
+@app.post("/chat/messages")
+async def send_message(message: ChatMessage):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    try:
+        # Set current timestamp
+        from datetime import datetime
+        message.timestamp = datetime.now().isoformat()
+        
+        cursor.execute("""
+            INSERT INTO chat_messages (sender_id, receiver_id, message, timestamp)
+            VALUES (%s, %s, %s, %s)
+        """, (message.sender_id, message.receiver_id, message.message, message.timestamp))
+        
+        connection.commit()
+        return {"status": "success", "message": "Message sent successfully"}
+    except Exception as e:
+        connection.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        connection.close()
+
+@app.get("/chat/messages/{user1_id}/{user2_id}")
+async def get_messages(user1_id: int, user2_id: int):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    
+    try:
+        cursor.execute("""
+            SELECT * FROM chat_messages
+            WHERE (sender_id = %s AND receiver_id = %s)
+            OR (sender_id = %s AND receiver_id = %s)
+            ORDER BY timestamp ASC
+        """, (user1_id, user2_id, user2_id, user1_id))
+        
+        messages = cursor.fetchall()
+        return {"messages": messages}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        connection.close()
+
+@app.get("/chat/conversations/{user_id}")
+async def get_conversations(user_id: int):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    
+    try:
+        # Get distinct users the current user has chatted with
+        cursor.execute("""
+            SELECT DISTINCT 
+                CASE 
+                    WHEN sender_id = %s THEN receiver_id 
+                    ELSE sender_id 
+                END as other_user_id,
+                u.first_name,
+                u.last_name
+            FROM chat_messages cm
+            JOIN users u ON 
+                (cm.sender_id = u.user_id AND cm.sender_id != %s) OR 
+                (cm.receiver_id = u.user_id AND cm.receiver_id != %s)
+            WHERE sender_id = %s OR receiver_id = %s
+        """, (user_id, user_id, user_id, user_id, user_id))
+        
+        conversations = cursor.fetchall()
+        return {"conversations": conversations}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        connection.close()
+
+@app.get("/users/{user_id}")
+async def get_user(user_id: int):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    
+    try:
+        cursor.execute("""
+            SELECT user_id, first_name, last_name, email 
+            FROM users 
+            WHERE user_id = %s
+        """, (user_id,))
+        
+        user = cursor.fetchone()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+            
+        return user
+    finally:
+        cursor.close()
+        connection.close()
+
+# Add this new endpoint for efficient message checking
+@app.get("/chat/has-new-messages/{user1_id}/{user2_id}/{last_message_id}")
+async def has_new_messages(user1_id: int, user2_id: int, last_message_id: int):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    
+    try:
+        cursor.execute("""
+            SELECT EXISTS(
+                SELECT 1 FROM chat_messages
+                WHERE ((sender_id = %s AND receiver_id = %s)
+                OR (sender_id = %s AND receiver_id = %s))
+                AND message_id > %s
+            ) AS has_new
+        """, (user1_id, user2_id, user2_id, user1_id, last_message_id))
+        
+        return cursor.fetchone()[0]
+    finally:
+        cursor.close()
+        connection.close()
 
 @app.get("/")
 async def docs_redirect():
@@ -555,7 +654,7 @@ async def get_matched_users(user_id: int):
         # Sort matched users based on similarity score
         matched_users.sort(key=lambda x: x["similarity_score"], reverse=True)
 
-        top_matches = matched_users[:5]
+        top_matches = matched_users[:10]
 
         # Save matches in the database
         for match in top_matches:
@@ -1030,3 +1129,4 @@ async def get_recommendations(user_id: int, location_id: int):
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, log_level="debug", reload=True)
+

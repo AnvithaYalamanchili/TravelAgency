@@ -1,4 +1,13 @@
-/* Sidebar */
+* Sidebar */
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* Prevents horizontal scrollbar */
+  margin: 0;
+  padding: 0;
+}
+
 
 html, body {
   width: 100%;
@@ -14,11 +23,16 @@ html, body {
   background-color: white !important;
   color: #e6a700 !important;
   position: fixed; /* Ensure sidebar stays fixed */
+  background-color: white !important;
+  color: #e6a700 !important;
+  position: fixed; /* Ensure sidebar stays fixed */
   left: 0;
   top: 0;
   padding-top: 20px;
   padding-left: 20px;
   padding-right: 20px;
+  transition: width 0.3s ease-in-out;
+  z-index: 1100;
   transition: width 0.3s ease-in-out;
   z-index: 1100;
   overflow: hidden;
@@ -27,9 +41,11 @@ html, body {
 
 
 
+
 /* Sidebar Expanded on Hover */
 .sidebar.expanded {
   width: 250px; /* Expanded width */
+  z-index: 1100;
   z-index: 1100;
 }
 
@@ -91,12 +107,16 @@ html, body {
 /* Adjust Main Content When Sidebar is Minimized */
 .main-content {
   margin-left: 80px; /* Set a static margin to prevent shifting */
+  margin-left: 80px; /* Set a static margin to prevent shifting */
   padding: 30px;
+  transition: none; /* Remove transition to avoid unwanted shifts */
+  width: calc(100% - 80px);
   transition: none; /* Remove transition to avoid unwanted shifts */
   width: calc(100% - 80px);
 }
 
 .sidebar.collapsed + .main-content {
+  margin-left: 80px; /* Increase this to ensure proper spacing */
   margin-left: 80px; /* Increase this to ensure proper spacing */
 }
 
@@ -104,6 +124,7 @@ html, body {
 /* Responsive Design */
 @media (max-width: 768px) {
   .sidebar {
+    width: 80px;
     width: 80px;
   }
 
@@ -115,8 +136,15 @@ html, body {
     width: 250px;
   }
 
+   .sidebar.expanded {
+    width: 250px;
+  }
+
   .sidebar.collapsed + .main-content {
     margin-left: 60px;
+  }
+  .main-content {
+    margin-left: 80px; /* Keep it fixed */
   }
   .main-content {
     margin-left: 80px; /* Keep it fixed */
