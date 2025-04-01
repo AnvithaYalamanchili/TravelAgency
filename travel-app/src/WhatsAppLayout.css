@@ -336,5 +336,24 @@
     background: #b8a58d;
   }
   
+
+  /* Emoji Picker */
+.emoji-picker-container {
+  position: absolute;
+  bottom: 50px; /* Adjust this to move it above the button */
+  left: 10px; /* Adjust to align with the button */
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.emoji-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
   
   

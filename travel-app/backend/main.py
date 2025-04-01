@@ -386,8 +386,11 @@ async def get_user(user_id: int):
         connection.close()
 
 # Add this new endpoint for efficient message checking
+from datetime import datetime
+
 @app.get("/chat/has-new-messages/{user1_id}/{user2_id}/{last_message_id}")
 async def has_new_messages(user1_id: int, user2_id: int, last_message_id: int):
+    print(f"Request received at {datetime.now()} for user1: {user1_id}, user2: {user2_id}, last_message_id: {last_message_id}")
     connection = get_db_connection()
     cursor = connection.cursor()
     
@@ -405,6 +408,7 @@ async def has_new_messages(user1_id: int, user2_id: int, last_message_id: int):
     finally:
         cursor.close()
         connection.close()
+
 
 @app.get("/")
 async def docs_redirect():
@@ -452,6 +456,8 @@ async def register(user: User):
 
 @app.post("/login")
 async def login(user: LoginUser):
+    print("Received login request for:", user.email)  # Debugging
+
     connection = get_db_connection()
     if not connection:
         raise HTTPException(status_code=500, detail="Database connection failed.")
@@ -462,15 +468,20 @@ async def login(user: LoginUser):
         cursor.execute("SELECT user_id, first_name, password FROM users WHERE email = %s", (user.email,))
         existing_user = cursor.fetchone()
 
+        print("Query executed")  # Debugging
+
         if not existing_user:
+            print("User not found")  # Debugging
             raise HTTPException(status_code=401, detail="Invalid credentials.")
 
         user_id, first_name, stored_password = existing_user
+        print(f"User found: {user_id}, {first_name}")  # Debugging
 
         if not bcrypt.checkpw(user.password.encode('utf-8'), stored_password.encode('utf-8')):
+            print("Password incorrect")  # Debugging
             raise HTTPException(status_code=401, detail="Invalid credentials.")
 
-        # Send the user's first name and user_id along with the login response
+        print("Login successful!")  # Debugging
         return {"message": "Login successful!", "user_id": user_id, "first_name": first_name}
 
     except Exception as e:
@@ -480,6 +491,7 @@ async def login(user: LoginUser):
     finally:
         cursor.close()
         connection.close()
+        print("Database connection closed")  # Debugging
 
 
 @app.post("/verify-face")
@@ -1129,4 +1141,3 @@ async def get_recommendations(user_id: int, location_id: int):
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, log_level="debug", reload=True)
-

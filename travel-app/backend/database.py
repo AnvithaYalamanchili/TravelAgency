@@ -26,7 +26,7 @@ def get_db_connection():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="Venu@66691",
+            password="Root@123",
             database="travel_db"
         )
         print("✅ Database connection successful!")
@@ -77,28 +77,25 @@ def create_tables():
 
         # Travel Preferences Table
         create_travel_preferences_table = """
-CREATE TABLE IF NOT EXISTS travel_preferences (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    vacation_type VARCHAR(255),
-    trip_duration VARCHAR(255),
-    budget VARCHAR(255),
-    accommodation VARCHAR(255),
-    travel_style VARCHAR(255),
-    activities TEXT,
-    social_interaction VARCHAR(255),
-    sleep_schedule VARCHAR(255),
-    sustainability VARCHAR(255),
-    companion VARCHAR(255),
-    shared_accommodation VARCHAR(255),
-    trip_planning VARCHAR(255),
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+            CREATE TABLE IF NOT EXISTS travel_preferences (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            vacation_type VARCHAR(255),
+            trip_duration VARCHAR(255),
+            budget VARCHAR(255),
+            accommodation VARCHAR(255),
+            travel_style VARCHAR(255),
+            activities TEXT,
+            social_interaction VARCHAR(255),
+            sleep_schedule VARCHAR(255),
+            sustainability VARCHAR(255),
+            companion VARCHAR(255),
+            shared_accommodation VARCHAR(255),
+            trip_planning VARCHAR(255),
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 """
-
-    
-
         # Locations Table
         create_locations_table = """
         CREATE TABLE IF NOT EXISTS locations (
@@ -156,6 +153,99 @@ CREATE TABLE IF NOT EXISTS travel_preferences (
         ) ENGINE=InnoDB;
         """
 
+        create_chat_messages= """
+        CREATE TABLE IF NOT EXISTS chat_messages (
+            message_id INT AUTO_INCREMENT PRIMARY KEY,
+            sender_id INT NOT NULL,
+            receiver_id INT NOT NULL,
+            message TEXT NOT NULL,
+            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (sender_id) REFERENCES users(user_id),
+            FOREIGN KEY (receiver_id) REFERENCES users(user_id),
+            INDEX idx_sender_receiver (sender_id, receiver_id),
+            INDEX idx_timestamp (timestamp)
+        );
+        """
+
+        create_interest_requests="""
+        CREATE TABLE IF NOT EXISTS interest_requests (
+            request_id INT AUTO_INCREMENT PRIMARY KEY,
+            sender_id INT NOT NULL,
+            receiver_id INT NOT NULL,
+            status ENUM('pending', 'accepted', 'declined') DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY (sender_id) REFERENCES users(user_id),
+            FOREIGN KEY (receiver_id) REFERENCES users(user_id),
+            UNIQUE KEY uk_sender_receiver (sender_id, receiver_id),
+            INDEX idx_receiver_status (receiver_id, status),
+            INDEX idx_sender_status (sender_id, status)
+        );
+        """
+        #Travel History Table
+        create_travel_history_table = """
+        CREATE TABLE IF NOT EXISTS travel_history (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            destination VARCHAR(255) NOT NULL,
+            country VARCHAR(255) NOT NULL,
+            nights INT NOT NULL,
+            departure DATE NOT NULL,
+            return_date DATE NOT NULL,
+            people VARCHAR(50) NOT NULL,
+            cost DECIMAL(10,2) NOT NULL
+        ) ENGINE=InnoDB;
+        """
+
+        # Ongoing Trips Table
+        create_ongoing_trips_table = """
+        CREATE TABLE IF NOT EXISTS ongoing_trips (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            destination VARCHAR(255) NOT NULL,
+            country VARCHAR(255) NOT NULL,
+            nights INT NOT NULL,
+            departure DATE NOT NULL,
+            return_date DATE NOT NULL,
+            people VARCHAR(50) NOT NULL,
+            cost DECIMAL(10,2) NOT NULL
+        ) ENGINE=InnoDB;
+        """
+
+        # Analytics Table
+        create_analytics_table = """
+        CREATE TABLE IF NOT EXISTS analytics (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            total INT NOT NULL,
+            confirmed INT NOT NULL,
+            pending INT NOT NULL,
+            canceled INT NOT NULL
+        ) ENGINE=InnoDB;
+        """
+
+        # Financial Data Table
+        create_financial_data_table = """
+        CREATE TABLE IF NOT EXISTS financial_data (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            total_profit DECIMAL(15,2) NOT NULL,
+            total_revenue DECIMAL(15,2) NOT NULL,
+            total_visitors INT NOT NULL,
+            expense DECIMAL(15,2) NOT NULL
+        ) ENGINE=InnoDB;
+        """
+
+        # Archived Trips Table
+        create_archived_trips_table = """
+        CREATE TABLE IF NOT EXISTS archived_trips (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            destination VARCHAR(255) NOT NULL,
+            country VARCHAR(255) NOT NULL,
+            nights INT NOT NULL,
+            departure DATE NOT NULL,
+            return_date DATE NOT NULL,
+            people VARCHAR(50) NOT NULL,
+            cost DECIMAL(10,2) NOT NULL
+        ) ENGINE=InnoDB;
+        """
+
         # Execute table creation queries
         cursor.execute(create_users_table)
         print("✅ Users table created or already exists.")
@@ -177,6 +267,30 @@ CREATE TABLE IF NOT EXISTS travel_preferences (
 
         cursor.execute(create_matched_users_table)
         print("✅ Matched Users table created or already exists.")
+
+        cursor.execute(create_chat_messages)
+        print("✅ Chat messages table created or already exists.")
+
+        cursor.execute(create_interest_requests)
+        print("✅ interest requests table created or already exists.")
+
+        cursor.execute(create_travel_history_table)
+        print("✅ Travel History table created or already exists.")
+
+        cursor.execute(create_ongoing_trips_table)
+        print("✅ Ongoing Trips table created or already exists.")
+
+        cursor.execute(create_analytics_table)
+        print("✅ Analytics table created or already exists.")
+
+        cursor.execute(create_financial_data_table)
+        print("✅ Financial Data table created or already exists.")
+
+        cursor.execute(create_archived_trips_table)
+        print("✅ Archived Trips table created or already exists.")
+
+
+
 
         # Commit changes
         connection.commit()

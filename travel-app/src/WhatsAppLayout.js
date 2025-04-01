@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
 import Layout from './Layout';
 import './WhatsAppLayout.css';
+import EmojiPicker from 'emoji-picker-react';
+
 
 const WhatsAppLayout = () => {
   const { userId, otherUserId } = useParams();
@@ -15,6 +17,8 @@ const WhatsAppLayout = () => {
   const [lastMessageId, setLastMessageId] = useState(0);
   const [isChecking, setIsChecking] = useState(false);
   const messagesEndRef = useRef(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
 
   // Fetch conversations and initial data
   useEffect(() => {
@@ -164,6 +168,11 @@ const WhatsAppLayout = () => {
     );
   }
 
+  const handleEmojiClick = (emojiObject) => {
+  setNewMessage((prevMessage) => prevMessage + emojiObject.emoji);
+};
+
+
   return (
     <Layout>
       <div className="whatsapp-container">
@@ -240,20 +249,34 @@ const WhatsAppLayout = () => {
               </div>
 
               <div className="chat-input">
-                <textarea
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Type a message..."
-                  rows="1"
-                />
-                <button 
-                  onClick={handleSendMessage} 
-                  disabled={!newMessage.trim() || isChecking || !otherUserId}
-                >
-                  {isChecking ? '...' : 'Send'}
-                </button>
-              </div>
+  <div style={{ position: "relative" }}>
+    <button 
+      className="emoji-button" 
+      onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+    >
+      😀
+    </button>
+
+    {showEmojiPicker && (
+      <div className="emoji-picker-container">
+        <EmojiPicker onEmojiClick={handleEmojiClick} />
+      </div>
+    )}
+  </div>
+
+  <textarea
+    value={newMessage}
+    onChange={(e) => setNewMessage(e.target.value)}
+    onKeyPress={handleKeyPress}
+    placeholder="Type a message..."
+    rows="1"
+  />
+  <button onClick={handleSendMessage} disabled={!newMessage.trim() || isChecking || !otherUserId}>
+    {isChecking ? '...' : 'Send'}
+  </button>
+</div>
+
+
             </>
           ) : (
             <div className="no-chat-selected">

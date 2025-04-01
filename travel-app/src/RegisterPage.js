@@ -34,10 +34,9 @@ newErrors.password = "Password is required";
 newErrors.password = "Password must be at least 6 characters";
 }
 
-    console.log("Validation errors:", newErrors);  // Debug log for validation errors
-setErrors(newErrors);
-return Object.keys(newErrors).length === 0;  // Return true if no errors
-};
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
 const handleRegister = async (e) => {
 e.preventDefault();
@@ -65,81 +64,17 @@ navigate('/verify-face');  // Redirect to face verification
         <h2 style={{ color: 'Black' }}>Register</h2>
         <p className="info-text">Please enter your details exactly as in your passport.</p>
         <form onSubmit={handleRegister}>
-          <input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          {errors.firstName && <span className="error">{errors.firstName}</span>}
-
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-          {errors.lastName && <span className="error">{errors.lastName}</span>}
-
-          <input
-            type="date"
-            placeholder="Date of Birth"
-            value={dob}
-            onChange={(e) => setDob(e.target.value)}
-          />
-          {errors.dob && <span className="error">{errors.dob}</span>}
-
-          <input
-            type="text"
-            placeholder="Passport Number"
-            value={passportNumber}
-            onChange={(e) => setPassportNumber(e.target.value)}
-          />
-          {errors.passportNumber && <span className="error">{errors.passportNumber}</span>}
-
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          {errors.email && <span className="error">{errors.email}</span>}
-
-          <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          {errors.username && <span className="error">{errors.username}</span>}
-
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {errors.password && <span className="error">{errors.password}</span>}
-
-          <button className="register-btn" type="submit">Register</button>
+          <input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+          <input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+          <input type="date" placeholder="Date of Birth" value={dob} onChange={(e) => setDob(e.target.value)} />
+          <input type="text" placeholder="Passport Number" value={passportNumber} onChange={(e) => setPassportNumber(e.target.value)} />
+          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+          <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+          
+          {/* Submit button */}
+          <button className='register-btn' type="submit">Register</button>
         </form>
-return (
-<div className="register-page-background">
-<div className="register-container">
-<h2 style={{ color: 'Black' }}>Register</h2>
-<p className="info-text">Please enter your details exactly as in your passport.</p>
-<form onSubmit={handleRegister}>
-<input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-<input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-<input type="date" placeholder="Date of Birth" value={dob} onChange={(e) => setDob(e.target.value)} />
-<input type="text" placeholder="Passport Number" value={passportNumber} onChange={(e) => setPassportNumber(e.target.value)} />
-<input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-<input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-<input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-
-{/* Submit button */}
-<button className='register-btn' type="submit">Register</button>
-</form>
 
 <p style={{ color: 'Black' }}>
 Already have an account? <a href="/login" className="register-link">Login here</a>

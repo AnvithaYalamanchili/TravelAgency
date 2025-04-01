@@ -36,8 +36,6 @@ const App = () => {
         <Route path="/admin-dashboard" element={<Admindashboard />} />
         <Route path="/places/:stateName" element={<PlaceDetails />} />
         <Route path="/lang" element={<LanguageTranslator/>}/>
-
-                // In your main App.js or routing file
         <Route path="/chat/:userId/:otherUserId?" element={<WhatsAppLayout />} />
         <Route path="/interest-requests" element={<InterestRequests />} />
       </Routes>
