@@ -113,7 +113,7 @@ def create_tables():
             place_id INT AUTO_INCREMENT PRIMARY KEY,
             location_id INT NOT NULL,
             place_name VARCHAR(255) NOT NULL,
-            image VARCHAR(255) NOT NULL,
+            image VARCHAR(255) NOT NULL, -- Stores the image file path or URL
             place_overview TEXT NOT NULL,
             features TEXT NOT NULL,
             vacation_type VARCHAR(255),
@@ -121,10 +121,28 @@ def create_tables():
             budget VARCHAR(255),
             accommodation VARCHAR(255),
             activities TEXT,
-            social_interaction VARCHAR(255),
             time_to_visit VARCHAR(255),
+            explore_images TEXT,
+            duration VARCHAR(100),
+            description TEXT NOT NULL,
+            transportation VARCHAR(255),
+            meals VARCHAR(255),
             FOREIGN KEY (location_id) REFERENCES locations(location_id) ON DELETE CASCADE
-        ) ENGINE=InnoDB;
+        );
+        """
+
+        create_spots_table = """
+        CREATE TABLE IF NOT EXISTS spots (
+            spot_id INT AUTO_INCREMENT PRIMARY KEY,
+            place_id INT NOT NULL,
+            spot_name VARCHAR(255) NOT NULL,
+            image VARCHAR(255) NOT NULL,
+            description TEXT NOT NULL,
+            duration VARCHAR(100),
+            price DECIMAL(10,2),
+            packing_list TEXT, -- Stores packing list in JSON format
+            FOREIGN KEY (place_id) REFERENCES places(place_id) ON DELETE CASCADE
+        );
         """
 
         # User Interactions Table
@@ -261,6 +279,9 @@ def create_tables():
 
         cursor.execute(create_places_table)
         print("✅ Places table created or already exists.")
+
+        cursor.execute(create_spots_table)
+        print("✅ Spots table created or already exists.")
 
         cursor.execute(create_user_interactions_table)
         print("✅ User Interactions table created or already exists.")

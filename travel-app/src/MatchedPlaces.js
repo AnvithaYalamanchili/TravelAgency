@@ -12,13 +12,16 @@ const LocationCard = ({ location_id, location_name, image, onSelect }) => (
 
 const MatchedPlaceCard = ({ place_id, place_name, image, place_overview }) => {
   const navigate = useNavigate();
-  
+
   return (
     <div className="matched-place-card">
       <img src={image} alt={`Image of ${place_name}`} loading="lazy" />
       <h3>{place_name}</h3>
       <p>{place_overview}</p>
-      <button className="view-details-button" onClick={() => navigate(`/places/${place_id}`)}>
+      <button
+        className="view-details-button"
+        onClick={() => navigate(`/trip/${place_id}`)}
+      >
         View Details
       </button>
     </div>
@@ -32,12 +35,12 @@ const MatchedPlaces = () => {
   const [placesLoading, setPlacesLoading] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [error, setError] = useState(null);
-  
-  const user_id = localStorage.getItem('user_id');
+
+  const user_id = localStorage.getItem("user_id");
 
   useEffect(() => {
     if (!user_id) {
-      setError("Please log in to view matched users.");
+      setError("Please log in to view matched places.");
       setLoading(false);
       return;
     }
@@ -64,7 +67,9 @@ const MatchedPlaces = () => {
     setPlacesLoading(true);
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/recommendations/${user_id}/${location_id}`);
+      const response = await fetch(
+        `http://127.0.0.1:8000/recommendations/${user_id}/${location_id}`
+      );
       if (!response.ok) throw new Error("Failed to fetch places");
 
       const data = await response.json();
@@ -90,7 +95,11 @@ const MatchedPlaces = () => {
           <div className="locations-list">
             {locations.length > 0 ? (
               locations.map((location) => (
-                <LocationCard key={location.location_id} {...location} onSelect={fetchPlaces} />
+                <LocationCard
+                  key={location.location_id}
+                  {...location}
+                  onSelect={fetchPlaces}
+                />
               ))
             ) : (
               !loading && <p>No locations found.</p>
@@ -101,7 +110,9 @@ const MatchedPlaces = () => {
             {placesLoading ? (
               <p>Loading places...</p>
             ) : places.length > 0 ? (
-              places.map((place) => <MatchedPlaceCard key={place.place_id} {...place} />)
+              places.map((place) => (
+                <MatchedPlaceCard key={place.place_id} {...place} />
+              ))
             ) : (
               <p>No matched places found.</p>
             )}

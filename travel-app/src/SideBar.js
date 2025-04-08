@@ -5,6 +5,7 @@ import {
   FaHome, 
   FaLanguage, 
   FaUserFriends, 
+  FaMapMarkerAlt,
   FaBars, 
   FaUserTie, 
   FaComments,
@@ -66,6 +67,15 @@ const Sidebar = () => {
             {isSidebarHovered && <span className="sidebar-text">Travel Mate</span>}
           </Link>
         </li>
+
+        {/* New Matched Places Option */}
+        <li>
+          <Link to="/Locations" className="sidebar-link">
+            <FaMapMarkerAlt style={{ color: "#e6a700" }} />
+            {isSidebarHovered && <span className="sidebar-text">Matched Places</span>}
+          </Link>
+        </li>
+
         <li>
           <Link to="/local-guide" className="sidebar-link">
             <FaUserTie style={{ color: "#e6a700" }} />

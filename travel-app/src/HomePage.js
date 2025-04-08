@@ -5,7 +5,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation, Autoplay } from "swiper/modules";
 import { useNavigate } from "react-router-dom";
-import Layout from "./Layout"; 
+import Layout from "./Layout";
 
 const HeroSection = () => {
   return (
@@ -21,48 +21,68 @@ const HeroSection = () => {
           <img src="./scenary.jpg" alt="Scenic view" />
         </SwiperSlide>
       </Swiper>
-      
     </div>
   );
 };
 
-const TripCard = ({ title, image }) => {
+const TripCard = ({ title, image, isLocation, place_id, location_id }) => {
   const navigate = useNavigate();
-  const handleBookNow = () => {
-     window.scrollTo(0, 0);
-    navigate(`/trip/${title.toLowerCase().replace(/\s+/g, '')}`);
+
+  const handleNavigation = () => {
+    window.scrollTo(0, 0);
+    if (isLocation) {
+      navigate(`/places/${location_id}`, {
+        state: { location_name: title },
+      }); 
+    } else {
+      navigate(`/trip/${place_id}`, {
+        state: { place_name: title },
+      });
+    }
   };
 
   return (
     <div className="trip-card">
       <img src={image} alt={title} />
       <h3>{title}</h3>
-      <button className="trip-button" onClick={handleBookNow}>Book now</button>
+      <button className="trip-button" onClick={handleNavigation}>
+        {isLocation ? "View Places" : "View Details"}
+      </button>
     </div>
   );
 };
 
-const trips = [
-  { title: "New York", image: "./newyork.webp" },
-  { title: "Arizona", image: "./arizona.jpg" },
-  { title: "Georgia", image: "./georgia.webp" },
-];
-
-const internationalTrips = [
-  { title: "India", image: "./india.jpg" },
-  { title: "Australia", image: "./australia.jpg" },
-  { title: "Canada", image: "./canada.jpg" },
-];
-
 const HomePage = () => {
-  const [userId, setUserId] = useState("");
+  const [popularTrips, setPopularTrips] = useState([]);
+  const [internationalTrips, setInternationalTrips] = useState([]);
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem('user_id');  // Retrieve user_id from localStorage
-    if (storedUserId) {
-      setUserId(storedUserId);  // Set user_id in state
-    }
-  }, []); 
+    const fetchPopularTrips = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/places/location/4");
+        if (!response.ok) throw new Error("Failed to fetch popular trips");
+        const data = await response.json();
+        setPopularTrips(data.places || []);
+      } catch (error) {
+        console.error("Error fetching popular trips:", error);
+      }
+    };
+
+    const fetchInternationalTrips = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/locations");
+        if (!response.ok) throw new Error("Failed to fetch locations");
+        const data = await response.json();
+        const filteredLocations = (data.locations || []).filter(loc => loc.location_name !== "USA");
+        setInternationalTrips(filteredLocations);
+      } catch (error) {
+        console.error("Error fetching international trips:", error);
+      }
+    };
+
+    fetchPopularTrips();
+    fetchInternationalTrips();
+  }, []);
 
   return (
     <Layout>
@@ -71,11 +91,21 @@ const HomePage = () => {
 
         {/* Popular Trips */}
         <section className="trip-section">
-          <h2 style={{ color: 'black', textAlign: 'center' }}>Popular Trips</h2>
+          <h2 style={{ color: 'black', textAlign: 'center' }}>Available Trips In The USA</h2>
           <div className="trip-container">
-            {trips.map((trip) => (
-              <TripCard key={trip.title} {...trip} />
-            ))}
+            {popularTrips.length > 0 ? (
+              popularTrips.map((trip) => (
+                <TripCard 
+                  key={trip.place_id} 
+                  title={trip.place_name} 
+                  image={trip.image} 
+                  place_id={trip.place_id} 
+                  isLocation={false} 
+                />
+              ))
+            ) : (
+              <p>Loading popular trips...</p>
+            )}
           </div>
         </section>
 
@@ -83,9 +113,20 @@ const HomePage = () => {
         <section className="trip-section">
           <h2 style={{ color: 'black', textAlign: 'center' }}>Popular International Trips</h2>
           <div className="trip-container">
-            {internationalTrips.map((trip) => (
-              <TripCard key={trip.title} {...trip} />
-            ))}
+            {internationalTrips.length > 0 ? (
+              internationalTrips.map((trip) => (
+                <TripCard 
+                  key={trip.location_id} 
+                  title={trip.location_name} 
+                  image={trip.image} 
+                  location_id={trip.location_id}  // Pass location_id for "View Places"
+                  location_name={trip.location_name}
+                  isLocation={true} 
+                />
+              ))
+            ) : (
+              <p>Loading international trips...</p>
+            )}
           </div>
         </section>
 
