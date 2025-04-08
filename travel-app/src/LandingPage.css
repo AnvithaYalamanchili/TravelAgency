@@ -1,260 +1,306 @@
-
-/* Landing Page Container */
-.landing-container {
-    text-align: center;
-    color: white;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    transition: background-image 1s ease-in-out; /* Smooth transition effect */
+/* Reset some basics */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Navigation Bar */
-.top-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* Pushes elements apart */
-    background: black;
-    padding: 10px 20px;
-    z-index: 1000;
-    height:30px;
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 3rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-/* Wrapper for menu items on the right */
-.menu-items {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-right: 200px;
+.navbar img {
+  height: 80px;
+  transition: transform 0.3s ease;
 }
 
-/* Logo */
-.logo img {
-    width: 170px;
-    height:150px;
+.navbar img:hover {
+  transform: scale(1.05);
 }
 
-/* About Us Button */
-.about-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
+.navbar-links {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
-
-
-.about-btn:hover {
-    background: #00c6ff;
-}
-.admin-btn:hover{
-    background: #00c6ff;
+.navbar-links li {
+  position: relative;
 }
 
-/* Dropdown Menu */
-.dropdown {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.dropdown-btn {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-    white-space: nowrap; 
-
-}
-
-.dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: white;
-    min-width: 150px;
-    border-radius: 5px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-    text-align: left;
-}
-
-.dropdown-item {
-    display: block;
-    padding: 10px 15px;
-    text-decoration: none;
-    color: black;
-    transition: background 0.3s;
-}
-
-.dropdown-item:hover {
-    background: #f0f0f0;
-}
-
-/* Background Navigation Buttons */
-.left-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.5);
-    width: 100px;
-    color: white;
-    border: none;
-    font-size: 24px;
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.right-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.5);
-    width: 100px;
-    color: white;
-    border: none;
-    font-size: 24px;
-    padding: 10px 15px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.left-btn {
-    left: 10px;
-}
-
-.right-btn {
-    right: 10px;
-}
-
-.left-btn:hover, .right-btn:hover {
-    background: rgba(0, 0, 0, 0.8);
-}
-
-/* Landing Content */
-.landing-content {
-    margin-top: 100px;
-    text-align: center;
-}
-
-.landing-content h1 {
-    font-size: 3rem;
-    margin-bottom: 10px;
-}
-
-.landing-content p {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-}
-
-/* Primary Button */
-.btn-primary {
-    background: #4facfe;
-    color: white;
-    padding: 12px 25px;
-    font-size: 18px;
-    text-decoration: none;
-    border-radius: 8px;
-    transition: 0.3s;
-}
-
-.btn-primary:hover {
-    background: #00c6ff;
-}
-
-/* About Us Section */
-.about-us {
-    position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, 0);
-    background: rgba(0, 0, 0, 0.9);
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    color: white;
-    width: 50%; /* Adjust width for better visibility */
-    max-width: 600px; /* Ensures it doesn't get too big */
-}
-
-.about-us h2 {
-    margin-bottom: 10px;
-    font-size: 24px;
-}
-
-.about-us p {
-    font-size: 18px;
-    margin-bottom: 15px;
-}
-
-.about-images {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
-
-.about-images img {
-    width: 100px;
-    height: auto;
-    border-radius: 5px;
-}
-
-.admin-btn{
-    color: white;
-  padding: 12px 25px;
+.navbar-links a,
+.dropbtnss {
+  color: black;
+  text-decoration: none;
+  background: none;
   border: none;
+  font-size: 1.1rem;
+  font-weight: 500;
   cursor: pointer;
-  font-size: 16px;
-  text-decoration: none; /* Remove underline */
-  border-radius: 5px;
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
-  margin-left: 20px; /* Add some space between buttons */
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+.navbar-links a::after,
+.dropbtnss::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: #0077cc;
+  transition: width 0.3s ease;
+}
+
+.navbar-links a:hover,
+.dropbtnss:hover {
+  color: #0077cc;
+}
+
+.navbar-links a:hover::after,
+.dropbtnss:hover::after {
+  width: 100%;
+}
+
+/* Dropdown menu */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: white;
+  border-radius: 8px;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: fadeIn 0.3s ease;
+  z-index: 1000;
+}
+
+.dropdown-content a {
+  color: #333;
+  padding: 0.8rem 1rem;
+  display: block;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.dropdown-content a:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* Main Container */
+.container1 {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 2rem;
+  background: linear-gradient(to bottom right, #f0f4f8, #ffffff);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+/* Hero Section */
+.books {
+  position: relative;
+  height: 400px;
+  border-radius: 1rem;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+
+  
+}
+
+.bg-slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  z-index: 0;
+}
+
+.bg-slide.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.books::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.35);
+  z-index: 1;
+  border-radius: 1rem;
+}
+
+.amazing {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.amazing h1 {
+  font-size: 2.8rem;
+  margin-bottom: 1rem;
+}
+
+.amazing p {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  color:white
+}
+
+.amazing button {
+  background: linear-gradient(135deg, #ff5e57, #ff9966);
+  color: white;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  background-size: 200% 200%;
+  animation: pulseGradient 3s ease infinite;
+  width:300px
+}
+
+.amazing button:hover {
+  background-color: #e94c47;
+}
+
+/* Search Section */
+.search-sections {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  animation: fadeUp 1s ease forwards;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.search-sections h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.search-sections p {
+  color: #555;
+  margin-bottom: 1.5rem;
+}
+
+.search-forms {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.search-forms input {
+  padding: 0.8rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 180px;
+  transition: all 0.3s ease;
+}
+
+.search-forms input:focus {
+  outline: none;
+  border-color: #0077cc;
+  box-shadow: 0 0 10px rgba(0, 119, 204, 0.2);
+}
+
+/* Adjust input widths and display them side by side */
+.search-forms .destination {
+  width:250px
 }
 
 
-/* Mobile Responsive */
-@media (max-width: 768px) {
-    .top-menu {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .search-box input {
-        width: 150px;
-    }
-
-    .landing-content h1 {
-        font-size: 2.5rem;
-    }
-
-    .landing-content p {
-        font-size: 1.2rem;
-    }
-
-    .left-btn {
-        font-size: 20px;
-        padding: 10px 15px;
-        width: 150px;
-
-    }
-    .right-btn {
-        font-size: 20px;
-        padding: 10px 15px;
-        width: 150px;
-    }
+.search-forms .dates {
+  display: flex;
+  gap: 1rem; /* Adds space between the date inputs */
 }
 
+.search-forms .dates input {
+  flex: 1;  /* Makes the date inputs take equal width */
+}
+
+.searchs {
+      background: linear-gradient(135deg, #ff5e57, #ff9966);
+
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  width:300px;
+  margin-top: 40px;
+}
+
+.search-forms button:hover {
+  background-color: #005fa3;
+}
+
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

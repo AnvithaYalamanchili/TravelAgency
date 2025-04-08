@@ -11,14 +11,14 @@ india: {
     meals: "Indian & Continental cuisine. Breakfast, Lunch & Dinner included.",
     totalCost: 1200,
     defaultPlaces: [
-      { name: "Goa", price: 200, image: "/goa.jpg", lat: 15.019690781712866, lon: 74.00160104548475, view360: "/goa360.jpg" },
-      { name: "Delhi", price: 150, image: "/redfort.jpg", lat: 28.6559299,  lon: 77.2378497, view360: "/delhi360.jpg" },
-      { name: "Mumbai", price: 180, image: "/Mumbai.jpg", lat: 18.922137229602686, lon: 72.83466457107671, view360: "/mumbai360.jpg" },
-      { name: "AndhraPradesh", price: 170, image: "/godavari.jpg", lat: 16.4971451, lon: 80.581826, view360: "/andhrapradesh360.jpg" },
-      { name: "Karnataka", price: 270, image: "/karnataka.jpg", lat: 12.3044878, lon: 76.6561619, view360: "/karnataka360.jpg" },
-      { name: "HimachalPradesh", price: 270, image: "/himachal.webp", lat: 31.1048, lon: 77.1734, view360: "/himachal360.jpg" },
-      { name: "Varanasi", price: 270, image: "/ganga.jpg", lat: 25.3107307, lon: 83.0112723, view360: "/varanasi360.jpg" },
-      { name: "Taj Mahal", price: 270, image: "/TajMahal.jpg", lat: 27.1733067, lon: 78.0423063, view360: "/tajmahal360.jpg" }
+      { name: "Goa", price: 200, image: "/goa.jpg", lat: 15.019690781712866, lon: 74.00160104548475 },
+      { name: "Delhi", price: 150, image: "/redfort.jpg", lat: 28.6559299,  lon: 77.2378497 },
+      { name: "Mumbai", price: 180, image: "/Mumbai.jpg", lat: 18.922137229602686, lon: 72.83466457107671},
+      { name: "AndhraPradesh", price: 170, image: "/godavari.jpg", lat: 16.4971451, lon: 80.581826},
+      { name: "Karnataka", price: 270, image: "/karnataka.jpg", lat: 12.3044878, lon: 76.6561619},
+      { name: "HimachalPradesh", price: 270, image: "/himachal.webp", lat: 31.1048, lon: 77.1734},
+      { name: "Varanasi", price: 270, image: "/ganga.jpg", lat: 25.3107307, lon: 83.0112723},
+      { name: "Taj Mahal", price: 270, image: "/TajMahal.jpg", lat: 27.1733067, lon: 78.0423063}
     ],
     states: {
       AndhraPradesh: {
@@ -101,10 +101,10 @@ india: {
       }
     },
     otherPlaces: [
-      { name: "Manali", price: 140, image: "/manali.jpg", lat: 32.275795, lon: 77.1807569, view360: "/manali360.jpg" },
-      { name: "Valley Of Flowers", price: 220, image: "/Valleyofflowers.jpg", lat: 30.7274108, lon: 79.6097704, view360: "/valleyofflowers360.jpg" },
-      { name: "Kerala", price: 190, image: "/kerala.jpg", lat: 10.2851072, lon: 76.5697643, view360: "/kerala360.jpg" },
-      { name: "Jammu & Kashmir", price: 210, image: "/jammu.jpg", lat: 33.715416, lon: 74.5184174, view360: "/jammu360.jpg" }
+      { name: "Manali", price: 140, image: "/manali.jpg", lat: 32.275795, lon: 77.1807569},
+      { name: "Valley Of Flowers", price: 220, image: "/Valleyofflowers.jpg", lat: 30.7274108, lon: 79.6097704},
+      { name: "Kerala", price: 190, image: "/kerala.jpg", lat: 10.2851072, lon: 76.5697643},
+      { name: "Jammu & Kashmir", price: 210, image: "/jammu.jpg", lat: 33.715416, lon: 74.5184174}
     ]
   },
   arizona: {

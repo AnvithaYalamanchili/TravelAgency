@@ -26,7 +26,7 @@ def get_db_connection():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="Root@123",
+            password="Venu@66691",
             database="travel_db"
         )
         print("✅ Database connection successful!")
@@ -108,24 +108,24 @@ def create_tables():
         """
 
         # Places Table
-        create_places_table = """
-        CREATE TABLE IF NOT EXISTS places (
-            place_id INT AUTO_INCREMENT PRIMARY KEY,
-            location_id INT NOT NULL,
-            place_name VARCHAR(255) NOT NULL,
-            image VARCHAR(255) NOT NULL,
-            place_overview TEXT NOT NULL,
-            features TEXT NOT NULL,
-            vacation_type VARCHAR(255),
-            trip_duration VARCHAR(255),
-            budget VARCHAR(255),
-            accommodation VARCHAR(255),
-            activities TEXT,
-            social_interaction VARCHAR(255),
-            time_to_visit VARCHAR(255),
-            FOREIGN KEY (location_id) REFERENCES locations(location_id) ON DELETE CASCADE
-        ) ENGINE=InnoDB;
-        """
+        #create_places_table = """
+        #CREATE TABLE IF NOT EXISTS places (
+            #place_id INT AUTO_INCREMENT PRIMARY KEY,
+            #location_id INT NOT NULL,
+            #place_name VARCHAR(255) NOT NULL,
+            #image VARCHAR(255) NOT NULL,
+            #place_overview TEXT NOT NULL,
+            # TEXT NOT NULL,
+            #vacation_type VARCHAR(255),
+            #trip_duration VARCHAR(255),
+            #budget VARCHAR(255),
+            #accommodation VARCHAR(255),
+            #activities TEXT,
+            #social_interaction VARCHAR(255),
+            #time_to_visit VARCHAR(255),
+            #FOREIGN KEY (location_id) REFERENCES locations(location_id) ON DELETE CASCADE
+        #) ENGINE=InnoDB;
+        #"""
 
         # User Interactions Table
         create_user_interactions_table = """
@@ -244,6 +244,43 @@ def create_tables():
             people VARCHAR(50) NOT NULL,
             cost DECIMAL(10,2) NOT NULL
         ) ENGINE=InnoDB;
+        """
+
+        create_countries_table="""
+        CREATE TABLE IF NOT EXISTS countries (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        description TEXT,
+        detailedDescription TEXT,
+        transportation TEXT,
+        duration TEXT,
+        accommodation TEXT,
+        meals TEXT,
+        totalCost INTEGER
+        );
+        """
+
+        create_states_table="""
+        CREATE TABLE IF NOT EXISTS states (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        image TEXT,
+        );
+        """
+
+        create_places_table="""
+        CREATE TABLE places (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        country_id INTEGER,
+        state_id INTEGER,
+        name TEXT,
+        price INTEGER,
+        image TEXT,
+        lat REAL,
+        lon REAL,
+        FOREIGN KEY (country_id) REFERENCES countries(id),
+        FOREIGN KEY (state_id) REFERENCES states(id)
+        );
         """
 
         # Execute table creation queries

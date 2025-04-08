@@ -12,39 +12,42 @@ const LoginPage = () => {
   const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setErrors({});
-    let formErrors = {};
-  
-    if (!email.trim()) formErrors.email = "Email is required";
-    else if (!validateEmail(email)) formErrors.email = "Invalid email format";
-  
-    if (!password.trim()) formErrors.password = "Password is required";
-    else if (password.length < 6) formErrors.password = "Password must be at least 6 characters";
-  
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      return;
-    }
-  
-    try {
-      const response = await axios.post('http://127.0.0.1:8000/login', { email, password });
-      alert('Login Successful!');
-  
-      // Assuming the response contains the first name and user ID
-      const { user_id, first_name } = response.data; // Modify backend to return user_id and first_name
-      localStorage.setItem('user_id', user_id); // Store user_id in local storage
-      localStorage.setItem('first_name', first_name); // Store first_name in local storage
-      console.log("User ID stored in localStorage: ", localStorage.getItem('user_id'));
-      console.log("User First Name stored in localStorage: ", localStorage.getItem('first_name'));
-  
-      // Redirect to the home page
-      navigate('/home');
-    } catch (error) {
-      alert('Login Failed!');
-    }
-  };
-  
+  e.preventDefault();
+  setErrors({});
+  let formErrors = {};
+
+  if (!email.trim()) formErrors.email = "Email is required";
+  else if (!validateEmail(email)) formErrors.email = "Invalid email format";
+
+  if (!password.trim()) formErrors.password = "Password is required";
+  else if (password.length < 6) formErrors.password = "Password must be at least 6 characters";
+
+  if (Object.keys(formErrors).length > 0) {
+    setErrors(formErrors);
+    return;
+  }
+
+  try {
+    const response = await axios.post('http://127.0.0.1:8000/login', { email, password });
+    alert('Login Successful!');
+
+    // Assuming the response contains the access_token, user_id, and first_name
+    const { access_token, user_id, first_name } = response.data; // Modify your backend to return access_token
+    localStorage.setItem('access_token', access_token); // Store access_token in local storage
+    localStorage.setItem('user_id', user_id); // Store user_id in local storage
+    localStorage.setItem('first_name', first_name); // Store first_name in local storage
+    console.log("Access token stored in localStorage: ", localStorage.getItem('access_token'));
+    console.log("User ID stored in localStorage: ", localStorage.getItem('user_id'));
+    console.log("User First Name stored in localStorage: ", localStorage.getItem('first_name'));
+
+    // Redirect to the home page
+    navigate('/home');
+  } catch (error) {
+    alert('Login Failed!');
+    console.error(error); // Log the error for debugging
+  }
+};
+
 
   return (
     <div className="login-page-background">

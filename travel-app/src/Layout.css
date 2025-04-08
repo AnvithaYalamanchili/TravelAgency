@@ -1,92 +1,132 @@
-/* Sidebar (Fixed) */
-.sidebar {
-  width: 60px; /* Default collapsed width */
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  background-color: white;  
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  transition: width 0.3s ease;
-  overflow: hidden; /* Hide overflowing content */
-}
-
-/* Expand sidebar on hover */
-.sidebar:hover {
-  width: 200px; /* Expand width on hover */
-}
-
-/* Sidebar Menu */a
-.sidebar-menu {
-  list-style: none;
-  padding: 0;
-  width: 100%;
-}
-
-.sidebar-menu li {
-  padding: 15px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  cursor: pointer;
-  text-decoration: none;
-  white-space: nowrap; /* Prevent text wrapping */
-}
-
-/* Hide text by default */
-.sidebar .sidebar-text {
-  display: none;
-  opacity: 0;
-  transition: opacity 0.2s ease-in-out;
-}
-
-/* Show text when hovered */
-.sidebar:hover .sidebar-text {
-  display: inline;
-  opacity: 1;
-}
-
-/* Sidebar Hover Effects */
-.sidebar-menu li:hover {
-  background-color: #f8c923;
-  color: white;
-}
-
-/* Adjust Main Content */
-.main-content {
-  flex: 1;
-  margin-left: 60px; /* Adjusted for collapsed sidebar */
-  padding: 20px;
-  transition: margin-left 0.3s ease;
-  background-color: #f4f4f4; 
-  overflow: auto;
-}
-
-/* Shift content when sidebar is hovered */
-.sidebar:hover + .main-content {
-  margin-left: 200px; /* Adjusted for expanded sidebar */
-}
-
-/* Navbar */
-.navbar {
-  height: 80px;
+nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
   background-color: white;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  position: fixed;
-   width: 100%; /* Adjust width for collapsed sidebar */
-  top: 0;
-  left: 0;
-  z-index: 900; 
-  transition: left 0.3s ease, width 0.3s ease;
+  padding: 6px 15px;
+  height: 15px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  z-index: 1000;
+  position:relative;
+  top:-20px
+
 }
 
-/* Shift navbar when sidebar is hovered */
-.sidebar:hover ~ .navbar {
-  width: calc(100% - 200px); /* Adjust width for expanded sidebar */
-  left: 200px;
+nav img {
+  height: 40px;
+  margin-right: 10px;
+}
+
+nav a {
+  color: #333;
+  text-decoration: none;
+  font-size: 13px;
+  margin-right: 10px;
+}
+
+.book-now-btn-nav {
+  background-color: #F8C923;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 12px;
+  margin-left: 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.book-now-btn-nav:hover {
+  background-color: #e0b81e;
+}
+
+.search-div {
+  display: flex;
+  align-items: center;
+}
+
+.search-div input[type="text"] {
+  padding: 4px 10px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  font-size: 13px;
+  width: 140px;
+}
+
+.welcome-message {
+  margin-left: 10px;
+  font-size: 13px;
+  color: #555;
+}
+
+.logout-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  margin-left: 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background-color: #d32f2f;
+}
+
+/* Icon Styling */
+nav svg {
+  font-size: 20px;
+  color: #F8C923;
+  margin: 0 10px;
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 5px;
+  cursor: pointer;
+  object-fit: cover;
+  border: 2px solid transparent;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 180px;
+  background-color: #141414;
+  color: white;
+  border-radius: 6px;
+  padding: 10px;
+  box-shadow: 0px 2px 10px rgba(0,0,0,0.5);
+  z-index: 999;
+}
+
+.dropdown-name {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.dropdown-btn {
+  width: 100%;
+  background: transparent;
+  color: white;
+  border: none;
+  text-align: left;
+  padding: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.dropdown-btn:hover {
+  background-color: #333;
+}
+
+.logout {
+  color: #f44336;
+}
+
+.logout:hover {
+  background-color: #b71c1c;
 }

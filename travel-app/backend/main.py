@@ -15,6 +15,28 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics.pairwise import cosine_similarity
+from fastapi import FastAPI, Depends
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
+from fastapi import status,Header
+from database import get_db_connection
+from jose import JWTError,jwt
+from datetime import datetime, timedelta
+from typing import Union
+
+
+SECRET_KEY = "your-super-secret-key"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60  # 1 hour
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+
+def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
 app = FastAPI(title="Voyagers")
@@ -150,6 +172,58 @@ async def send_interest_request(request: InterestRequest):
     finally:
         cursor.close()
         connection.close()
+
+
+
+
+def get_current_user_email(authorization: str = Header(...)):
+    try:
+        token = authorization.split(" ")[1]
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("sub")
+        if email is None:
+            raise HTTPException(status_code=401, detail="Invalid token: no email found")
+        return email
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+
+@app.get("/profile")
+async def get_profile(email: str = Depends(get_current_user_email)):
+    connection = get_db_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Database connection failed.")
+    
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            "SELECT first_name, last_name, email, dob, username FROM users WHERE email = %s", (email,)
+        )
+        user_data = cursor.fetchone()
+
+        if not user_data:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        first_name, last_name, email, dob, username = user_data
+
+        return {
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "dob": dob,
+            "username": username
+        }
+
+    except Exception as e:
+        logging.error(f"Error retrieving profile: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+    finally:
+        cursor.close()
+        connection.close()
+
+
 
 from enum import Enum
 from fastapi import Body
@@ -482,7 +556,15 @@ async def login(user: LoginUser):
             raise HTTPException(status_code=401, detail="Invalid credentials.")
 
         print("Login successful!")  # Debugging
-        return {"message": "Login successful!", "user_id": user_id, "first_name": first_name}
+        access_token = create_access_token(data={"sub": user.email})
+
+        return {
+            "access_token": access_token,
+            "token_type": "bearer",
+            "user_id": user_id,
+            "first_name": first_name
+        }
+    
 
     except Exception as e:
         logging.error(f"Error during login: {e}")

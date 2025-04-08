@@ -16,6 +16,8 @@ import PlaceDetails from "./PlaceDetails";
 import LanguageTranslator from "./LanguageTranslator";
 import InterestRequests from "./InterestRequests";
 import WhatsAppLayout from "./WhatsAppLayout";
+import About from "./Aboutus";
+import Profile from "./UserProfile";
 
 const App = () => {
   return (
@@ -38,6 +40,9 @@ const App = () => {
         <Route path="/lang" element={<LanguageTranslator/>}/>
         <Route path="/chat/:userId/:otherUserId?" element={<WhatsAppLayout />} />
         <Route path="/interest-requests" element={<InterestRequests />} />
+        <Route path="/about" element={<About/>}/>
+        <Route path="/profile" element={<Profile/>}/>
+
       </Routes>
     </Router>
   );

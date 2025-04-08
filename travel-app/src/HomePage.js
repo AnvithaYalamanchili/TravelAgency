@@ -5,14 +5,14 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation, Autoplay } from "swiper/modules";
 import { useNavigate } from "react-router-dom";
-import Layout from "./Layout"; 
+import Layout from "./Layout";
 
 const HeroSection = () => {
   return (
     <div className="hero-section">
       <Swiper modules={[Navigation, Autoplay]} navigation autoplay={{ delay: 3000 }}>
         <SwiperSlide>
-          <img src="./travellers1.jpg" alt="Travel adventure" />
+          <img src="./travellers2.jpg" alt="Travel adventure" />
         </SwiperSlide>
         <SwiperSlide>
           <img src="./beach.jpg" alt="Adventure" />
@@ -21,16 +21,26 @@ const HeroSection = () => {
           <img src="./scenary.jpg" alt="Scenic view" />
         </SwiperSlide>
       </Swiper>
-      
     </div>
   );
 };
 
-const TripCard = ({ title, image }) => {
+export const TripCard = ({ title, image, onLike, isLiked }) => {
   const navigate = useNavigate();
+  const [hearts, setHearts] = useState([]);
+
   const handleBookNow = () => {
-     window.scrollTo(0, 0);
+    window.scrollTo(0, 0);
     navigate(`/trip/${title.toLowerCase().replace(/\s+/g, '')}`);
+  };
+
+  const handleHeartClick = (e) => {
+    const heartPos = { 
+      x: e.nativeEvent.offsetX, 
+      y: e.nativeEvent.offsetY 
+    };
+    setHearts([...hearts, heartPos]);
+    onLike();
   };
 
   return (
@@ -38,6 +48,20 @@ const TripCard = ({ title, image }) => {
       <img src={image} alt={title} />
       <h3>{title}</h3>
       <button className="trip-button" onClick={handleBookNow}>Book now</button>
+
+      <span className={`heart ${isLiked ? "liked" : ""}`} onClick={handleHeartClick}>
+        {isLiked ? "❤️" : "🤍"}
+      </span>
+
+      {hearts.map((heart, index) => (
+        <div 
+          key={index} 
+          className="animated-heart" 
+          style={{ left: heart.x - 25, top: heart.y - 25 }} 
+        >
+          ❤️
+        </div>
+      ))}
     </div>
   );
 };
@@ -55,41 +79,69 @@ const internationalTrips = [
 ];
 
 const HomePage = () => {
-  const [userId, setUserId] = useState("");
+  const [likedTrips, setLikedTrips] = useState([]);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem('user_id');  // Retrieve user_id from localStorage
+    // Retrieve the user ID from localStorage
+    const storedUserId = localStorage.getItem("user_id");
+
     if (storedUserId) {
-      setUserId(storedUserId);  // Set user_id in state
+      setUserId(storedUserId); // Set the user_id
     }
-  }, []); 
+
+    if (storedUserId) {
+      // Retrieve liked trips for the specific user based on their user_id
+      const savedLikes = JSON.parse(localStorage.getItem(`${storedUserId}_likedTrips`) || "[]");
+      setLikedTrips(savedLikes);
+    }
+  }, []);
+
+  const handleLike = (title) => {
+    const updatedLikes = likedTrips.includes(title)
+      ? likedTrips.filter((trip) => trip !== title)
+      : [...likedTrips, title];
+
+    // Save liked trips for the specific user in localStorage
+    if (userId) {
+      localStorage.setItem(`${userId}_likedTrips`, JSON.stringify(updatedLikes));
+    }
+    setLikedTrips(updatedLikes);
+  };
 
   return (
     <Layout>
       <div className="home-container">
         <HeroSection />
-
-        {/* Popular Trips */}
+        
         <section className="trip-section">
           <h2 style={{ color: 'black', textAlign: 'center' }}>Popular Trips</h2>
           <div className="trip-container">
             {trips.map((trip) => (
-              <TripCard key={trip.title} {...trip} />
+              <TripCard
+                key={trip.title}
+                {...trip}
+                onLike={() => handleLike(trip.title)}
+                isLiked={likedTrips.includes(trip.title)}
+              />
             ))}
           </div>
         </section>
 
-        {/* International Trips */}
         <section className="trip-section">
           <h2 style={{ color: 'black', textAlign: 'center' }}>Popular International Trips</h2>
           <div className="trip-container">
             {internationalTrips.map((trip) => (
-              <TripCard key={trip.title} {...trip} />
+              <TripCard
+                key={trip.title}
+                {...trip}
+                onLike={() => handleLike(trip.title)}
+                isLiked={likedTrips.includes(trip.title)}
+              />
             ))}
           </div>
         </section>
 
-        {/* Footer */}
         <footer className="footer">
           <p>&copy; 2025 Voyagers. All rights reserved.</p>
         </footer>

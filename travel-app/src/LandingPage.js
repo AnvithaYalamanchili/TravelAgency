@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import "./LandingPage.css";
-// Array of Background Images
+import './LandingPage.css';
+
 const images = [
   "/bg1.jpg",
   "/bg2.jpg",
@@ -13,25 +12,20 @@ const images = [
 
 const LandingPage = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [aboutUsVisible, setAboutUsVisible] = useState(false);
 
-  // Change background image every 10 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       nextImage();
-    }, 10000);
+    }, 5000); // Switch the image every 5 seconds
     return () => clearInterval(interval);
   }, [currentImageIndex]);
 
-  // Next Image Function
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) =>
       prevIndex === images.length - 1 ? 0 : prevIndex + 1
     );
   };
 
-  // Previous Image Function
   const prevImage = () => {
     setCurrentImageIndex((prevIndex) =>
       prevIndex === 0 ? images.length - 1 : prevIndex - 1
@@ -39,77 +33,55 @@ const LandingPage = () => {
   };
 
   return (
-    <div
-      className="landing-container"
-      style={{ backgroundImage: `url(${images[currentImageIndex]})` }}
-    >
-      {/* Top Menu Bar */}
-      <nav className="top-menu">
-        {/* Logo on the left */}
-        <div className="logo">
-          <img src="./logo.png" alt="Logo" />
-        </div>
-
-        {/* Menu items on the right */}
-        <div className="menu-items">
-          {/* About Us Button */}
-          <button
-            className="about-btn"
-            onClick={() => setAboutUsVisible(!aboutUsVisible)}
-          >
-            About Us
-          </button>
-
-          <Link to="/admin-login" className="admin-btn">
-            Admin Login
-          </Link>
-
-          {/* Dropdown for Login & Register */}
-          <div className="dropdown">
-            <button
-              className="dropdown-btn"
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-            >
-              Join Us ▾
-            </button>
-            {dropdownOpen && (
-              <div className="dropdown-menu">
-                <Link to="/login" className="dropdown-item">
-                  Login
-                </Link>
-                <Link to="/register" className="dropdown-item">
-                  Register
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
+    <>
+      <nav className="navbar">
+        <img
+          style={{ height: '120px', backgroundColor: "transparent", marginTop: "-20px" }}
+          src="./logo.png"
+          alt="logo"
+        />
+        <ul className="navbar-links">
+          <li><a href="/admin-login">Admin Login</a></li>
+          <li className="dropdown">
+            <button className="dropbtnss">Join Us ▼</button>
+            <div className="dropdown-content">
+              <a href="/login">Login</a>
+              <a href="/register">Register</a>
+            </div>
+          </li>
+        </ul>
       </nav>
 
-      {/* Background Navigation Buttons */}
-      <button className="left-btn" onClick={prevImage}>←</button>
-      <button className="right-btn" onClick={nextImage}>→</button>
+      <div className="container1">
+        <div className="books">
+  {images.map((img, index) => (
+    <div
+      key={index}
+      className={`bg-slide ${index === currentImageIndex ? "active" : ""}`}
+      style={{ backgroundImage: `url(${img})` ,backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',}}
+    ></div>
+  ))}
+  <div className="amazing">
+    <h1>Make Your Tour Amazing With Us</h1>
+    <p>Travel to any corner of the world without going in circles</p>
+    <button>Book Now</button>
+  </div>
+</div>
+        <div className="search-sections">
+          <h2>It's time to start your adventure</h2>
+          <p>Find your perfect travel destination</p>
 
-      {/* About Us Section (Appears on Click) */}
-      {aboutUsVisible && (
-        <div className="about-us">
-          <h2>About Us</h2>
-          <p>We are a passionate travel agency dedicated to making your journeys unforgettable.</p>
-          <div className="about-images">
-            <img src="images/about1.jpg" alt="Travel" />
-            <img src="images/about2.jpg" alt="Adventures" />
+          <div className="search-forms">
+            <input className="destination" type="text" placeholder="Destination" />
+            <input type="number" placeholder="$ Price Limit" />
+            
           </div>
+          <button className="searchs">Search</button>
         </div>
-      )}
-
-      {/* Main Content */}
-      <div className="landing-content">
-        <h1>Welcome to Voyagers</h1>
-        <Link to="/register" className="btn-primary">
-          Get Started
-        </Link>
       </div>
-    </div>
+    </>
   );
 };
 
