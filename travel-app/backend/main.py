@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from datetime import date, time
 import mysql.connector
 from database import get_db_connection  # Ensure this function is correctly implemented
 import bcrypt
@@ -9,7 +10,8 @@ import uvicorn
 import face_recognition
 import numpy as np
 import io
-import logging
+import logging, json
+from typing import List, Optional
 from fastapi import HTTPException
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -104,7 +106,7 @@ class Location(BaseModel):
 # Place model
 class Place(BaseModel):
     place_name: str
-    location_id: str
+    location_id: int
     image: str
     place_overview: str
     features: str
@@ -113,8 +115,27 @@ class Place(BaseModel):
     budget: str
     accommodation: str
     activities: str
-    social_interaction: str
     time_to_visit: str
+    explore_images: Optional[List[str]] = None
+    description: Optional[str] = None
+    duration: str
+    transportation: Optional[str] = None
+    meals: Optional[str] = None
+
+
+# Pydantic Model for Spot
+class Spot(BaseModel):
+    place_id: int
+    spot_name: str
+    image: str
+    description: str
+    duration: str
+    transportation: str
+    price: float
+    activities: str
+    accommodation: str
+    packing_list: list  # This will be stored as JSON in the database
+
 
 # Pydantic model for interaction input
 class InteractionInput(BaseModel):
@@ -122,6 +143,15 @@ class InteractionInput(BaseModel):
     place_id: int
     interaction_type: str  # 'like', 'book', or 'rate'
     interaction_value: float = None  # Optional (only for ratings)
+
+
+class Booking(BaseModel):
+    booking_id: int
+    user_id: int
+    guide_id: int
+    date: date
+    time: time
+    status: str
 
 
 # Add these to your existing models
@@ -992,8 +1022,8 @@ async def get_places():
         connection.close()
 
 # Fetch a single place by ID
-@app.get("/places/{place_id}")
-async def get_place(place_id: int):
+@app.get("/place/{place_id}")
+async def get_place_details(place_id: int):
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
 
@@ -1002,37 +1032,73 @@ async def get_place(place_id: int):
         place = cursor.fetchone()
         if not place:
             raise HTTPException(status_code=404, detail="Place not found")
+        
+        # Fetch associated spots
+        cursor.execute("SELECT * FROM spots WHERE place_id = %s", (place_id,))
+        spots = cursor.fetchall()
+
+        place['spots'] = spots  # Append spots data to the place data
         return place
     finally:
         cursor.close()
         connection.close()
 
-# Add a new place (or update if exists)
-@app.post("/places")
-async def add_place(place: Place):
+# Fetch all places based on location_id
+@app.get("/places/location/{location_id}")
+async def get_places_by_location(location_id: int):
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
 
     try:
-        # Check if location already exists
+        cursor.execute("SELECT * FROM places WHERE location_id = %s", (location_id,))
+        places = cursor.fetchall()
+        if not places:
+            raise HTTPException(status_code=404, detail="No places found for this location")
+        return {"places": places}
+    finally:
+        cursor.close()
+        connection.close()
+
+
+# Add a new place (or update if exists)
+@app.post("/places")
+async def add_or_update_place(place: Place):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
         cursor.execute("SELECT place_id FROM places WHERE place_name = %s", (place.place_name,))
         existing_place = cursor.fetchone()
 
         if existing_place:
-            raise HTTPException(
-                status_code=400,
-                detail="Place already exists. Do you want to update it?"
+            place_id = existing_place["place_id"]
+            cursor.execute(
+                """UPDATE places SET 
+                    location_id = %s, image = %s, place_overview = %s, features = %s, vacation_type = %s, 
+                    trip_duration = %s, budget = %s, accommodation = %s, activities = %s, duration = %s,
+                    time_to_visit = %s, explore_images = %s, 
+                    description = %s, transportation = %s, meals = %s 
+                    WHERE place_id = %s""",
+                (place.location_id, place.image, place.place_overview, place.features, place.vacation_type, 
+                 place.trip_duration, place.budget, place.accommodation, place.activities, place.duration,
+                 place.time_to_visit, ",".join(place.explore_images) if place.explore_images else None, 
+                 place.description, place.transportation, place.meals, place_id)
             )
+            connection.commit()
+            return {"message": "Place updated successfully!"}
 
-        # Insert new place
+        # Insert new place if it does not exist
         cursor.execute(
             """INSERT INTO places 
                (place_name, location_id, image, place_overview, features, vacation_type, 
-                trip_duration, budget, accommodation, activities, social_interaction, time_to_visit) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                trip_duration, budget, accommodation, activities, time_to_visit, 
+                explore_images, duration, description, transportation, meals) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
             (place.place_name, place.location_id, place.image, place.place_overview, place.features, 
              place.vacation_type, place.trip_duration, place.budget, place.accommodation, 
-             place.activities, place.social_interaction, place.time_to_visit)
+             place.activities, place.time_to_visit, 
+             ",".join(place.explore_images) if place.explore_images else None, place.duration,
+             place.description, place.transportation, place.meals)
         )
 
         connection.commit()
@@ -1046,7 +1112,7 @@ async def add_place(place: Place):
 @app.put("/places/{place_id}")
 async def update_place(place_id: int, place: Place):
     connection = get_db_connection()
-    cursor = connection.cursor()
+    cursor = connection.cursor(dictionary=True)
 
     try:
         cursor.execute("SELECT place_id FROM places WHERE place_id = %s", (place_id,))
@@ -1054,15 +1120,26 @@ async def update_place(place_id: int, place: Place):
             raise HTTPException(status_code=404, detail="Place not found")
 
         cursor.execute(
-            "UPDATE places SET place_name = %s, location_id = %s, image = %s, place_overview = %s, features = %s, vacation_type = %s, trip_duration = %s, budget = %s, accommodation = %s, activities = %s, social_interaction = %s, time_to_visit = %s WHERE place_id = %s",
-            (place.place_name, place.location_id, place.image, place.place_overview, place.features, place.vacation_type, place.trip_duration, place.budget, place.accommodation, place.activities, place.social_interaction, place.time_to_visit, place_id)
+            """UPDATE places SET 
+                place_name = %s, location_id = %s, image = %s, place_overview = %s, 
+                features = %s, vacation_type = %s, trip_duration = %s, budget = %s, 
+                accommodation = %s, activities = %s, 
+                time_to_visit = %s, explore_images = %s, duration = %s, description = %s, 
+                transportation = %s, meals = %s 
+                WHERE place_id = %s""",
+            (place.place_name, place.location_id, place.image, place.place_overview, place.features, 
+             place.vacation_type, place.trip_duration, place.budget, place.accommodation, 
+             place.activities, place.time_to_visit, 
+             ",".join(place.explore_images) if place.explore_images else None, place.duration,
+             place.description, place.transportation, place.meals, place_id)
         )
         connection.commit()
         return {"message": "Place updated successfully!"}
-    
+
     finally:
         cursor.close()
         connection.close()
+
 
 # Delete a place
 @app.delete("/places/{place_id}")
@@ -1079,6 +1156,119 @@ async def delete_place(place_id: int):
         connection.commit()
         return {"message": "Place deleted successfully!"}
     
+    finally:
+        cursor.close()
+        connection.close()
+
+# Fetch all spots
+@app.get("/spots")
+async def get_spots():
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute("SELECT * FROM spots")
+        spots = cursor.fetchall()
+
+        # Convert packing_list JSON string to Python list
+        for spot in spots:
+            if spot["packing_list"]:
+                spot["packing_list"] = json.loads(spot["packing_list"])
+
+        return {"spots": spots}
+    finally:
+        cursor.close()
+        connection.close()
+
+# Fetch spots by Place ID
+@app.get("/spots/place/{place_id}")
+def get_spots_by_place(place_id: int):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    # Fetch all spots where place_id matches
+    try:
+        cursor.execute("SELECT * FROM spots WHERE place_id = %s", (place_id,))
+        spots = cursor.fetchall()
+        if not spots:
+            raise HTTPException(status_code=404, detail="No spots found for this place_id")
+        return {"spots": spots}
+    finally:
+        cursor.close()
+        connection.close()
+
+
+# Add a new spot
+@app.post("/spots")
+async def add_spot(spot: Spot):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        # Convert packing_list from Python list to JSON string
+        packing_list_json = json.dumps(spot.packing_list)
+
+        cursor.execute(
+            """INSERT INTO spots 
+               (place_id, spot_name, image, description, duration, 
+                transportation, price, activities, accommodation, packing_list) 
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+            (spot.place_id, spot.spot_name, spot.image, 
+             spot.description, spot.duration, spot.transportation, spot.price, 
+             spot.accommodation, packing_list_json)
+        )
+
+        connection.commit()
+        return {"message": "Spot added successfully!"}
+    finally:
+        cursor.close()
+        connection.close()
+
+# Update an existing spot
+@app.put("/spots/{spot_id}")
+async def update_spot(spot_id: int, spot: Spot):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("SELECT spot_id FROM spots WHERE spot_id = %s", (spot_id,))
+        if not cursor.fetchone():
+            raise HTTPException(status_code=404, detail="Spot not found")
+
+        # Convert packing_list from Python list to JSON string
+        packing_list_json = json.dumps(spot.packing_list)
+
+        cursor.execute(
+            """UPDATE spots 
+               SET place_id = %s, spot_name = %s, image = %s, description = %s, 
+                   duration = %s, transportation = %s, price = %s, activities = %s, 
+                   accommodation = %s, packing_list = %s 
+               WHERE spot_id = %s""",
+            (spot.place_id, spot.spot_name, spot.image, spot.description, 
+             spot.duration, spot.transportation, spot.price, spot.activities, 
+             spot.accommodation, packing_list_json, spot_id)
+        )
+
+        connection.commit()
+        return {"message": "Spot updated successfully!"}
+    finally:
+        cursor.close()
+        connection.close()
+
+# Delete a spot
+@app.delete("/spots/{spot_id}")
+async def delete_spot(spot_id: int):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("SELECT spot_id FROM spots WHERE spot_id = %s", (spot_id,))
+        if not cursor.fetchone():
+            raise HTTPException(status_code=404, detail="Spot not found")
+
+        cursor.execute("DELETE FROM spots WHERE spot_id = %s", (spot_id,))
+        connection.commit()
+        return {"message": "Spot deleted successfully!"}
     finally:
         cursor.close()
         connection.close()
@@ -1164,61 +1354,80 @@ def get_matched_user_interactions(user_id, cursor):
             interactions[place_id]["rate"] = interaction_value
     return interactions
 
+
 @app.get("/recommendations/{user_id}/{location_id}")
 async def get_recommendations(user_id: int, location_id: int):
     connection = get_db_connection()
     if not connection:
         raise HTTPException(status_code=500, detail="Database connection failed")
     cursor = connection.cursor(dictionary=True)
+
     try:
+        # Fetch user preferences
         cursor.execute("SELECT * FROM travel_preferences WHERE user_id = %s", (user_id,))
         user_prefs = cursor.fetchone()
         if not user_prefs:
             raise HTTPException(status_code=404, detail="User preferences not found")
+
+        user_vacation_type = user_prefs["vacation_type"].lower()
+
         user_pref_text = (
-            (user_prefs["vacation_type"] + " ") * 3 +
-            (user_prefs["activities"] + " ") * 2 +
-            (user_prefs["budget"] + " ") * 1 +
+            (user_prefs["activities"] + " ") * 3 +
+            (user_prefs["budget"] + " ") * 2 +
             user_prefs["accommodation"]
         )
+
+        # Fetch places and filter vacation_type dynamically
         cursor.execute("SELECT * FROM places WHERE location_id = %s", (location_id,))
         places = cursor.fetchall()
+
         if not places:
             return {"recommended_places": []}
+
         places_df = pd.DataFrame(places)
-        places_df["vacation_type"] = places_df["vacation_type"].str.lower()
-        places_df["activities"] = places_df["activities"].str.lower()
-        places_df = places_df[
-            (places_df["vacation_type"].str.contains(user_prefs["vacation_type"].lower())) |
-            (places_df["activities"].str.contains(user_prefs["activities"].lower()))
-        ]
+
+        # Convert vacation_type to lowercase lists for comparison
+        places_df["vacation_type_list"] = places_df["vacation_type"].str.lower().str.split(", ")
+
+        # Filter places where the user's vacation type exists in the list
+        places_df = places_df[places_df["vacation_type_list"].apply(lambda x: user_vacation_type in x)]
+
         if places_df.empty:
             return {"recommended_places": []}
+
+        # Combine features for similarity comparison
         places_df["combined_features"] = places_df.apply(
             lambda x: (
-                (x['vacation_type'] + " ") * 3 +
-                (x['activities'] + " ") * 2 +
-                (x['budget'] + " ") * 1 +
+                (x['activities'] + " ") * 3 +
+                (x['budget'] + " ") * 2 +
                 x['accommodation']
             ),
             axis=1
         )
+
+        # Calculate similarity scores
         similarity_scores = calculate_similarity(user_pref_text, list(places_df["combined_features"]))
         places_df["similarity_score"] = similarity_scores
+
+        # Fetch interactions from matched users
         matched_user_interactions = get_matched_user_interactions(user_id, cursor)
+
+        # Compute final score with interaction weight
         places_df["final_score"] = places_df.apply(
             lambda x: x["similarity_score"] * 0.8 + interaction_weight(matched_user_interactions, x["place_id"]) * 0.2,
             axis=1
         )
+
+        # Sort and return top recommendations
         recommendations = places_df.sort_values(by="final_score", ascending=False).head(5).to_dict(orient="records")
         return {"recommended_places": recommendations}
+
     except Exception as e:
         logging.error(f"Error fetching recommendations: {e}")
         raise HTTPException(status_code=500, detail="Error fetching recommendations")
     finally:
         cursor.close()
         connection.close()
-
 
 
 if __name__ == "__main__":

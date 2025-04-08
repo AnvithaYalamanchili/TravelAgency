@@ -1,3 +1,118 @@
+.trip-page {
+  padding-top: 100px;
+}
+
+/* Top Bar */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #f8c923;
+  color: white;
+  font-size: 20px;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.5rem;
+  background-size: contain;
+  width: 150px;
+  height: 75px;
+  border-radius: 5px;
+  text-indent: -9999px;
+}
+
+.home-btn {
+  background: white;
+  color: #007bff;
+  width: 150px;
+  height: 50px;
+  padding: 5px 10px;
+  border: 1px solid #007bff;
+  border-radius: 15px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.book-now-btn {
+  background: white;
+  color: #007bff;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 10px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.book-now-btn:disabled {
+  background: #ddd;
+  color: gray;
+  cursor: not-allowed;
+}
+
+.book-now-btn:hover:not(:disabled) {
+  background: #0056b3;
+  color: white;
+}
+
+/* Selected Spots */
+.selected {
+  border: 2px solid #007bff !important;
+  background: rgba(0, 123, 255, 0.1);
+}
+
+.selected .place-image {
+  border: 2px solid #007bff;
+}
+
+/* Total Cost Section */
+.total-cost-section {
+  background: #f4f4f4;
+  padding: 15px;
+  text-align: center;
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.total-cost-section h2 {
+  font-size: 1.5rem;
+  color: #2c3e50;
+}
+
+.total-cost-section p {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #27ae60;
+  margin-top: 10px;
+}
+
+/* Currency Selector */
+.currency-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.currency-selector select {
+  padding: 5px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #007bff;
+}
+
+/* Additional Styles */
+.default-places .place-card.selected {
+  transform: scale(1.05);
+  box-shadow: 0px 6px 12px rgba(0, 123, 255, 0.2);
+}
+
+.default-places .place-card.selected:hover .place-image {
+  transform: scale(1.1);
+}
+
 .trip-details {
   max-width: 900px;
   margin: auto;
@@ -68,6 +183,23 @@
   font-weight: bold;
 }
 
+.selected-spots {
+  margin-top: 10px;
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 5px;
+}
+
+.selected-spots ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.selected-spots li {
+  margin-bottom: 5px;
+}
+
 .default-places ul,
 .additional-places {
   display: flex;
@@ -90,33 +222,18 @@
 .place-card {
   background: white;
   border: 1px solid #ddd;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 10px;
   text-align: center;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  width: 220px;  /* Adjust width for better alignment */
-  height: 260px; /* Ensure consistent height */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between; /* Ensures button is always at bottom */
 }
 
 .place-image {
   width: 100%;
-  height: 120px; /* Fixed height to maintain consistency */
-  object-fit: cover; /* Prevents image distortion */
-  border-radius: 10px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 5px;
 }
-.place-card h3 {
-  font-size: 16px;
-  font-weight: bold;
-  white-space: nowrap; /* Prevents awkward line breaks */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 90%;
-}
-
 
 .select-button {
   background: #3498db;
@@ -125,9 +242,10 @@
   padding: 8px 12px;
   border-radius: 5px;
   cursor: pointer;
+  margin-top: 8px;
   transition: background 0.3s ease;
-  width: 90%; /* Makes the button size uniform */
 }
+
 .select-button:hover {
   background: #2980b9;
 }
@@ -143,17 +261,28 @@
   border-radius: 5px;
 }
 
-.default-places,
-.additional-places {
+.default-places, .additional-places {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 15px;
-  justify-content: center;
   margin-top: 20px;
 }
 
+.place-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-
+.place-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 5px;
+}
 
 .default-places .place-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -169,73 +298,4 @@
 
 .default-places .place-card:hover .place-image {
   transform: scale(1.1);
-}
-
-.street-view-container {
-    width: 100%;
-    height: 400px;
-    margin-top: 20px;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.floating-button {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
-  background-color: #f8c923;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  font-size: 16px;
-  font-weight: bold;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease-in-out;
-}
-
-.floating-button:hover {
-  background-color: #f8c923;
-  transform: scale(1.1);
-}
-
-.street-view-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  width: 80%;
-  max-width: 800px;
-  position: relative;
-}
-
-.close-button {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 24px;
-  cursor: pointer;
-}
-
-.street-view-container {
-  width: 100%;
-  height: 400px;
-  border-radius: 10px;
-  overflow: hidden;
 }

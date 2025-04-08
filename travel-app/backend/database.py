@@ -108,24 +108,24 @@ def create_tables():
         """
 
         # Places Table
-        #create_places_table = """
-        #CREATE TABLE IF NOT EXISTS places (
-            #place_id INT AUTO_INCREMENT PRIMARY KEY,
-            #location_id INT NOT NULL,
-            #place_name VARCHAR(255) NOT NULL,
-            #image VARCHAR(255) NOT NULL,
-            #place_overview TEXT NOT NULL,
-            # TEXT NOT NULL,
-            #vacation_type VARCHAR(255),
-            #trip_duration VARCHAR(255),
-            #budget VARCHAR(255),
-            #accommodation VARCHAR(255),
-            #activities TEXT,
-            #social_interaction VARCHAR(255),
-            #time_to_visit VARCHAR(255),
-            #FOREIGN KEY (location_id) REFERENCES locations(location_id) ON DELETE CASCADE
-        #) ENGINE=InnoDB;
-        #"""
+        create_places_table = """
+        CREATE TABLE IF NOT EXISTS places (
+            place_id INT AUTO_INCREMENT PRIMARY KEY,
+            location_id INT NOT NULL,
+            place_name VARCHAR(255) NOT NULL,
+            image VARCHAR(255) NOT NULL,
+            place_overview TEXT NOT NULL,
+            features TEXT NOT NULL,
+            vacation_type VARCHAR(255),
+            trip_duration VARCHAR(255),
+            budget VARCHAR(255),
+            accommodation VARCHAR(255),
+            activities TEXT,
+            social_interaction VARCHAR(255),
+            time_to_visit VARCHAR(255),
+            FOREIGN KEY (location_id) REFERENCES locations(location_id) ON DELETE CASCADE
+        ) ENGINE=InnoDB;
+        """
 
         # User Interactions Table
         create_user_interactions_table = """
@@ -298,6 +298,9 @@ def create_tables():
 
         cursor.execute(create_places_table)
         print("✅ Places table created or already exists.")
+
+        cursor.execute(create_spots_table)
+        print("✅ Spots table created or already exists.")
 
         cursor.execute(create_user_interactions_table)
         print("✅ User Interactions table created or already exists.")
