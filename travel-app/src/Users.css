@@ -1,0 +1,51 @@
+.users-container {
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+  margin-left: 80px;
+}
+
+.users-container h2 {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.users-table th,
+.users-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.users-table th {
+  background-color: #f0f0f0;
+  color: #555;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+}
+
+.users-table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.users-table td {
+  color: #333;
+  font-size: 0.95rem;
+}
+
+/* Loading and error messages */
+.users-container > div {
+  font-size: 1rem;
+  color: #666;
+}

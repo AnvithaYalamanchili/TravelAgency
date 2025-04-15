@@ -1,174 +1,80 @@
-/* General Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Body Style */
-/*body {
-  background-size: cover;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  padding: 20px;
-  color: #fff; 
-  font-size: 16px;
-}*/
-
-/* Container Style - Black Box */
 .container {
-  background: rgba(0, 0, 0, 0.8); /* Black with slight transparency */
-  border-radius: 15px;
-  padding: 50px 70px; /* Larger padding for spacious look */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* Darker shadow for a high-end feel */
-  width: 100%;
-  max-width: 650px;
+  max-width: 600px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   text-align: center;
-  position: relative;
-  backdrop-filter: blur(10px); /* Adding a blurred background effect */
-  border: 1px solid rgba(255, 255, 255, 0.2); /* Light border for contrast */
+  font-family: 'Segoe UI', sans-serif;
 }
 
-/* Title Style */
 h1 {
-  font-size: 2.5rem;
-  color: #fff; /* White title */
-  margin-bottom: 25px;
-  font-weight: 700; /* Bold title */
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  margin-bottom: 2rem;
+  color: #222;
+  font-size: 2rem;
 }
 
-/* Description */
+.upload-section,
+.camera-section {
+  margin-bottom: 1.5rem;
+}
+
+input[type="file"] {
+  margin-top: 1rem;
+}
+
 p {
-  font-size: 1rem;
-  color: #bbb; /* Slightly lighter gray text for description */
-  margin-bottom: 40px;
-  line-height: 1.6;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #555;
 }
 
-/* Upload Section */
-.upload-section {
-  position: relative;
-  margin-bottom: 30px;
-}
-
-.upload-button {
-  background-color: #5c6bc0;
-  color: white;
-  border: none;
-  padding: 14px 30px;
-  border-radius: 30px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s;
-}
-
-.upload-button:hover {
-  background-color: #3f51b5;
-}
-
-.upload-button:active {
-  transform: scale(0.98);
-}
-
-.upload-input {
-  display: none;
-}
-
-/* Preview Section */
-.preview {
-  margin-top: 20px;
-  background: #333; /* Dark background for preview area */
-  padding: 15px;
-  border-radius: 12px;
-  display: none;
-  justify-content: center;
-  align-items: center;
-}
-
-.preview img {
-  max-width: 100%;
-  max-height: 250px;
-  border-radius: 12px;
-  border: 3px solid #444;
-}
-
-/* Verification Button */
+.start-btn,
 .verification-button {
-  background-color: #4caf50;
-  color: white;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
   border: none;
-  padding: 18px 35px;
-  border-radius: 50px;
-  font-size: 1.2rem;
-  margin-top: 30px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s;
+  color: white;
+  margin-top: 1rem;
+  transition: background-color 0.3s ease;
 }
 
-.verification-button:hover {
-  background-color: #388e3c;
+.start-btn {
+  background-color: #007bff;
 }
 
-.verification-button:active {
-  transform: scale(0.98);
+.start-btn:hover {
+  background-color: #0056b3;
 }
 
-/* Loading Spinner */
-.spinner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: none;
+.verify-btn {
+  background-color: #28a745;
 }
 
-.spinner div {
-  width: 20px;
-  height: 20px;
-  margin: 3px;
-  border-radius: 50%;
-  background: #4caf50;
-  animation: spin 1.2s infinite ease-in-out;
+.verify-btn:hover {
+  background-color: #1e7e34;
 }
 
-.spinner div:nth-child(1) {
-  animation-delay: -0.4s;
+.video-preview {
+  margin-top: 1.5rem;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 1rem;
+  min-height: 200px;
 }
 
-.spinner div:nth-child(2) {
-  animation-delay: -0.2s;
-}
-
-.spinner div:nth-child(3) {
-  animation-delay: 0s;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
+/* Responsive layout */
+@media (max-width: 600px) {
+  .container {
+    margin: 1rem;
+    padding: 1.5rem;
   }
-  100% {
-    transform: rotate(360deg);
+
+  .start-btn,
+  .verify-btn {
+    width: 100%;
   }
 }
-
-/* Success / Error Messages */
-.message {
-  margin-top: 30px;
-  font-size: 1.1rem;
-  font-weight: bold;
-}
-
-.success {
-  color: #388e3c;
-}
-
-.error {
-  color: #d32f2f;
-}
-

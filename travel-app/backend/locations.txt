@@ -1,0 +1,147 @@
+mysql> select * from locations;
++-------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| location_id | location_name | image                                                                                                                                                                          | description                                                                                                                                                                                             |
++-------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+|           1 | India         | https://images.goway.com/production/hero/iStock-962421230.jpg                                                                                                                  | India is one of the greatest and beautiful countries to visit.                                                                                                                                          |
+|           2 | Australia     | https://media.gettyimages.com/id/535455441/photo/view-of-sydney-harbour-australia.jpg?b=1&s=170667a&w=0&k=20&c=RbGrLAF446T6O5u30kIvUfKu2MrIg4f3f16VH1KcNdE=                    | Australia is a land of diverse and stunning beauty, where you can explore vibrant cities, pristine beaches, rugged outback, and amazing wildlife.                                                       |
+|           3 | Canada        | https://www.thebalancemoney.com/thmb/IG_3EAmYPIIvVvELA3gfFXvq-Ng=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/GettyImages-530611401-571419af3df78c3fa20a9821.jpg | Canada is a vast country teeming with natural wonders and vibrant cities. From the stunning Rocky Mountains to the picturesque coastlines of Nova Scotia, Canada offers a diverse range of experiences. |
+|           4 | USA           | https://www.themigrationfirm.com/wp-content/uploads/2020/03/shutterstock_1470372077.jpg                                                                                        | Explore the diverse landscapes, iconic cities, and cultural experiences across the USA.                                                                                                                 |
++-------------+---------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+4 rows in set (0.00 sec)
+
+{
+  "location_name": "Japan",
+  "image": "https://media.gettyimages.com/id/1428545051/photo/chureito-pagoda-and-mt-fuji-at-sunset.jpg?s=612x612&w=0&k=20&c=tg44d-rh4VD1yzU6o85tWAq3_6oWtRVJ0nTf5cG7y7E=",
+  "description": " Discover Japan?s perfect blend of ancient traditions, futuristic cities, and natural beauty."
+},
+
+{
+  "location_name": "Italy",
+  "image": "https://media.gettyimages.com/id/1514280754/photo/italy-veneto-venice-gondola-on-canal-grande.jpg?s=612x612&w=0&k=20&c=PxVnTi5BNM5G4qVHZJShNBTEFTaAVns5QGVU3HidLOU=",
+  "description": "Wander through Italy?s timeless art, architecture, romantic countryside, and world-class cuisine."
+},
+{
+  "location_name": "France",
+  "image": "https://media.gettyimages.com/id/1298383663/photo/aerial-view-of-paris-streets-and-eiffel-tower-at-sunset-france.jpg?s=612x612&w=0&k=20&c=GPRT8zmkftvZipp_ZUmmC_qKf6g05nyI-2bErH_7slI=",
+  "description":"Fall in love with France?s elegant charm, world-famous landmarks, and delicious culinary scenes."
+},
+
+{
+  "location_name": "Brazil",
+  "image": "https://media.gettyimages.com/id/150271777/photo/rio-de-janeiro-brazil.jpg?s=612x612&w=0&k=20&c=MicyFyBG96yW8X1ZwlWG-O2-WAmGQDxRBnv9TycFePA=",
+  "description": "Feel the rhythm of Brazil through its festivals, lush rainforests, and vibrant city life."
+},
+{
+  "location_name": "Switzerland",
+  "image": "https://media.gettyimages.com/id/1038870630/photo/woman-standing-and-looking-at-lago-di-carezza-in-dolomites.jpg?s=612x612&w=0&k=20&c=sRbpFCJ-odpl2cQetrZaxlxL0oqAmxcjDEGN46kmGJ0=",
+  "description": "Enjoy the serene Alps, pristine lakes, and picturesque villages of Switzerland."
+},
+{
+  "location_name": "Thailand",
+  "image": "https://media.gettyimages.com/id/1125087241/photo/wat-arun-is-a-buddhist-temple-in-bangkok-yai-district-of-bangkok-thailand-wat-arun-is-one-of.jpg?s=612x612&w=0&k=20&c=eRUhuVuckb6xK2IhTwAI5FoXFyO6q-qetdPOmXIehmM=",
+  "description": "Relax on tropical beaches, explore ornate temples, and indulge in Thai street food."
+},
+{
+  "location_name": "Iceland",
+  "image": "https://media.gettyimages.com/id/663874486/photo/northern-lights-in-mount-kirkjufell-iceland-with-a-man-passing-by.jpg?s=612x612&w=0&k=20&c=l2D4o7qde_0L7yhxUDTPQ9O7iiQbjXSwm8wWpUS2e8k=",
+  "description": "Visit volcanoes, glaciers, hot springs, and magical northern lights in Iceland."
+},
+{
+  "location_name": "Greece",
+  "image": "https://media.gettyimages.com/id/510967662/photo/santorini-sunset-at-dawn-village-of-oia-greece.jpg?s=612x612&w=0&k=20&c=O05ZFOTQmVs7m34iL7-WTlPIW7XcWH55V9WCm03i1JI=",
+  "description": "Step into ancient history, island-hop in the Aegean, and enjoy Mediterranean cuisine."
+
+},
+{
+  "location_name": "Portugal",
+  "image": "https://media.gettyimages.com/id/1287198512/photo/beatuful-woman-in-benagil-cave-algarve-portugal.jpg?s=612x612&w=0&k=20&c=Y2h7My3CaCLNDnQjVY5bomgrWTUy_ebd-S7mKgX5s0c=",
+  "description": "Wander through colorful cities, surf Atlantic waves, and taste world-renowned wines."
+
+},
+{
+  "location_name": "Turkey",
+  "image": "https://media.gettyimages.com/id/483421687/photo/cappadocia-turkey.jpg?s=612x612&w=0&k=20&c=7ZBddJ8AuahBCEr1wHD2EilhwLh7QhKoBQnFpcpyuxs=",
+  "description": "Soar above Cappadocia in a hot air balloon and explore Istanbul's rich history."
+
+},
+{
+  "location_name": "Indonesia",
+  "image": "https://media.gettyimages.com/id/1318324745/photo/aerial-view-of-misty-volcano-of-kawah-ijen-crater-in-east-java.jpg?s=612x612&w=0&k=20&c=eWahHtgCT5VgoTiSbWUbcrfXV8SicjyCWFVZba7y234=",
+  "description": "Discover Bali’s temples, beaches, and lush landscapes in Indonesia’s island paradise."
+
+},
+{
+  "location_name": "Morocco",
+  "image": "https://media.gettyimages.com/id/982105760/photo/ait-benhaddou-ancient-city-in-morocco-north-africa.jpg?s=612x612&w=0&k=20&c=RtNjLQio6qFLwhn_MA6J0mCsDsbbE2Wji9mahh-5laM=",
+  "description": "Stroll through vibrant souks, desert dunes, and ancient medinas in Morocco."
+
+},
+{
+  "location_name": "Spain",
+  "image": "https://media.gettyimages.com/id/903624050/photo/idyllic-costa-brava-seaside-town-in-girona-province-catalonia.jpg?s=612x612&w=0&k=20&c=uqTnJ8yCRqoEWjNmCDrFsR77MABSrGyPeoLR4IDb_4E=",
+  "description": "Experience passionate flamenco, Gaudí’s architecture, and Spanish cuisine."
+
+},
+{
+  "location_name": "Vietnam",
+  "image": "https://media.gettyimages.com/id/1715153036/photo/aerial-view-of-halong-bay-in-vietnam.jpg?s=612x612&w=0&k=20&c=U-Todpj50gMELlA9-iqDHJs5ninHbOg0Gq5CvAnVQTw=",
+  "description": "Cruise through Ha Long Bay, explore ancient towns, and enjoy delicious street food."
+
+},
+{
+  "location_name": "Argentina",
+  "image": "https://media.gettyimages.com/id/117149827/photo/guanaco-at-torres-del-paine-xxxl.jpg?s=612x612&w=0&k=20&c=NGzn2ZVuLO1Y4-V12_Sanm-sR_1gDu-sdAlY8mF9yj0=",
+  "description": "From tango in Buenos Aires to the glaciers of Patagonia, Argentina has it all."
+
+},
+{
+  "location_name": "Peru",
+  "image": "https://media.gettyimages.com/id/1189921870/photo/rainbow-mountains.jpg?s=612x612&w=0&k=20&c=oYYsnBeq7FPRPo388LX-BqnDf7EPAKLLu2zYRwLkEzc=",
+  "description": "Hike to the ancient Incan city of Machu Picchu and explore the Andes."
+
+},
+{
+  "location_name": "Nepal",
+  "image": "https://media.gettyimages.com/id/1439040510/photo/gumba-on-lap-of-mount-manaslu-nepal-gorkha-nepal.jpg?s=612x612&w=0&k=20&c=WBef2Gpf-1b2-9SKyQygrDW_e5FPKaMnxy059AKQIE8=",
+  "description": "Home to the Himalayas, Nepal is a dream for trekkers and spiritual seekers alike."
+
+},
+{
+  "location_name": "Netherlands",
+  "image": "https://media.gettyimages.com/id/613319258/photo/tulips-and-windmills.jpg?s=612x612&w=0&k=20&c=XK_0Eob3BAcwvO5j5vN0iBS_P1LWMBppqpOBWZCrVsQ=",
+  "description": "Cycle through tulip fields and charming canals in the Netherlands."
+
+},
+{
+  "location_name": "Czech Republic",
+  "image": "https://media.gettyimages.com/id/1296692921/photo/view-of-old-town-cesky-krumlov-south-bohemia-czech-republic.jpg?s=612x612&w=0&k=20&c=hIAReI0UR4vJCYoBgjMSr24g5egrjzcwtL8wp81ZLwo=",
+  "description": "Wander the fairy-tale streets of Prague and savor classic Czech beer."
+
+},
+{
+  "location_name": "South Korea",
+  "image": "https://media.gettyimages.com/id/612209180/photo/scenes-of-seoul-at-ansan.jpg?s=612x612&w=0&k=20&c=scOo0Mlk_p8-gg9WvIv1zfEaRdWXUPDwiMi_NjRxTSA=",
+  "description": "Balance tradition and innovation with palaces, street food, and K-pop in South Korea."
+
+},
+{
+  "location_name": "Austria",
+  "image": "https://media.gettyimages.com/id/583677726/photo/hallstatt-austria.jpg?s=612x612&w=0&k=20&c=NVxqru7nS7FbzrVDeFXDfZfYIWNy0CTUEyv4GPE_Qb0=",
+  "description": "Explore charming alpine villages, classical music heritage, and snow-capped mountains."
+
+},
+{
+  "location_name": "Malaysia",
+  "image": "https://media.gettyimages.com/id/1475323914/photo/colorful-steps-leading-to-the-top-of-kuala-lumpurs-batu-caves.jpg?s=612x612&w=0&k=20&c=hYTbz2GXnWBfI1joA4vN_dkoBu_kXNX_mYE5xtQElbE=",
+  "description": "Experience a fusion of cultures, lush jungles, and futuristic cityscapes in Malaysia."
+
+},
+{
+  "location_name": "Norway",
+  "image": "https://media.gettyimages.com/id/1214094455/photo/scenic-view-of-fjord-in-norway.jpg?s=612x612&w=0&k=20&c=F6RLt8asgtdkPBexDcANjgL4aRWmvY1KwVPplHm5tMA=",
+  "description": "Discover dramatic fjords, midnight sun, and pristine Nordic nature in Norway."
+
+}
+
+
+

@@ -107,24 +107,35 @@ def create_tables():
         ) ENGINE=InnoDB;
         """
 
-        # Places Table
-        create_places_table = """
-        CREATE TABLE IF NOT EXISTS places (
-            place_id INT AUTO_INCREMENT PRIMARY KEY,
-            location_id INT NOT NULL,
-            place_name VARCHAR(255) NOT NULL,
+        create_spots_table = """
+        CREATE TABLE IF NOT EXISTS spots (
+            spot_id INT AUTO_INCREMENT PRIMARY KEY,
+            place_id INT NOT NULL,
+            spot_name VARCHAR(255) NOT NULL,
             image VARCHAR(255) NOT NULL,
-            place_overview TEXT NOT NULL,
-            features TEXT NOT NULL,
-            vacation_type VARCHAR(255),
-            trip_duration VARCHAR(255),
-            budget VARCHAR(255),
-            accommodation VARCHAR(255),
-            activities TEXT,
-            social_interaction VARCHAR(255),
-            time_to_visit VARCHAR(255),
-            FOREIGN KEY (location_id) REFERENCES locations(location_id) ON DELETE CASCADE
-        ) ENGINE=InnoDB;
+            description TEXT NOT NULL,
+            duration VARCHAR(100),
+            price DECIMAL(10,2),
+            packing_list TEXT, -- Stores packing list in JSON format
+            FOREIGN KEY (place_id) REFERENCES places(place_id) ON DELETE CASCADE
+        );
+        """
+
+        create_spotss_table = """
+        CREATE TABLE IF NOT EXISTS spotss (
+            spot_id INT AUTO_INCREMENT PRIMARY KEY,
+            place_id INT NOT NULL,
+            spot_name VARCHAR(255) NOT NULL,
+            image VARCHAR(255) NOT NULL,
+            description TEXT NOT NULL,
+            duration VARCHAR(100),
+            transportation VARCHAR(255),
+            price DECIMAL(10,2),
+            activities VARCHAR(255),
+            accommodation Varchar(255),
+            packing_list TEXT, 
+            FOREIGN KEY (place_id) REFERENCES placess(place_id) ON DELETE CASCADE
+        );
         """
 
         # User Interactions Table
@@ -246,42 +257,94 @@ def create_tables():
         ) ENGINE=InnoDB;
         """
 
-        create_countries_table="""
-        CREATE TABLE IF NOT EXISTS countries (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        description TEXT,
-        detailedDescription TEXT,
-        transportation TEXT,
-        duration TEXT,
-        accommodation TEXT,
-        meals TEXT,
-        totalCost INTEGER
+        create_countries_table = """
+            CREATE TABLE IF NOT EXISTS countries (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name TEXT,
+                description TEXT,
+                detailedDescription TEXT,
+                transportation TEXT,
+                duration TEXT,
+                accommodation TEXT,
+                meals TEXT,
+                totalCost INT
+            ) ENGINE=InnoDB;
+            """
+
+
+        create_states_table = """
+            CREATE TABLE IF NOT EXISTS states (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name TEXT,
+                image TEXT
+            ) ENGINE=InnoDB;
+            """
+
+
+        create_placess_table = """
+        CREATE TABLE IF NOT EXISTS placess (
+            place_id INT AUTO_INCREMENT PRIMARY KEY,
+            location_id INT NOT NULL,
+            place_name VARCHAR(255) NOT NULL,
+            image VARCHAR(255) NOT NULL, -- Stores the image file path or URL
+            place_overview TEXT NOT NULL,
+            features TEXT NOT NULL,
+            vacation_type VARCHAR(255),
+            trip_duration VARCHAR(255),
+            budget VARCHAR(255),
+            accommodation VARCHAR(255),
+            activities TEXT,
+            time_to_visit VARCHAR(255),
+            explore_images TEXT,
+            duration VARCHAR(100),
+            description TEXT NOT NULL,
+            transportation VARCHAR(255),
+            meals VARCHAR(255),
+            FOREIGN KEY (location_id) REFERENCES locations(location_id) ON DELETE CASCADE
         );
         """
 
-        create_states_table="""
-        CREATE TABLE IF NOT EXISTS states (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        image TEXT,
+        create_bookings_table="""
+          CREATE TABLE IF NOT EXISTS bookings (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        place_id INT NOT NULL,
+        travel_date DATE NOT NULL,
+        travelers INT NOT NULL,
+        insurance_selected BOOLEAN DEFAULT FALSE,
+        final_total DECIMAL(10,2) NOT NULL,
+        processing_fee DECIMAL(10,2),
+        insurance_fee DECIMAL(10,2),
+        currency VARCHAR(10),
+        country VARCHAR(50),
+        full_name VARCHAR(100),
+        email VARCHAR(100),
+        phone VARCHAR(20),
+        user_id INT NOT NULL,  -- Added user_id column
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(user_id) -- Assuming there's a users table with id as the primary key
+    );"""
+
+
+        create_passengers_table="""
+        CREATE TABLE IF NOT EXISTS passengers (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            booking_id INT,
+            full_name VARCHAR(100),
+            FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
         );
         """
 
-        create_places_table="""
-        CREATE TABLE places (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        country_id INTEGER,
-        state_id INTEGER,
-        name TEXT,
-        price INTEGER,
-        image TEXT,
-        lat REAL,
-        lon REAL,
-        FOREIGN KEY (country_id) REFERENCES countries(id),
-        FOREIGN KEY (state_id) REFERENCES states(id)
+        create_booking_spots="""
+        CREATE TABLE IF NOT EXISTS booking_spots (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            booking_id INT,
+            spot_id INT,  
+            FOREIGN KEY (booking_id) REFERENCES bookings(id),
+            FOREIGN KEY (spot_id) REFERENCES spotss(spot_id)  
         );
         """
+
+
 
         # Execute table creation queries
         cursor.execute(create_users_table)
@@ -296,11 +359,16 @@ def create_tables():
         cursor.execute(create_locations_table)
         print("✅ Locations table created or already exists.")
 
-        cursor.execute(create_places_table)
+        cursor.execute(create_placess_table)
         print("✅ Places table created or already exists.")
 
         cursor.execute(create_spots_table)
         print("✅ Spots table created or already exists.")
+
+        cursor.execute(create_spotss_table)
+        print("✅ Spotss table created or already exists.")
+
+
 
         cursor.execute(create_user_interactions_table)
         print("✅ User Interactions table created or already exists.")
@@ -329,9 +397,15 @@ def create_tables():
         cursor.execute(create_archived_trips_table)
         print("✅ Archived Trips table created or already exists.")
 
+        cursor.execute(create_bookings_table)
+        print("✅ Bookings Table created or already exists.")
 
+        cursor.execute(create_passengers_table)
+        print("✅ Passengers Table created or already exists.")
 
-
+        cursor.execute(create_booking_spots)
+        print("✅ Booking Spots table created or already exists. ")
+        
         # Commit changes
         connection.commit()
 

@@ -123,6 +123,7 @@ const VerifyFacePage = () => {
       <div>
         <input type="file" accept="image/*" onChange={handleFileChange} />
         <p>Upload your Passport/ID Photo</p>
+        <button className="verification-button" onClick={handleVerify}>Verify</button>
       </div>
 
       {/* Camera Stream for Live Selfie */}

@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request
 from fastapi.responses import RedirectResponse
+from fastapi import Path
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import date, time
@@ -11,6 +12,7 @@ import face_recognition
 import numpy as np
 import io
 import logging, json
+import sqlite3
 from typing import List, Optional
 from fastapi import HTTPException
 import pandas as pd
@@ -25,6 +27,9 @@ from database import get_db_connection
 from jose import JWTError,jwt
 from datetime import datetime, timedelta
 from typing import Union
+from fastapi.responses import JSONResponse
+from decimal import Decimal
+
 
 
 SECRET_KEY = "your-super-secret-key"
@@ -55,6 +60,7 @@ app.add_middleware(
 
 # User Registration Model
 class User(BaseModel):
+    user_id:Optional[int] = None
     first_name: str
     last_name: str
     dob: str
@@ -172,6 +178,38 @@ class InterestRequest(BaseModel):
     receiver_id: int
     status: str
 
+class Passenger(BaseModel):
+    full_name: str
+
+class BookingData(BaseModel):
+    place_id: int
+    travel_date: date
+    travelers: int
+    insurance_selected: bool
+    final_total: float
+    processing_fee: Optional[float] = 0.0
+    insurance_fee: Optional[float] = 0.0
+    currency: str
+    country: str
+    full_name: str
+    email: str
+    phone: str
+    user_id: int
+    passengers: List[Passenger]
+    spot_ids: List[int]
+
+class SpotSelection(BaseModel):
+    spot_ids: List[int]
+
+class BookingSpot(BaseModel):
+    booking_id: int
+    spot_id: int
+
+class UserUpdate(BaseModel):
+    first_name: Optional[str]
+    last_name: Optional[str]
+    email: Optional[str]
+
 # Add these endpoints
 @app.post("/interest-requests")
 async def send_interest_request(request: InterestRequest):
@@ -203,7 +241,35 @@ async def send_interest_request(request: InterestRequest):
         cursor.close()
         connection.close()
 
+def get_current_user_id(token: str = Depends(oauth2_scheme)) -> int:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
 
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: int = payload.get("user_id")
+        if user_id is None:
+            raise credentials_exception
+        return user_id
+    except JWTError:
+        raise credentials_exception
+    
+def get_current_user_info(token: str = Depends(oauth2_scheme)) -> dict:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: int = payload.get("user_id")
+        email: str = payload.get("sub")
+
+        if user_id is None or email is None:
+            raise HTTPException(status_code=401, detail="Could not validate credentials")
+
+        return {"user_id": user_id, "email": email}
+
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Could not validate credentials")
 
 
 def get_current_user_email(authorization: str = Header(...)):
@@ -219,7 +285,9 @@ def get_current_user_email(authorization: str = Header(...)):
 
 
 @app.get("/profile")
-async def get_profile(email: str = Depends(get_current_user_email)):
+async def get_profile(user_info: dict = Depends(get_current_user_info)):
+    user_id = user_info["user_id"]
+    email = user_info["email"]
     connection = get_db_connection()
     if not connection:
         raise HTTPException(status_code=500, detail="Database connection failed.")
@@ -586,7 +654,8 @@ async def login(user: LoginUser):
             raise HTTPException(status_code=401, detail="Invalid credentials.")
 
         print("Login successful!")  # Debugging
-        access_token = create_access_token(data={"sub": user.email})
+        access_token = create_access_token(data={"user_id": user_id, "sub": user.email})
+
 
         return {
             "access_token": access_token,
@@ -1014,7 +1083,7 @@ async def get_places():
     cursor = connection.cursor(dictionary=True)
 
     try:
-        cursor.execute("SELECT * FROM places")
+        cursor.execute("SELECT * FROM placess")
         places = cursor.fetchall()
         return {"places": places}
     finally:
@@ -1028,7 +1097,7 @@ async def get_place_details(place_id: int):
     cursor = connection.cursor(dictionary=True)
 
     try:
-        cursor.execute("SELECT * FROM places WHERE place_id = %s", (place_id,))
+        cursor.execute("SELECT * FROM placess WHERE place_id = %s", (place_id,))
         place = cursor.fetchone()
         if not place:
             raise HTTPException(status_code=404, detail="Place not found")
@@ -1050,7 +1119,7 @@ async def get_places_by_location(location_id: int):
     cursor = connection.cursor(dictionary=True)
 
     try:
-        cursor.execute("SELECT * FROM places WHERE location_id = %s", (location_id,))
+        cursor.execute("SELECT * FROM placess WHERE location_id = %s", (location_id,))
         places = cursor.fetchall()
         if not places:
             raise HTTPException(status_code=404, detail="No places found for this location")
@@ -1060,49 +1129,53 @@ async def get_places_by_location(location_id: int):
         connection.close()
 
 
+
 # Add a new place (or update if exists)
-@app.post("/places")
-async def add_or_update_place(place: Place):
+from typing import List
+
+
+@app.post("/places/bulk")
+async def add_or_update_multiple_places(places: List[Place]):
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
 
     try:
-        cursor.execute("SELECT place_id FROM places WHERE place_name = %s", (place.place_name,))
-        existing_place = cursor.fetchone()
+        for place in places:
+            # Check if the place already exists
+            cursor.execute("SELECT place_id FROM placess WHERE place_name = %s", (place.place_name,))
+            existing_place = cursor.fetchone()
 
-        if existing_place:
-            place_id = existing_place["place_id"]
-            cursor.execute(
-                """UPDATE places SET 
-                    location_id = %s, image = %s, place_overview = %s, features = %s, vacation_type = %s, 
-                    trip_duration = %s, budget = %s, accommodation = %s, activities = %s, duration = %s,
-                    time_to_visit = %s, explore_images = %s, 
-                    description = %s, transportation = %s, meals = %s 
-                    WHERE place_id = %s""",
-                (place.location_id, place.image, place.place_overview, place.features, place.vacation_type, 
-                 place.trip_duration, place.budget, place.accommodation, place.activities, place.duration,
-                 place.time_to_visit, ",".join(place.explore_images) if place.explore_images else None, 
-                 place.description, place.transportation, place.meals, place_id)
-            )
-            connection.commit()
-            return {"message": "Place updated successfully!"}
-
-        # Insert new place if it does not exist
-        cursor.execute(
-            """INSERT INTO places 
-               (place_name, location_id, image, place_overview, features, vacation_type, 
-                trip_duration, budget, accommodation, activities, time_to_visit, 
-                explore_images, duration, description, transportation, meals) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-            (place.place_name, place.location_id, place.image, place.place_overview, place.features, 
-             place.vacation_type, place.trip_duration, place.budget, place.accommodation, 
-             place.activities, place.time_to_visit, 
-             ",".join(place.explore_images) if place.explore_images else None, place.duration,
-             place.description, place.transportation, place.meals)
-        )
+            if existing_place:
+                place_id = existing_place["place_id"]
+                cursor.execute(
+                    """UPDATE placess SET 
+                        location_id = %s, image = %s, place_overview = %s, features = %s, vacation_type = %s, 
+                        trip_duration = %s, budget = %s, accommodation = %s, activities = %s, duration = %s,
+                        time_to_visit = %s, explore_images = %s, 
+                        description = %s, transportation = %s, meals = %s 
+                        WHERE place_id = %s""",
+                    (place.location_id, place.image, place.place_overview, place.features, place.vacation_type, 
+                     place.trip_duration, place.budget, place.accommodation, place.activities, place.duration,
+                     place.time_to_visit, ",".join(place.explore_images) if place.explore_images else None, 
+                     place.description, place.transportation, place.meals, place_id)
+                )
+            else:
+                # Insert new place
+                cursor.execute(
+                    """INSERT INTO placess 
+                       (place_name, location_id, image, place_overview, features, vacation_type, 
+                        trip_duration, budget, accommodation, activities, time_to_visit, 
+                        explore_images, duration, description, transportation, meals) 
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                    (place.place_name, place.location_id, place.image, place.place_overview, place.features, 
+                     place.vacation_type, place.trip_duration, place.budget, place.accommodation, 
+                     place.activities, place.time_to_visit, 
+                     ",".join(place.explore_images) if place.explore_images else None, place.duration,
+                     place.description, place.transportation, place.meals)
+                )
 
         connection.commit()
-        return {"message": "Place added successfully!"}
+        return {"message": f"{len(places)} place(s) processed successfully."}
 
     finally:
         cursor.close()
@@ -1115,7 +1188,7 @@ async def update_place(place_id: int, place: Place):
     cursor = connection.cursor(dictionary=True)
 
     try:
-        cursor.execute("SELECT place_id FROM places WHERE place_id = %s", (place_id,))
+        cursor.execute("SELECT place_id FROM placess WHERE place_id = %s", (place_id,))
         if not cursor.fetchone():
             raise HTTPException(status_code=404, detail="Place not found")
 
@@ -1148,7 +1221,7 @@ async def delete_place(place_id: int):
     cursor = connection.cursor()
 
     try:
-        cursor.execute("SELECT place_id FROM places WHERE place_id = %s", (place_id,))
+        cursor.execute("SELECT place_id FROM placess WHERE place_id = %s", (place_id,))
         if not cursor.fetchone():
             raise HTTPException(status_code=404, detail="place not found")
 
@@ -1167,7 +1240,7 @@ async def get_spots():
     cursor = connection.cursor(dictionary=True)
 
     try:
-        cursor.execute("SELECT * FROM spots")
+        cursor.execute("SELECT * FROM spotss")
         spots = cursor.fetchall()
 
         # Convert packing_list JSON string to Python list
@@ -1188,7 +1261,7 @@ def get_spots_by_place(place_id: int):
 
     # Fetch all spots where place_id matches
     try:
-        cursor.execute("SELECT * FROM spots WHERE place_id = %s", (place_id,))
+        cursor.execute("SELECT * FROM spotss WHERE place_id = %s", (place_id,))
         spots = cursor.fetchall()
         if not spots:
             raise HTTPException(status_code=404, detail="No spots found for this place_id")
@@ -1209,12 +1282,12 @@ async def add_spot(spot: Spot):
         packing_list_json = json.dumps(spot.packing_list)
 
         cursor.execute(
-            """INSERT INTO spots 
+            """INSERT INTO spotss 
                (place_id, spot_name, image, description, duration, 
                 transportation, price, activities, accommodation, packing_list) 
                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
             (spot.place_id, spot.spot_name, spot.image, 
-             spot.description, spot.duration, spot.transportation, spot.price, 
+             spot.description, spot.duration, spot.transportation, spot.price, spot.activities, 
              spot.accommodation, packing_list_json)
         )
 
@@ -1231,7 +1304,7 @@ async def update_spot(spot_id: int, spot: Spot):
     cursor = connection.cursor()
 
     try:
-        cursor.execute("SELECT spot_id FROM spots WHERE spot_id = %s", (spot_id,))
+        cursor.execute("SELECT spot_id FROM spotss WHERE spot_id = %s", (spot_id,))
         if not cursor.fetchone():
             raise HTTPException(status_code=404, detail="Spot not found")
 
@@ -1262,7 +1335,7 @@ async def delete_spot(spot_id: int):
     cursor = connection.cursor()
 
     try:
-        cursor.execute("SELECT spot_id FROM spots WHERE spot_id = %s", (spot_id,))
+        cursor.execute("SELECT spot_id FROM spotss WHERE spot_id = %s", (spot_id,))
         if not cursor.fetchone():
             raise HTTPException(status_code=404, detail="Spot not found")
 
@@ -1272,6 +1345,35 @@ async def delete_spot(spot_id: int):
     finally:
         cursor.close()
         connection.close()
+
+# Fetch trip details for a specific place by place_id
+# Fetch trip details based on place_id
+@app.get("/trip/{place_id}")
+async def get_trip_details(place_id: int):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        # Fetch place details
+        cursor.execute("SELECT * FROM placess WHERE place_id = %s", (place_id,))
+        place = cursor.fetchone()
+        if not place:
+            raise HTTPException(status_code=404, detail="Place not found")
+
+        # Fetch associated spots for the place
+        cursor.execute("SELECT * FROM spotss WHERE place_id = %s", (place_id,))
+        spots = cursor.fetchall()
+
+        # Attach spots to the place
+        place['spots'] = spots
+        
+        # Now you can add any additional information about the trip, such as pricing, activities, etc.
+        return place
+
+    finally:
+        cursor.close()
+        connection.close()
+
 
 
 @app.post("/interactions/")
@@ -1428,6 +1530,298 @@ async def get_recommendations(user_id: int, location_id: int):
     finally:
         cursor.close()
         connection.close()
+
+@app.post("/bookings/")
+def create_booking(data: BookingData, user_info: dict = Depends(get_current_user_info)):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        user_id = user_info["user_id"]
+
+        booking_query = """
+            INSERT INTO bookings (
+                place_id, travel_date, travelers, insurance_selected,
+                final_total, processing_fee, insurance_fee, currency,
+                country, full_name, email, phone, user_id
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        booking_values = (
+            data.place_id, data.travel_date, data.travelers,
+            data.insurance_selected, data.final_total, data.processing_fee,
+            data.insurance_fee, data.currency, data.country,
+            data.full_name, data.email, data.phone, user_id
+        )
+
+        cursor.execute(booking_query, booking_values)
+        booking_id = cursor.lastrowid
+
+        # Insert passengers
+        passenger_query = """
+            INSERT INTO passengers (booking_id, full_name) VALUES (%s, %s)
+        """
+        for passenger in data.passengers:
+            cursor.execute(passenger_query, (booking_id, passenger.full_name))
+
+        # ✅ Insert selected spot IDs into booking_spots
+        spot_query = "INSERT INTO booking_spots (booking_id, spot_id) VALUES (%s, %s)"
+        for spot_id in data.spot_ids:
+            cursor.execute(spot_query, (booking_id, spot_id))
+
+        conn.commit()
+        return {"message": "Booking successful", "booking_id": booking_id}
+
+    except Exception as e:
+        print(str(e))
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
+
+
+
+@app.get("/bookings/{user_id}")
+def get_user_bookings(user_id: int):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # Query to fetch bookings for a specific user
+        query = """
+            SELECT b.id, b.place_id, b.travel_date, b.travelers, b.insurance_selected, 
+                   b.final_total, b.processing_fee, b.insurance_fee, b.currency, 
+                   b.country, b.full_name, b.email, b.phone, b.created_at
+            FROM bookings b
+            WHERE b.user_id = %s  -- assuming bookings table has a user_id column
+        """
+        cursor.execute(query, (user_id,))
+        bookings = cursor.fetchall()
+
+        # If no bookings found
+        if not bookings:
+            return {"message": "No bookings found for this user"}
+
+        # Prepare the booking data in a more readable format
+        bookings_data = []
+        for booking in bookings:
+            bookings_data.append({
+                "id": booking[0],
+                "place_id": booking[1],
+                "travel_date": booking[2],
+                "travelers": booking[3],
+                "insurance_selected": booking[4],
+                "final_total": booking[5],
+                "processing_fee": booking[6],
+                "insurance_fee": booking[7],
+                "currency": booking[8],
+                "country": booking[9],
+                "full_name": booking[10],
+                "email": booking[11],
+                "phone": booking[12],
+                "created_at": booking[13]
+            })
+
+        return {"bookings": bookings_data}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.get("/bookings/{booking_id}/spots")
+def get_booking_spots(booking_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        query = """
+        SELECT s.*
+        FROM spotss s
+        JOIN booking_spots bs ON s.spot_id = bs.spot_id
+        WHERE bs.booking_id = %s;
+        """
+        cursor.execute(query, (booking_id,))
+        spots = cursor.fetchall()
+        return {"spots": spots}
+    except Exception as e:
+        print(f"Database error: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+
+
+
+
+@app.post("/bookings/{booking_id}/spots")
+def add_selected_spots_to_booking(booking_id: int, selection: SpotSelection):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        for spot_id in selection.spot_ids:
+            cursor.execute(
+                "INSERT INTO booking_spots (booking_id, spot_id) VALUES (%s, %s)",
+                (booking_id, spot_id)
+            )
+        conn.commit()
+        return {"message": "Spots added to booking"}
+    except Exception as e:
+        conn.rollback()
+        return {"error": str(e)}
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.delete("/bookings/{booking_id}")
+def cancel_booking(booking_id: int):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("DELETE FROM booking_spots WHERE booking_id = %s", (booking_id,))
+
+        cursor.execute("DELETE FROM bookings WHERE id = %s", (booking_id,))
+
+        conn.commit()
+
+        return {"message": "Booking cancelled successfully"}
+    
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail="Error cancelling booking: " + str(e))
+    
+    finally:
+        cursor.close()
+        conn.close()
+
+import logging
+
+# Set up basic logging
+logging.basicConfig(level=logging.DEBUG)
+
+@app.get("/admin/bookings")
+def get_all_bookings():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        # Fetch bookings
+        cursor.execute("SELECT * FROM bookings")
+        bookings = cursor.fetchall()
+
+        for booking in bookings:
+            booking_id = booking["id"]
+
+            # Fetch passengers for this booking
+            cursor.execute("SELECT full_name FROM passengers WHERE booking_id = %s", (booking_id,))
+            passengers = cursor.fetchall()
+            booking["passengers"] = [p["full_name"] for p in passengers]
+
+            # Fetch spots for this booking
+            cursor.execute("""
+                SELECT s.spot_name FROM booking_spots bs
+                JOIN spotss s ON bs.spot_id = s.spot_id
+                WHERE bs.booking_id = %s
+            """, (booking_id,))
+            spots = cursor.fetchall()
+            booking["spots"] = [s["spot_name"] for s in spots]
+
+        return {"status": "success", "bookings": bookings}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An error occurred while fetching bookings.")
+
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.get("/admin/users", response_model=List[User])
+def get_users():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT user_id, first_name, last_name, dob, passport_number, email, username, password FROM users"
+        )
+        users = cursor.fetchall()
+        conn.close()
+
+        user_list = [
+            User(
+                user_id=user[0],
+                first_name=user[1],
+                last_name=user[2],
+                dob=str(user[3]),
+                passport_number=user[4],
+                email=user[5],
+                username=user[6],
+                password=user[7],
+            )
+            for user in users
+        ]
+        return user_list
+
+    except Exception as e:
+        print(f"Error: {e}")
+        raise HTTPException(status_code=500, detail="Error fetching users from database")
+    
+@app.delete("/admin/users/{user_id}")
+def delete_user(user_id: int = Path(..., description="ID of the user to delete")):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM users WHERE user_id = ?", (user_id,))
+        user = cursor.fetchone()
+        if not user:
+            conn.close()
+            raise HTTPException(status_code=404, detail="User not found")
+
+        cursor.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
+        conn.commit()
+        conn.close()
+        return {"detail": f"User with ID {user_id} has been deleted."}
+    except Exception as e:
+        print(f"Error: {e}")
+        raise HTTPException(status_code=500, detail="Error deleting user")
+    
+
+@app.put("/admin/users/{user_id}")
+def update_user(user_id: int, updated_data: UserUpdate):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Correct placeholder for MySQL
+    cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
+    existing_user = cursor.fetchone()
+    
+    if not existing_user:
+        conn.close()
+        raise HTTPException(status_code=404, detail="User not found")
+
+    update_fields = {k: v for k, v in updated_data.dict().items() if v is not None}
+    if not update_fields:
+        conn.close()
+        raise HTTPException(status_code=400, detail="No fields provided to update")
+
+    set_clause = ", ".join([f"{field} = %s" for field in update_fields])
+    values = list(update_fields.values())
+    values.append(user_id)
+
+    # Correct query
+    query = f"UPDATE users SET {set_clause} WHERE user_id = %s"
+
+    try:
+        cursor.execute(query, values)
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    conn.close()
+    return {"message": "User updated successfully"}
+
+
 
 
 if __name__ == "__main__":

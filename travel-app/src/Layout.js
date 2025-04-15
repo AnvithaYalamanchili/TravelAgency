@@ -50,6 +50,8 @@ const Layout = ({ children }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+ 
+
   return (
     <div className="home-container">
       <Sidebar />
@@ -74,34 +76,30 @@ const Layout = ({ children }) => {
             About Us
           </Link>
 
-          <Link>My Bookings</Link>
+          <Link to="/my-bookings" style={{ marginLeft: '-50px' }}>
+            My Bookings
+          </Link>
+
 
           <div style={{ display: 'flex', alignItems: 'center', marginLeft: '-50px' }}>
             <button className="book-now-btn-nav">Explore</button>
           </div>
 
-
-
-          <div className="search-div">
-            <input type="text" placeholder="Search" />
-            <FaBell />
-
-            {/* User Icon + Dropdown */}
-            <div className="user-icon-container" style={{ position: 'relative', marginLeft: '50px' }}>
-              <FaUser
-                style={{ color: '#F8C923', fontSize: '30px', cursor: 'pointer' }}
-                onClick={() => setShowUserDropdown(prev => !prev)}
-              />
-              {showUserDropdown && (
-                <div className="user-dropdown">
-                  <p className="dropdown-name">Welcome, {userName}!</p>
-                  <hr />
-                  <button className="dropdown-btn" onClick={() => navigate("/profile")}>Profile</button>
-                  <button className="dropdown-btn" onClick={() => navigate("/settings")}>Settings</button>
-                  <button className="dropdown-btn logout" onClick={handleLogout}>Logout</button>
-                </div>
-              )}
-            </div>
+          {/* User Icon + Dropdown */}
+          <div className="user-icon-container" style={{ position: 'relative', marginLeft: '50px' }}>
+            <FaUser
+              style={{ color: '#F8C923', fontSize: '30px', cursor: 'pointer' }}
+              onClick={() => setShowUserDropdown(prev => !prev)}
+            />
+            {showUserDropdown && (
+              <div className="user-dropdown">
+                <p className="dropdown-name">Welcome, {userName}!</p>
+                <hr />
+                <button className="dropdown-btn" onClick={() => navigate("/profile")}>Profile</button>
+                <button className="dropdown-btn" onClick={() => navigate("/settings")}>Settings</button>
+                <button className="dropdown-btn logout" onClick={handleLogout}>Logout</button>
+              </div>
+            )}
           </div>
         </nav>
 

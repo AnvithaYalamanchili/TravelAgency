@@ -5,6 +5,7 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin-top: 20px;
   overflow:hidden;
+  margin-left: 100px;
 }
 
 /* Sidebar */
@@ -255,6 +256,24 @@
   background-color: #38a169;
   transform: scale(1.1);
 }
+
+.bookings-container {
+  margin-top: 2rem;
+}
+
+.bookings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.bookings-table th,
+.bookings-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
 
 /* Responsive Adjustments */
 @media (max-width: 768px) {

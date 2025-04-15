@@ -7,6 +7,7 @@ import { Navigation, Autoplay } from "swiper/modules";
 import "./TripPage.css";
 import { FaHome } from "react-icons/fa";
 import logo from "./logo.jpg"; // Ensure it's inside src
+import Layout from "./Layout";
 
 const currencySymbols = {
   USD: "$",
@@ -91,12 +92,8 @@ const TripPage = () => {
   if (!trip) return <h2 style={{ textAlign: "center" }}>Trip details not found.</h2>;
 
   return (
-    <div className="trip-page">
-      <div className="top-bar">
-        <img src={logo} alt="Logo" className="logo" />
-        <button className="home-btn" onClick={() => navigate("/home")}>
-          <FaHome /> Home
-        </button>
+    <Layout>
+    
         <div className="currency-selector">
           <label>Currency:</label>
           <select onChange={(e) => setSelectedCurrency(e.target.value)} value={selectedCurrency}>
@@ -106,7 +103,6 @@ const TripPage = () => {
             <option value="AUD">AUD</option>
           </select>
         </div>
-      </div>
 
       <div className="trip-details">
         <h1 style={{ textAlign: "center" }}>Explore {trip.place_name}</h1>
@@ -176,7 +172,7 @@ const TripPage = () => {
           )}
         </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

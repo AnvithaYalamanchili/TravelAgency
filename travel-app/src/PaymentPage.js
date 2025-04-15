@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "./PaymentPage.css";
 import { FaLock, FaHome } from "react-icons/fa";
 import logo from "./logo.jpg";
+import { jwtDecode } from "jwt-decode";
 
 const currencySymbols = {
   USD: "$",
@@ -31,6 +32,11 @@ const PaymentPage = () => {
   const [placeDetails, setPlaceDetails] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
+  // User input states
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+
   useEffect(() => {
     const fetchPlaceDetails = async () => {
       try {
@@ -51,9 +57,70 @@ const PaymentPage = () => {
     return `${symbol}${parseFloat(amount).toFixed(2)}`;
   };
 
-  const handlePayment = () => {
-    setShowModal(true);
+  const handlePayment = async () => {
+  // Extract user_id from JWT token
+  const token = localStorage.getItem("access_token");
+  let user_id = null;
+  if (token) {
+    const decodedToken = jwtDecode(token);
+    user_id = decodedToken.user_id;
+  }
+
+  const passengers = Array.from({ length: travelers }, (_, index) => ({
+    full_name: `${fullName} ${index + 1}`, // Dummy names for each traveler
+  }));
+
+  // 🔥 Extract only spot_ids from selectedSpots
+  const spot_ids = selectedSpots.map((spot) => spot.spot_id);
+
+  const bookingData = {
+    place_id,
+    travel_date: travelDate,
+    travelers,
+    insurance_selected: insuranceSelected,
+    final_total: finalTotal,
+    processing_fee: processingFee,
+    insurance_fee: insuranceFee,
+    currency: selectedCurrency,
+    country: selectedCountry,
+    full_name: fullName,
+    email,
+    phone,
+    user_id,
+    passengers,
+    spot_ids, // ✅ Send only spot IDs here
   };
+
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+
+  try {
+    const response = await fetch("http://127.0.0.1:8000/bookings/", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(bookingData),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem("bookingData", JSON.stringify(data));
+      setShowModal(true);
+    } else {
+      if (response.status === 401) {
+        alert("You are not authorized. Please log in again.");
+        navigate("/login");
+      } else {
+        alert("Booking failed. Please try again.");
+      }
+    }
+  } catch (error) {
+    console.error("Payment error:", error);
+    alert("An error occurred. Please try again later.");
+  }
+};
+
 
   return (
     <div className="payment-page">
@@ -78,10 +145,35 @@ const PaymentPage = () => {
           </p>
 
           <div className="card-payment">
-            <label>Card Number</label>
-            <input type="text" placeholder="1234 1234 1234 1234" />
+            <label>Full Name</label>
+            <input
+              type="text"
+              placeholder="John Doe"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
+
+            <label>Email</label>
+            <input
+              type="email"
+              placeholder="john.doe@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <label>Phone</label>
+            <input
+              type="text"
+              placeholder="1234567890"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
 
             <div className="card-details">
+              <div>
+                <label>Card Number</label>
+                <input type="text" placeholder="1234 1234 1234 1234" />
+              </div>
               <div>
                 <label>Expiration Date</label>
                 <input type="text" placeholder="MM / YY" />
@@ -151,12 +243,12 @@ const PaymentPage = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>🎉 Payment Successful!</h2>
-            <p>Your booking has been completed.</p>
-            <button className="home-btn" onClick={() => navigate("/home")}>
-              Go back to Home
+        <div className="modal">
+          <div className="modal-content">
+            <h2>Payment Successful!</h2>
+            <p>Your booking is confirmed. You will receive a confirmation email shortly.</p>
+            <button className="close-btn" onClick={() => setShowModal(false)}>
+              Close
             </button>
           </div>
         </div>

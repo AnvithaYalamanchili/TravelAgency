@@ -22,6 +22,10 @@ import InterestRequests from "./InterestRequests";
 import WhatsAppLayout from "./WhatsAppLayout";
 import About from "./Aboutus";
 import Profile from "./UserProfile";
+import MyBookings from "./MyBookings";
+import BookingDetails from "./BookingDetails";
+import Users from "./Users";
+import Settings from "./Settings";
 
 const App = () => {
   return (
@@ -50,6 +54,10 @@ const App = () => {
         <Route path="/interest-requests" element={<InterestRequests />} />
         <Route path="/about" element={<About/>}/>
         <Route path="/profile" element={<Profile/>}/>
+        <Route path="/my-bookings" element={<MyBookings />} />
+        <Route path="/booking/:id" element={<BookingDetails />} />
+        <Route path="/users" element={<Users/>} />
+        <Route path="/settings" element={<Settings/>}/>
 
       </Routes>
     </Router>

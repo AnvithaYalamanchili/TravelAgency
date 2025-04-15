@@ -1,63 +1,72 @@
 import React, { useState, useEffect } from "react";
-import { 
-  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, 
-  PieChart, Pie, Cell, Legend 
+import {
+  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend
 } from "recharts";
-import { Search,Bell, Home,Settings, Users } from "lucide-react";
-import { analyticsData, financialData, travelHistory, ongoingTrips } from "./admindata"; 
-import './adminstyles.css'; 
+import { Search, Bell, Home, Settings, Users } from "lucide-react";
+import { Link } from "react-router-dom";  // Import Link
+import axios from "axios";
+import { analyticsData, financialData, travelHistory, ongoingTrips } from "./admindata";
+import './adminstyles.css';
+import Sidebar from "./AdminSidebar";
 
-// Colors for Pie Chart
 const COLORS = ["#4CAF50", "#FFC107", "#F44336"];
 
 const Dashboard = () => {
-  const [activeTrips, setActiveTrips] = useState(travelHistory); // Active trips
-  const [archivedTrips, setArchivedTrips] = useState([]); // Archived trips
-  const [currentOngoingTrips, setCurrentOngoingTrips] = useState(ongoingTrips); // Ongoing trips
+  const [activeTrips, setActiveTrips] = useState(travelHistory);
+  const [archivedTrips, setArchivedTrips] = useState([]);
+  const [currentOngoingTrips, setCurrentOngoingTrips] = useState(ongoingTrips);
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true); // Loading state for bookings
+  const [error, setError] = useState(null); // Error state for bookings
 
-  // Function to archive a trip manually
+  // Archive a trip
   const archiveTrip = (index) => {
     const tripToArchive = activeTrips[index];
-    setArchivedTrips([...archivedTrips, tripToArchive]); // Add to archived trips
-    setActiveTrips(activeTrips.filter((_, i) => i !== index)); // Remove from active trips
+    setArchivedTrips([...archivedTrips, tripToArchive]);
+    setActiveTrips(activeTrips.filter((_, i) => i !== index));
   };
 
-  // Automatically archive completed trips
+  // Handle trip archiving based on return date
   useEffect(() => {
-    const today = new Date(); // Get today's date
+    const today = new Date();
     const completedTrips = activeTrips.filter((trip) => {
-      const returnDate = new Date(trip.return); // Convert return date to Date object
-      return returnDate < today; // Check if return date is in the past
+      const returnDate = new Date(trip.return);
+      return returnDate < today;
     });
 
     if (completedTrips.length > 0) {
-      setArchivedTrips([...archivedTrips, ...completedTrips]); // Add completed trips to archive
-      setActiveTrips(activeTrips.filter((trip) => !completedTrips.includes(trip))); // Remove from active trips
+      setArchivedTrips([...archivedTrips, ...completedTrips]);
+      setActiveTrips(activeTrips.filter((trip) => !completedTrips.includes(trip)));
     }
   }, [activeTrips, archivedTrips]);
+
+  // Fetch bookings from API
+  useEffect(() => {
+  const fetchBookings = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/admin/bookings");
+      console.log(response.data);  // Log the API response to inspect the structure
+      if (response.data.status === "success") {
+        setBookings(response.data.bookings);
+      } else {
+        setError("Failed to load bookings");
+      }
+    } catch (error) {
+      setError("Error fetching bookings");
+      console.error("Error fetching bookings:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchBookings();
+}, []);
+
 
   return (
     <div className="dashboard-container">
       {/* Sidebar */}
-      <div className="sidebar">
-        <div className="sidebar-item">
-    <Home size={24} color="#cbd5e0" />
-  </div>
-  <div className="sidebar-item">
-    <Bell size={24} color="#cbd5e0" />
-  </div>
-  <div className="sidebar-item">
-    <Users size={24} color="#cbd5e0" />
-  </div>
-  <div className="sidebar-item">
-    <Settings size={24} color="#cbd5e0" />
-  </div>
-  
-        {/* Admin Profile Section */}
-        <div className="admin-profile">
-          <img src="/admin-avatar.png" alt="Admin Avatar" className="admin-avatar" />
-        </div>
-      </div>
+      <Sidebar /> 
 
       {/* Main Content */}
       <div className="main-content">
@@ -69,7 +78,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Stats Cards (Side by Side) */}
+        {/* Stats Cards */}
         <div className="stats-cards">
           <div className="stat-card">
             <h2 className="stat-card-title">Total Profit</h2>
@@ -85,7 +94,37 @@ const Dashboard = () => {
           </div>
         </div>
 
-        
+        <div className="travel-history-container">
+            <h2 className="travel-history-title">All Bookings</h2>
+            {loading ? (
+              <div>Loading bookings...</div>
+            ) : error ? (
+              <div>{error}</div>
+            ) : (
+              <table className="travel-history-table">
+                <thead>
+                  <tr className="table-header">
+                    <th className="table-cell">Booking ID</th>
+                    <th className="table-cell">Full Name</th>
+                    <th className="table-cell">Date</th>
+                    <th className="table-cell">Passengers</th>
+                    <th className="table-cell">Spots</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bookings.map((booking, index) => (
+                    <tr key={index} className="table-row">
+                      <td className="table-cell">{booking.id}</td> {/* Correct field name */}
+                      <td className="table-cell">{booking.full_name}</td> {/* Correct field name */}
+                      <td className="table-cell">{booking.travel_date}</td> {/* Correct field name */}
+                      <td className="table-cell">{booking.passengers}</td>
+                      <td className="table-cell">{booking.spots}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
 
         {/* Ongoing Trips */}
         <div className="travel-history-container">
@@ -111,16 +150,14 @@ const Dashboard = () => {
                   <td className="table-cell">{trip.return}</td>
                   <td className="table-cell">{trip.people}</td>
                   <td className="table-cell">{trip.cost}</td>
-                  <td className="table-cell">
-                    <span>Ongoing</span>
-                  </td>
+                  <td className="table-cell"><span>Ongoing</span></td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        {/* Archived Travel History */}
+        {/* Archived Trips */}
         <div className="travel-history-container">
           <h2 className="travel-history-title">Archived Trips</h2>
           <table className="travel-history-table">
@@ -149,17 +186,13 @@ const Dashboard = () => {
           </table>
         </div>
 
-        {/* Booking Analytics (Pie Chart) */}
+        {/* Booking Analytics */}
         <div className="pie-chart-container">
           <h2 className="pie-chart-title">Booking Status</h2>
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
-                data={[
-                  { name: "Confirmed", value: analyticsData.confirmed },
-                  { name: "Pending", value: analyticsData.pending },
-                  { name: "Canceled", value: analyticsData.canceled },
-                ]}
+                data={[{ name: "Confirmed", value: analyticsData.confirmed }, { name: "Pending", value: analyticsData.pending }, { name: "Canceled", value: analyticsData.canceled }] }
                 dataKey="value"
                 cx="50%"
                 cy="50%"
@@ -188,6 +221,9 @@ const Dashboard = () => {
             </LineChart>
           </ResponsiveContainer>
         </div>
+
+        {/* All Bookings */}
+        
       </div>
     </div>
   );
