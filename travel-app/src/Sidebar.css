@@ -80,7 +80,7 @@ html, body {
 }
 
 .sidebar-menu li:hover {
-  background-color: #f5f5f5; /* Light gray on hover */
+  background-color:  #001F54; /* Light gray on hover */
 }
 
 /* Sidebar Icons */
@@ -90,7 +90,7 @@ html, body {
 }
 
 /* Sidebar Text */
-.sidebar-menu li .sidebar-text {
+.sidebar-menu li  {
   margin-left: 10px;
   color: #e6a700; /* Yellow Text */
   transition: opacity 0.3s ease-in-out;
@@ -104,6 +104,9 @@ html, body {
   transition: opacity 0.3s ease-in-out;
 }
 
+.sidebar-text{
+  color:black;
+}
 /* Adjust Main Content When Sidebar is Minimized */
 .main-content {
   margin-left: 80px; /* Set a static margin to prevent shifting */

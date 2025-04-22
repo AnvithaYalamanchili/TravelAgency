@@ -344,6 +344,62 @@ def create_tables():
         );
         """
 
+        create_review_table="""
+        CREATE TABLE IF NOT EXISTS reviews (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            booking_id INT NOT NULL,
+            rating INT NOT NULL,
+            review TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """
+
+        create_suggestions_table="""
+        CREATE TABLE IF NOT EXISTS suggestions (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            booking_id INT NOT NULL,
+            name VARCHAR(255) NOT NULL,
+            description TEXT,
+            type VARCHAR(100),
+            rating DECIMAL(2,1),
+            hours VARCHAR(100),
+            image TEXT,
+            local_event TEXT,
+            weather_conditions TEXT,
+            average_review_rating DECIMAL(3,2),  -- Assuming average rating is a decimal (e.g., 4.75)
+            FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
+        );
+        """
+
+        create_suggestionss_table="""
+        CREATE TABLE IF NOT EXISTS suggestionss (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            booking_id INT NOT NULL,
+            name VARCHAR(255) NOT NULL,
+            description TEXT,
+            type VARCHAR(100),
+            rating DECIMAL(2,1),
+            hours VARCHAR(100),
+            image TEXT,
+            local_event TEXT,
+            weather_conditions TEXT,
+            average_review_rating DECIMAL(3,2),  -- Assuming average rating is a decimal (e.g., 4.75)
+            attractions JSON,  -- Add new columns as needed
+            hotels JSON,
+            activities JSON,
+            FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
+        );
+        """
+
+        create_booking_hotel_table="""
+        CREATE TABLE booking_hotels (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            booking_id INT NOT NULL,
+            hotel_name VARCHAR(255) NOT NULL,
+            FOREIGN KEY (booking_id) REFERENCES bookings(id)
+        );
+        """
 
 
         # Execute table creation queries
@@ -405,6 +461,19 @@ def create_tables():
 
         cursor.execute(create_booking_spots)
         print("✅ Booking Spots table created or already exists. ")
+
+        cursor.execute(create_review_table)
+        print("✅ Review table created or already exists. ")
+
+        cursor.execute(create_suggestions_table)
+        print("✅ Suggestions table created or already exists.")
+
+        cursor.execute(create_suggestionss_table)
+        print("✅ Suggestions table created or already exists.")
+
+        cursor.execute(create_booking_hotel_table)
+        print("✅ booking_hotels table created or already exists.")
+
         
         # Commit changes
         connection.commit()

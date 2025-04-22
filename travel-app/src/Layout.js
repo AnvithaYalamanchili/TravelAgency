@@ -10,6 +10,8 @@ const Layout = ({ children }) => {
   const [likedTrips, setLikedTrips] = useState([]);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
 
   useEffect(() => {
     // Get data from localStorage when the component mounts
@@ -50,7 +52,34 @@ const Layout = ({ children }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
- 
+ const handleSearch = async (e) => {
+  e.preventDefault();
+  const query = searchQuery.trim();
+  if (query === "") return;
+  navigate(`/search?q=${encodeURIComponent(query)}`);
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/places/search?q=${encodeURIComponent(query)}`);
+    
+    if (!response.ok) throw new Error("Search failed");
+    
+    const data = await response.json();
+    
+    if (data.place_id) {
+      // Navigate to place details page with the place_id
+      navigate(`/places/${data.place_id}`);
+    } else if (data.suggestions && data.suggestions.length > 0) {
+      // If no exact match but have suggestions, navigate to search results
+      navigate(`/search?q=${encodeURIComponent(query)}`);
+    } else {
+      // No results found
+        
+    }
+  } catch (error) {
+    console.error("Search error:", error);
+    navigate(`/search?q=${encodeURIComponent(query)}`);
+  }
+};
+
 
   return (
     <div className="home-container">
@@ -82,7 +111,22 @@ const Layout = ({ children }) => {
 
 
           <div style={{ display: 'flex', alignItems: 'center', marginLeft: '-50px' }}>
-            <button className="book-now-btn-nav">Explore</button>
+           <button className="book-now-btn-nav" onClick={() => navigate("/explore")}>
+  Explore
+</button>
+
+<form onSubmit={handleSearch} style={{ marginLeft: "20px", display: "flex", alignItems: "center" }}>
+  <input
+    type="text"
+    placeholder="Search trips..."
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    className="navbar-search-input"
+  />
+  <button type="submit" className="navbar-search-btn">Search</button>
+</form>
+
+
           </div>
 
           {/* User Icon + Dropdown */}

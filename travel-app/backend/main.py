@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request
 from fastapi.responses import RedirectResponse
-from fastapi import Path
+from fastapi import Path, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import date, time
@@ -29,8 +29,7 @@ from datetime import datetime, timedelta
 from typing import Union
 from fastapi.responses import JSONResponse
 from decimal import Decimal
-
-
+import requests
 
 SECRET_KEY = "your-super-secret-key"
 ALGORITHM = "HS256"
@@ -209,6 +208,68 @@ class UserUpdate(BaseModel):
     first_name: Optional[str]
     last_name: Optional[str]
     email: Optional[str]
+
+class ReviewCreate(BaseModel):
+    user_id: int
+    booking_id: int
+    rating: int
+    review: str
+
+class ReviewResponse(BaseModel):
+    review_id: int
+    user_id: int
+    booking_id: int
+    rating: int
+    review: str
+    created_at: datetime
+    place_name: str  # changed from location_name
+
+class Hotel1(BaseModel):
+    name: str
+    image: str
+    contact_number: str
+    
+class SuggestionResponse(BaseModel):
+    id: int
+    name: str
+    description: str
+    type: str
+    rating: float
+    hours: str
+    image: str
+    local_event: str
+    weather_conditions: Optional[str] = None  # Weather condition might be added dynamically
+    average_review_rating: float
+    attractions: Optional[List[str]] = []  # List of attraction names or descriptions
+    hotels: Optional[List[Hotel1]] = []   # List of hotel names
+    activities: Optional[List[str]] = []
+
+class Hotel(BaseModel):
+    name: str
+    image: str
+    contact_number: str
+
+class HotelChangeRequest(BaseModel):
+    booking_id: int
+    hotel_name: str
+    
+class SuggestionCreate(BaseModel):
+    booking_id: int
+    name: str
+    description: str
+    type: str
+    rating: float
+    hours: str
+    image: str
+    local_event: str
+    weather_conditions: Optional[str] = None
+    average_review_rating: float
+    attractions: Optional[List[str]] = []  # List of attraction names or descriptions
+    hotels: List[Hotel] # List of hotel names
+    activities: Optional[List[str]] = [] 
+
+class HotelSelection(BaseModel):
+    hotel_name: str
 
 # Add these endpoints
 @app.post("/interest-requests")
@@ -1471,6 +1532,8 @@ async def get_recommendations(user_id: int, location_id: int):
         if not user_prefs:
             raise HTTPException(status_code=404, detail="User preferences not found")
 
+        print("🔍 User Preferences:", user_prefs)
+
         user_vacation_type = user_prefs["vacation_type"].lower()
 
         user_pref_text = (
@@ -1479,22 +1542,27 @@ async def get_recommendations(user_id: int, location_id: int):
             user_prefs["accommodation"]
         )
 
+        print("🧠 User Preference Text for Similarity:", user_pref_text)
+
         # Fetch places and filter vacation_type dynamically
-        cursor.execute("SELECT * FROM places WHERE location_id = %s", (location_id,))
+        cursor.execute("SELECT * FROM placess WHERE location_id = %s", (location_id,))
         places = cursor.fetchall()
 
         if not places:
+            print("❌ No places found for location_id:", location_id)
             return {"recommended_places": []}
 
         places_df = pd.DataFrame(places)
+        print("📌 Places Retrieved:", places_df[["place_id", "place_name", "vacation_type"]].to_dict(orient="records"))
 
-        # Convert vacation_type to lowercase lists for comparison
+        # Filter by vacation_type
         places_df["vacation_type_list"] = places_df["vacation_type"].str.lower().str.split(", ")
-
-        # Filter places where the user's vacation type exists in the list
         places_df = places_df[places_df["vacation_type_list"].apply(lambda x: user_vacation_type in x)]
 
+        print("✅ Matched Vacation Type Places:", places_df[["place_id", "place_name"]].to_dict(orient="records"))
+
         if places_df.empty:
+            print("🚫 No places matched vacation_type:", user_vacation_type)
             return {"recommended_places": []}
 
         # Combine features for similarity comparison
@@ -1507,12 +1575,17 @@ async def get_recommendations(user_id: int, location_id: int):
             axis=1
         )
 
+        print("📚 Combined Features:", places_df[["place_id", "combined_features"]].to_dict(orient="records"))
+
         # Calculate similarity scores
         similarity_scores = calculate_similarity(user_pref_text, list(places_df["combined_features"]))
         places_df["similarity_score"] = similarity_scores
 
+        print("📈 Similarity Scores:", places_df[["place_id", "similarity_score"]].to_dict(orient="records"))
+
         # Fetch interactions from matched users
         matched_user_interactions = get_matched_user_interactions(user_id, cursor)
+        print("🧑‍🤝‍🧑 Matched User Interactions:", matched_user_interactions)
 
         # Compute final score with interaction weight
         places_df["final_score"] = places_df.apply(
@@ -1520,13 +1593,18 @@ async def get_recommendations(user_id: int, location_id: int):
             axis=1
         )
 
+        print("🏆 Final Scores:", places_df[["place_id", "final_score"]].to_dict(orient="records"))
+
         # Sort and return top recommendations
         recommendations = places_df.sort_values(by="final_score", ascending=False).head(5).to_dict(orient="records")
+        print("📤 Top 5 Recommendations:", recommendations)
+
         return {"recommended_places": recommendations}
 
     except Exception as e:
         logging.error(f"Error fetching recommendations: {e}")
         raise HTTPException(status_code=500, detail="Error fetching recommendations")
+
     finally:
         cursor.close()
         connection.close()
@@ -1822,6 +1900,377 @@ def update_user(user_id: int, updated_data: UserUpdate):
     return {"message": "User updated successfully"}
 
 
+@app.post("/reviews/")
+async def create_review(review: ReviewCreate):
+    # Validate rating
+    if review.rating < 1 or review.rating > 5:
+        raise HTTPException(status_code=400, detail="Rating must be between 1 and 5.")
+
+    # Create the SQL query to insert the review
+    query = """
+    INSERT INTO reviews (user_id, booking_id, rating, review)
+    VALUES (%s, %s, %s, %s)
+    """
+    try:
+        # Get the database connection
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Execute the query with parameters
+        cursor.execute(query, (review.user_id, review.booking_id, review.rating, review.review))
+
+        # Commit the transaction
+        connection.commit()
+
+        # Close the cursor and connection
+        cursor.close()
+        connection.close()
+
+        return {"message": "Review submitted successfully."}
+    except mysql.connector.Error as e:
+        # Handle any MySQL errors
+        raise HTTPException(status_code=500, detail=f"Error saving review: {e}")
+    
+@app.get("/admin/reviews", response_model=List[ReviewResponse])
+async def get_reviews(db: Session = Depends(get_db_connection)):
+    query = """
+        SELECT 
+            r.id AS review_id,
+            r.user_id,
+            r.booking_id,
+            r.rating,
+            r.review,
+            r.created_at,
+            p.place_name
+        FROM reviews r
+        JOIN bookings b ON r.booking_id = b.id
+        JOIN placess p ON b.place_id = p.place_id
+    """
+
+    try:
+        connection = db
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute(query)
+        raw_reviews = cursor.fetchall()
+        cursor.close()
+        connection.close()
+
+        reviews = [
+            {
+                "review_id": r["review_id"],
+                "user_id": r["user_id"],
+                "booking_id": r["booking_id"],
+                "rating": r["rating"],
+                "review": r["review"],
+                "created_at": r["created_at"],
+                "place_name": r["place_name"],
+            }
+            for r in raw_reviews
+        ]
+        return reviews
+    except mysql.connector.Error as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching reviews: {e}")
+
+API_KEY = "94fc2c2cbeb7264aecafee3ca40228cc"
+BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
+
+import logging
+
+def get_weather_condition_for_booking(booking_id: int) -> str:
+    # Define a mapping for known landmarks to cities with weather support
+    landmark_to_city_map = {
+        "Taj Mahal": "Agra",
+        "Eiffel Tower": "Paris",
+        "Statue of Liberty": "New York",
+        "Colosseum": "Rome",
+        "Great Wall": "Beijing",
+        # Add more as needed
+    }
+
+    # Fetch booking details from the database to get the city or location
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        # Join bookings table with placess table to get place_name and locations table to get location_name
+        cursor.execute("""
+            SELECT l.location_name, p.place_name 
+            FROM bookings b
+            LEFT JOIN placess p ON b.place_id = p.place_id
+            LEFT JOIN locations l ON p.location_id = l.location_id
+            WHERE b.id = %s
+        """, (booking_id,))
+
+        booking = cursor.fetchone()
+
+        if not booking:
+            raise HTTPException(status_code=404, detail="Booking not found")
+        
+        place_name = booking['place_name']
+        location_name = booking['location_name']
+
+        # Use the landmark_to_city_map to get the nearest weather-supported city
+        city_name = landmark_to_city_map.get(place_name, place_name)
+        
+        # Construct the location string, for example: "Agra, India"
+        location = f"{city_name}, {location_name}"
+
+        # Make a request to the OpenWeatherMap API to get the current weather data
+        weather_response = requests.get(
+            BASE_URL,
+            params={
+                "q": location,
+                "appid": API_KEY,
+                "units": "metric"  # Optional: temperature in Celsius. Use "imperial" for Fahrenheit.
+            }
+        )
+
+        # Log the full API response for debugging purposes
+        logging.info(f"Weather API Response for {location}: {weather_response.json()}")
+
+        weather_data = weather_response.json()
+
+        if weather_response.status_code != 200:
+            raise HTTPException(status_code=weather_response.status_code, detail=weather_data.get("message", "Failed to fetch weather data"))
+
+        # Extract relevant weather data
+        weather_condition = weather_data.get('weather', [{}])[0].get('description', 'No description available')
+        temperature = weather_data.get('main', {}).get('temp', 'N/A')
+        return f"{weather_condition}, {temperature}°C"
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching weather data: {str(e)}")
+    
+    finally:
+        conn.close()
+
+
+@app.post("/suggestions/")
+def create_suggestion(suggestion: SuggestionCreate):
+    weather_data = get_weather_condition_for_booking(suggestion.booking_id)
+    
+    # Format weather_conditions string
+    weather_condition = weather_data  # Already a string like "clear sky, 28°C"
+
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        cursor.execute("""
+            INSERT INTO suggestionss (
+                booking_id, name, description, type, rating, hours, image, 
+                local_event, weather_conditions, average_review_rating, attractions, hotels, activities
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            suggestion.booking_id,
+            suggestion.name,
+            suggestion.description,
+            suggestion.type,
+            suggestion.rating,
+            suggestion.hours,
+            suggestion.image,
+            suggestion.local_event,
+            weather_condition,  # 🌤️ now contains both description + temperature
+            suggestion.average_review_rating,
+            json.dumps(suggestion.attractions),
+            json.dumps([hotel.dict() for hotel in suggestion.hotels]),
+            json.dumps(suggestion.activities)
+        ))
+
+        conn.commit()
+        return {"message": "Suggestion added successfully"}
+    
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    finally:
+        conn.close()
+
+
+
+@app.get("/suggestions/{booking_id}", response_model=List[SuggestionResponse])
+def get_suggestions_for_booking(booking_id: int):
+    weather_condition = get_weather_condition_for_booking(booking_id)
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    def safe_json_load(s):
+        try:
+            return json.loads(s or "[]")
+        except Exception:
+            return []
+
+    try:
+        cursor.execute("""
+            SELECT id, name, description, type, rating, hours, image, local_event, 
+                   weather_conditions, average_review_rating, attractions, hotels, activities
+            FROM suggestionss
+            WHERE booking_id = %s
+        """, (booking_id,))
+        
+        suggestions = cursor.fetchall()
+
+        for suggestion in suggestions:
+            suggestion["weather_conditions"] = weather_condition
+            suggestion["attractions"] = safe_json_load(suggestion.get("attractions"))
+            
+            # Extract hotel details (name, image, and contact_number)
+            hotels_data = safe_json_load(suggestion.get("hotels"))
+            suggestion["hotels"] = [
+                {
+                    "name": hotel.get("name", ""),  # Hotel name (default to empty string if missing)
+                    "image": hotel.get("image", ""),  # Hotel image (default to empty string if missing)
+                    "contact_number": hotel.get("contact_number", "")  # Hotel contact_number (default to empty string if missing)
+                }
+                for hotel in hotels_data
+            ]
+            
+            suggestion["activities"] = safe_json_load(suggestion.get("activities"))
+
+        return [SuggestionResponse(**suggestion) for suggestion in suggestions]
+    
+    except Exception as e:
+        print(f"Error fetching suggestions: {e}")  # debug
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    finally:
+        conn.close()
+
+
+@app.post("/bookings/{booking_id}/hotel")
+def select_hotel(booking_id: int = Path(...), hotel: HotelSelection = None):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Check if booking exists
+        cursor.execute("SELECT id FROM bookings WHERE id = %s", (booking_id,))
+        if cursor.fetchone() is None:
+            raise HTTPException(status_code=404, detail="Booking not found")
+        
+        # Insert selected hotel
+        cursor.execute(
+            "INSERT INTO booking_hotels (booking_id, hotel_name) VALUES (%s, %s)",
+            (booking_id, hotel.hotel_name)
+        )
+        conn.commit()
+        return {"message": "Hotel selected successfully"}
+
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.get("/bookings/{booking_id}/hotel")
+def get_selected_hotel(booking_id: int = Path(...)):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        cursor.execute(
+            "SELECT hotel_name FROM booking_hotels WHERE booking_id = %s",
+            (booking_id,)
+        )
+        result = cursor.fetchone()
+        if result:
+            return {"hotel_name": result["hotel_name"]}
+        return {"hotel_name": None}
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.put("/update-hotel")  # Change this to PUT
+async def update_hotel(request: HotelChangeRequest):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Check if the booking exists
+        cursor.execute("SELECT * FROM booking_hotels WHERE booking_id = %s", (request.booking_id,))
+        existing_booking = cursor.fetchone()
+
+        if existing_booking:
+            # Update hotel_name if the booking exists
+            cursor.execute(
+                "UPDATE booking_hotels SET hotel_name = %s WHERE booking_id = %s",
+                (request.hotel_name, request.booking_id)
+            )
+            conn.commit()
+            return {"message": f"Hotel updated to {request.hotel_name}."}
+        else:
+            raise HTTPException(status_code=404, detail="Booking not found")
+    except mysql.connector.Error as err:
+        conn.rollback()  # Rollback in case of error
+        raise HTTPException(status_code=500, detail=f"MySQL Error: {err}")
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.get("/places/search")
+async def search_places(
+    q: str = Query(..., min_length=1),
+    limit: int = Query(5, gt=0)
+):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        query = """
+            SELECT 
+                place_id, 
+                place_name, 
+                image as main_image,
+                place_overview as short_description
+            FROM placess
+            WHERE place_name LIKE %s
+               OR place_overview LIKE %s
+               OR description LIKE %s
+               OR activities LIKE %s
+            LIMIT %s
+        """
+        wildcard = f"%{q}%"
+        cursor.execute(query, (wildcard, wildcard, wildcard, wildcard, limit))
+        results = cursor.fetchall()
+
+        return {"results": results}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        connection.close()
+
+@app.get("/places/exact-search")
+async def exact_search_place(
+    q: str = Query(..., min_length=1)
+):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        query = """
+            SELECT 
+                place_id, 
+                place_name,
+                image as main_image
+            FROM placess
+            WHERE LOWER(place_name) = LOWER(%s)
+            LIMIT 1
+        """
+        cursor.execute(query, (q,))
+        result = cursor.fetchone()
+        
+        if result:
+            return result
+        return {"message": "No exact match found"}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        connection.close()
 
 
 if __name__ == "__main__":

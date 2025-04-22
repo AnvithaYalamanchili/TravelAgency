@@ -26,6 +26,11 @@ import MyBookings from "./MyBookings";
 import BookingDetails from "./BookingDetails";
 import Users from "./Users";
 import Settings from "./Settings";
+import WriteReview from "./WriteReview";
+import ExplorePage from "./ExplorePage";
+import Search from "./Search";
+import 'leaflet/dist/leaflet.css';
+
 
 const App = () => {
   return (
@@ -58,6 +63,9 @@ const App = () => {
         <Route path="/booking/:id" element={<BookingDetails />} />
         <Route path="/users" element={<Users/>} />
         <Route path="/settings" element={<Settings/>}/>
+        <Route path="/write-review/:bookingId" element={<WriteReview/>}/>
+        <Route path="/explore" element={<ExplorePage />} />
+        <Route path="/search" element={<Search />} />
 
       </Routes>
     </Router>

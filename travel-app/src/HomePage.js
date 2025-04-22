@@ -27,7 +27,7 @@ const HeroSection = () => {
 };
 
 // TripCard Component with heart animation and Like functionality
-export const TripCard = ({ title, image, onLike, isLiked, isLocation, place_id, location_id }) => {
+export const TripCard = ({ title, image, onLike, isLiked, isLocation, place_id, location_id, place_overview }) => {
   const navigate = useNavigate();
   const [hearts, setHearts] = useState([]);
 
@@ -37,10 +37,6 @@ export const TripCard = ({ title, image, onLike, isLiked, isLocation, place_id, 
       navigate(`/places/${location_id}`, {
         state: { location_name: title },
       });
-    // } else {
-    //   navigate(`/trip/${place_id}`, {
-    //     state: { place_name: title },
-    //   });
     }
   };
 
@@ -57,6 +53,10 @@ export const TripCard = ({ title, image, onLike, isLiked, isLocation, place_id, 
     <div className="trip-card">
       <img src={image} alt={title} />
       <h3>{title}</h3>
+
+      {/* ✅ Add this block to show the description */}
+      {place_overview && <p className="trip-description">{place_overview}</p>}
+
       <button className="trip-button" onClick={handleBookNow}>
         {isLocation ? "View Places" : "View Details"}
       </button>
@@ -73,6 +73,7 @@ export const TripCard = ({ title, image, onLike, isLiked, isLocation, place_id, 
     </div>
   );
 };
+
 
 const HomePage = () => {
   const [likedTrips, setLikedTrips] = useState([]);
@@ -168,20 +169,22 @@ const HomePage = () => {
           <h2 style={{ color: 'black', textAlign: 'center' }}>Popular International Trips</h2>
           <div className="trip-container">
             {internationalTrips.length > 0 ? (
-              internationalTrips.map((trip) => (
-                <TripCard
-                  key={trip.location_id}
-                  title={trip.location_name}
-                  image={trip.image}
-                  location_id={trip.location_id}
-                  isLocation={true}
-                  onLike={() => handleLike(trip.location_name)}
-                  isLiked={likedTrips.includes(trip.location_name)}
-                />
-              ))
-            ) : (
-              <p>Loading international trips...</p>
-            )}
+  internationalTrips.slice(0, 6).map((trip) => (
+    <TripCard
+  key={trip.location_id}
+  title={trip.location_name}
+  image={trip.image}
+  location_id={trip.location_id}
+  isLocation={true}
+  place_overview={trip.place_overview} // ✅ Correct prop name
+  onLike={() => handleLike(trip.location_name)}
+  isLiked={likedTrips.includes(trip.location_name)}
+/>
+  ))
+) : (
+  <p>Loading international trips...</p>
+)}
+
           </div>
         </section>
 

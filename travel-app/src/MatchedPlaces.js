@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom"; // ← Added useParams
 import Layout from "./Layout";
 import "./MatchedPlaces.css";
 
@@ -29,6 +29,7 @@ const MatchedPlaceCard = ({ place_id, place_name, image, place_overview }) => {
 };
 
 const MatchedPlaces = () => {
+  const { location_id } = useParams(); // ← Get the location_id from URL
   const [locations, setLocations] = useState([]);
   const [places, setPlaces] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,13 +63,13 @@ const MatchedPlaces = () => {
     fetchLocations();
   }, [user_id]);
 
-  const fetchPlaces = async (location_id) => {
-    setSelectedLocation(location_id);
+  const fetchPlaces = async (locId) => {
+    setSelectedLocation(locId);
     setPlacesLoading(true);
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/recommendations/${user_id}/${location_id}`
+        `http://127.0.0.1:8000/recommendations/${user_id}/${locId}`
       );
       if (!response.ok) throw new Error("Failed to fetch places");
 
@@ -80,6 +81,13 @@ const MatchedPlaces = () => {
       setPlacesLoading(false);
     }
   };
+
+  // Automatically fetch matched places if location_id is in URL
+  useEffect(() => {
+    if (location_id) {
+      fetchPlaces(location_id);
+    }
+  }, [location_id]);
 
   return (
     <Layout>
