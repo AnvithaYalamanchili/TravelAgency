@@ -45,6 +45,7 @@ const PlacesPage = () => {
               <div key={place.place_id} className="matched-place-card">
                 <img src={place.image} alt={place.place_name} />
                 <h3>{place.place_name}</h3>
+                <p>{place.place_overview}</p>
                 <button 
                   className="view-details-button" 
                   onClick={() => handleViewDetails(place.place_id)}

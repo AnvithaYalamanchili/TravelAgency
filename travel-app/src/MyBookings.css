@@ -9,6 +9,8 @@
   text-align: center;
   margin-bottom: 2rem;
   color: #333;
+  font-family: 'Playwrite AU SA', cursive; /* Changed to Playwrite AU SA */
+  font-weight: 400; /* Adjust weight (100-400) */
 }
 
 .success-message-box {
@@ -59,7 +61,7 @@
   padding: 0.6rem 1rem;
   border: none;
   border-radius: 8px;
-  background-color: #007bff;
+  background-color: #E0B81E;
   color: white;
   cursor: pointer;
   font-weight: bold;
@@ -83,6 +85,19 @@
 .cancel-trip-btn:hover,
 .write-review-btn:hover {
   opacity: 0.9;
+}
+
+/* For place names (e.g., <h3>{place.place_name}</h3>) */
+/* For place names (e.g., <h3>{place.place_name}</h3>) */
+.place-name {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 400; /* Urbanist supports 100-900 (adjust as needed) */
+}
+
+/* If you want to style all h3 place names in booking cards */
+.booking-card h3 {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 400;
 }
 
 .booking-details-expanded {
@@ -201,7 +216,7 @@
   width: 200px;
   margin-top: 8px;
   padding: 6px 12px;
-  background-color: #007bff;
+  background-color: #e6a700;
   color: white;
   border: none;
   border-radius: 6px;
@@ -212,7 +227,7 @@
 
 
 .book-hotel-btn:hover {
-  background-color: #0056b3;
+  background-color: #E6A700;
 }
 
 .packing-list-section {

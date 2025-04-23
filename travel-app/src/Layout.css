@@ -138,10 +138,12 @@ nav svg {
   border: 1px solid #ccc;
   border-radius: 12px;
   font-size: 13px;
-  width: 180px;
+  width: 400px;
   margin-right: 5px;
   outline: none;
   transition: border-color 0.3s;
+  margin-left:40px
+
 }
 
 .navbar-search-input:focus {
@@ -157,6 +159,7 @@ nav svg {
   cursor: pointer;
   color: #333;
   transition: background-color 0.3s;
+  
 }
 
 .navbar-search-btn:hover {

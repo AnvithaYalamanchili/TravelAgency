@@ -294,13 +294,14 @@ async def send_interest_request(request: InterestRequest):
         """, (request.sender_id, request.receiver_id, request.status))
         
         connection.commit()
+        cursor.close()
+        connection.close()
         return {"status": "success", "message": "Interest request sent"}
     except Exception as e:
         connection.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
         cursor.close()
         connection.close()
+        raise HTTPException(status_code=500, detail=str(e))
 
 def get_current_user_id(token: str = Depends(oauth2_scheme)) -> int:
     credentials_exception = HTTPException(
@@ -382,7 +383,88 @@ async def get_profile(user_info: dict = Depends(get_current_user_info)):
         cursor.close()
         connection.close()
 
+@app.put("/profile")
+async def update_profile(
+    user_update: dict,
+    user_info: dict = Depends(get_current_user_info)
+):
+    user_id = user_info["user_id"]
+    email = user_info["email"]
+    
+    connection = get_db_connection()
+    if not connection:
+        raise HTTPException(status_code=500, detail="Database connection failed.")
+    
+    cursor = connection.cursor()
 
+    try:
+        # Validate required fields
+        required_fields = ["first_name", "last_name", "email", "dob"]
+        for field in required_fields:
+            if field not in user_update:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Missing required field: {field}"
+                )
+
+        # Check if email is being changed to one that already exists
+        if user_update["email"] != email:
+            cursor.execute(
+                "SELECT email FROM users WHERE email = %s AND user_id != %s",
+                (user_update["email"], user_id)
+            )
+            if cursor.fetchone():
+                raise HTTPException(
+                    status_code=400,
+                    detail="Email already in use by another account"
+                )
+
+        # Update user profile
+        cursor.execute(
+            """UPDATE users 
+            SET first_name = %s, 
+                last_name = %s, 
+                email = %s, 
+                dob = %s 
+            WHERE user_id = %s""",
+            (
+                user_update["first_name"],
+                user_update["last_name"],
+                user_update["email"],
+                user_update["dob"],
+                user_id
+            )
+        )
+        connection.commit()
+
+        # Return updated profile
+        cursor.execute(
+            "SELECT first_name, last_name, email, dob, username FROM users WHERE user_id = %s",
+            (user_id,)
+        )
+        updated_data = cursor.fetchone()
+
+        if not updated_data:
+            raise HTTPException(status_code=404, detail="User not found after update")
+
+        return {
+            "first_name": updated_data[0],
+            "last_name": updated_data[1],
+            "email": updated_data[2],
+            "dob": updated_data[3],
+            "username": updated_data[4]
+        }
+
+    except HTTPException:
+        # Re-raise HTTP exceptions
+        raise
+    except Exception as e:
+        connection.rollback()
+        logging.error(f"Error updating profile: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+    finally:
+        cursor.close()
+        connection.close()
 
 from enum import Enum
 from fastapi import Body
@@ -447,13 +529,15 @@ async def update_interest_request(
                     raise
         
         connection.commit()
+        cursor.close()
+        connection.close()
         return {"status": "success", "message": f"Request {status}"}
     except Exception as e:
         connection.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
         cursor.close()
         connection.close()
+        raise HTTPException(status_code=500, detail=str(e))
+    
 
 @app.get("/interest-requests/received/{user_id}")
 async def get_received_requests(user_id: int):
@@ -469,18 +553,21 @@ async def get_received_requests(user_id: int):
         """, (user_id,))
         
         requests = cursor.fetchall()
-        return {"requests": requests}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
         cursor.close()
         connection.close()
+        return {"requests": requests}
+    
+    except Exception as e:
+        cursor.close()
+        connection.close()
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.get("/interest-requests/status/{user1_id}/{user2_id}")
 async def get_request_status(user1_id: int, user2_id: int):
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
-    
+
     try:
         # Check for any accepted connection between these users
         cursor.execute("""
@@ -490,12 +577,13 @@ async def get_request_status(user1_id: int, user2_id: int):
             AND status = 'accepted'
         """, (user1_id, user2_id, user2_id, user1_id))
         
-        accepted_request = cursor.fetchone()  # This consumes the result
+        accepted_request = cursor.fetchone()
         
         if accepted_request:
-            # Make sure to consume any remaining results
             while cursor.fetchone() is not None:
                 pass
+            cursor.close()
+            connection.close()
             return {
                 "request": {
                     "status": "accepted",
@@ -503,24 +591,26 @@ async def get_request_status(user1_id: int, user2_id: int):
                 }
             }
         
-        # If no accepted connection, check for pending requests
+        # Check for pending or other requests
         cursor.execute("""
             SELECT * FROM interest_requests 
             WHERE (sender_id = %s AND receiver_id = %s)
             OR (sender_id = %s AND receiver_id = %s)
         """, (user1_id, user2_id, user2_id, user1_id))
         
-        request = cursor.fetchone()  # Consume the result
-        # Consume any remaining results
+        request = cursor.fetchone()
         while cursor.fetchone() is not None:
             pass
-            
-        return {"request": request}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
+
         cursor.close()
         connection.close()
+        return {"request": request}
+
+    except Exception as e:
+        cursor.close()
+        connection.close()
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/chat/messages")
 async def send_message(message: ChatMessage):

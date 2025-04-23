@@ -4,6 +4,7 @@ import "./PaymentPage.css";
 import { FaLock, FaHome } from "react-icons/fa";
 import logo from "./logo.jpg";
 import { jwtDecode } from "jwt-decode";
+import Layout from './Layout';
 
 const currencySymbols = {
   USD: "$",
@@ -123,14 +124,9 @@ const PaymentPage = () => {
 
 
   return (
+    <Layout>
     <div className="payment-page">
-      {/* Top Bar */}
-      <div className="top-bar">
-        <img src={logo} alt="Logo" className="logo" />
-        <button className="home-btn" onClick={() => navigate("/home")}>
-          <FaHome /> Home
-        </button>
-      </div>
+      
 
       <div className="payment-content">
         {/* LEFT: Payment Form */}
@@ -145,29 +141,36 @@ const PaymentPage = () => {
           </p>
 
           <div className="card-payment">
-            <label>Full Name</label>
-            <input
-              type="text"
-              placeholder="John Doe"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-            />
+            <div className="form-group">
+  <label>Full Name</label>
+  <input
+    type="text"
+    placeholder="John Doe"
+    value={fullName}
+    onChange={(e) => setFullName(e.target.value)}
+  />
+</div>
 
-            <label>Email</label>
-            <input
-              type="email"
-              placeholder="john.doe@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+<div className="form-group">
+  <label>Email</label>
+  <input
+    type="email"
+    placeholder="john.doe@example.com"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+  />
+</div>
 
-            <label>Phone</label>
-            <input
-              type="text"
-              placeholder="1234567890"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
+<div className="form-group">
+  <label>Phone</label>
+  <input
+    type="text"
+    placeholder="1234567890"
+    value={phone}
+    onChange={(e) => setPhone(e.target.value)}
+  />
+</div>
+
 
             <div className="card-details">
               <div>
@@ -254,6 +257,7 @@ const PaymentPage = () => {
         </div>
       )}
     </div>
+    </Layout>
   );
 };
 
