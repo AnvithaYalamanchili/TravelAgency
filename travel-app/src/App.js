@@ -29,6 +29,7 @@ import Settings from "./Settings";
 import WriteReview from "./WriteReview";
 import ExplorePage from "./ExplorePage";
 import Search from "./Search";
+import UserSettings from "./UserSettings";
 import 'leaflet/dist/leaflet.css';
 
 
@@ -66,6 +67,7 @@ const App = () => {
         <Route path="/write-review/:bookingId" element={<WriteReview/>}/>
         <Route path="/explore" element={<ExplorePage />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/user-settings" element={<UserSettings />} />
 
       </Routes>
     </Router>

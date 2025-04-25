@@ -252,7 +252,7 @@ const MyBookings = () => {
                   {place && (
                     <>
                       <img src={place.image} alt={place.place_name} className="place-img" />
-                      <h3>{place.place_name}</h3>
+                      <h3 style={{textAlign:"center"}}>{place.place_name}</h3>
                       <button className="view-details-btn" onClick={() => toggleExpand(null)}>
                         Hide Details
                       </button>
@@ -293,7 +293,7 @@ const MyBookings = () => {
     <li key={spotId} className="spot-card">
       <div onClick={toggleSpot} style={{ cursor: 'pointer' }}>
         {spot[3] && <img src={spot[3]} alt={spot[2]} />}
-        <strong>{spot[2] || "Unnamed Spot"}</strong>
+        <strong style={{textAlign:"center"}}>{spot[2] || "Unnamed Spot"}</strong>
         {isExpanded && (
           <div className="packing-list-section">
             <h5>🧳 Packing List:</h5>
@@ -324,7 +324,7 @@ const MyBookings = () => {
                               <li key={idx} className="suggestion-card">
                                 {s.image && <img src={s.image} alt={s.name} className="suggestion-image" />}
                                 <div>
-                                  <strong>{s.name}</strong>
+                                  <strong style={{textAlign:"center"}}>{s.name}</strong>
                                   <p>{s.description}</p>
                                   <p><em>Type: {s.type}</em></p>
                                   <p>Rating ⭐: {s.rating}</p>

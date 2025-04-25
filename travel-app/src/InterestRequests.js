@@ -83,7 +83,7 @@ const InterestRequests = () => {
         </header>
 
         {loading ? (
-          <div className="loading-spinner">
+          <div className="loading-spinners">
             <div className="spinner"></div>
             <p>Loading your requests...</p>
           </div>

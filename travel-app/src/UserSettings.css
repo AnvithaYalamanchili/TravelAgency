@@ -1,0 +1,119 @@
+/* Settings Page Styling */
+.settings-page {
+  padding: 20px;
+  max-width: 500px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.settings-page.dark-mode {
+  background: #333;
+  color: white;
+}
+
+.settings-group {
+  margin-bottom: 25px;
+  padding: 15px;
+  background: #f5f5f5;
+  border-radius: 10px;
+}
+
+.settings-group.dark-mode {
+  background: #444;
+}
+
+.settings-group h3 {
+  margin-top: 0;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  padding: 10px 15px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:hover {
+  background: #45a049;
+}
+
+.logout-btn {
+  background: #ff4d4d;
+  width: 100%;
+}
+
+.logout-btn:hover {
+  background: #e60000;
+}
+
+.back-btn {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.message {
+  color: green;
+  text-align: center;
+}
+
+/* Dark Mode Toggle Switch */
+.toggle-switch {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-switch label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.toggle-switch input[type="checkbox"] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: relative;
+  width: 50px;
+  height: 24px;
+  background: #ccc;
+  border-radius: 24px;
+  transition: 0.3s;
+}
+
+.slider:before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: 0.3s;
+}
+
+input:checked + .slider {
+  background: #4CAF50;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}

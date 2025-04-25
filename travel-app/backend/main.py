@@ -612,6 +612,7 @@ async def get_request_status(user1_id: int, user2_id: int):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
 @app.post("/chat/messages")
 async def send_message(message: ChatMessage):
     connection = get_db_connection()

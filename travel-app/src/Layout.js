@@ -144,7 +144,7 @@ const Layout = ({ children }) => {
                 <p className="dropdown-name">Welcome, {userName}!</p>
                 <hr />
                 <button className="dropdown-btn" onClick={() => navigate("/profile")}>Profile</button>
-                <button className="dropdown-btn" onClick={() => navigate("/settings")}>Settings</button>
+                <button className="dropdown-btn" onClick={() => navigate("/user-settings")}>Settings</button>
                 <button className="dropdown-btn logout" onClick={handleLogout}>Logout</button>
               </div>
             )}
