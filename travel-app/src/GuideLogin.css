@@ -1,0 +1,163 @@
+/* Background setup */
+.login-page-background {
+    font-family: 'Poppins', sans-serif;
+    background: url('./pic1.jpg') no-repeat center center/cover;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Dark overlay */
+  .login-page-background::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); 
+    z-index: 0;
+  }
+  
+  /* Login form container */
+  .login-container {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    padding: 3rem 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    animation: fadeIn 0.6s ease-in-out;
+  }
+  
+  /* Welcome text animation */
+  .login-container::before {
+    content: 'Hey there!';
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: black;
+    letter-spacing: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+    animation: typeAnimation 2s steps(12) forwards;
+  }
+  
+  @keyframes typeAnimation {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+  
+  /* Login title */
+  .login {
+    color: black;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+  }
+  
+  /* Inputs */
+  .login-input {
+    width: 100%;
+    padding: 12px 14px;
+    margin: 10px 0 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    color: black;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    outline: none;
+  }
+  
+  .login-input:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 8px rgba(79, 172, 254, 0.5);
+  }
+  
+  /* Error messages */
+  .error-text {
+    color: red;
+    font-size: 0.85rem;
+    margin-top: -12px;
+    margin-bottom: 10px;
+    text-align: left;
+  }
+  
+  /* Submit button */
+  .submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .submit-btn:hover {
+    background: linear-gradient(to right, #00c6ff, #0072ff);
+    transform: translateY(-2px);
+  }
+  
+  /* Fade animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Register link (if added) */
+  .register-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #4facfe;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  
+  .register-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* Mobile responsiveness */
+  @media (max-width: 500px) {
+    .login-container {
+      padding: 2rem 1rem;
+    }
+  
+    .login-container::before {
+      font-size: 2rem;
+      top: -50px;
+    }
+  
+    .login {
+      font-size: 1.5rem;
+    }
+  
+    .login-input, .submit-btn {
+      font-size: 1rem;
+    }
+  }
+  

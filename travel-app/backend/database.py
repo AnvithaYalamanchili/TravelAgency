@@ -1,24 +1,3 @@
-# import mysql.connector
-
-# def get_db_connection():
-#     try:
-#         connection = mysql.connector.connect(
-#             host='localhost',
-#             user='root',
-#             password='Root@123',
-#             database='travel_db'
-#         )
-#         print("Database connection successful!")
-#         return connection
-#     except mysql.connector.Error as err:
-#         print(f"Error: {err}")
-#         return None
-
-
-
-
-
-
 import mysql.connector
 
 def get_db_connection():
@@ -26,7 +5,7 @@ def get_db_connection():
         connection = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="Venu@66691",
+            password="Root@123",
             database="travel_db"
         )
         print("✅ Database connection successful!")
@@ -254,7 +233,7 @@ def create_tables():
             return_date DATE NOT NULL,
             people VARCHAR(50) NOT NULL,
             cost DECIMAL(10,2) NOT NULL
-        ) ENGINE=InnoDB;
+        ) ENGINE=InnoDB
         """
 
         create_countries_table = """
@@ -401,6 +380,52 @@ def create_tables():
         );
         """
 
+        # Guides Table
+        create_guides_table = """
+        CREATE TABLE IF NOT EXISTS guides (
+            guide_id INT NOT NULL AUTO_INCREMENT,
+            place_id INT NOT NULL,
+            guide_name VARCHAR(100) NOT NULL,
+            guide_image VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL UNIQUE,
+            phone VARCHAR(20),
+            bio TEXT,
+            languages_spoken VARCHAR(255),
+            experience_years INT,
+            rating FLOAT,
+            password VARCHAR(255) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (guide_id),
+            FOREIGN KEY (place_id) REFERENCES placess(place_id) ON DELETE CASCADE
+        ) ENGINE=InnoDB AUTO_INCREMENT=1000;
+        """
+
+        create_guides_bookings_table = """
+        CREATE TABLE guide_bookings (
+            booking_id INT AUTO_INCREMENT PRIMARY KEY,
+            guide_id INT NOT NULL,
+            user_id INT NOT NULL,
+            booking_date DATE NOT NULL,
+            trip_end_date DATE NOT NULL, 
+            trip_status ENUM('pending', 'completed', 'canceled') DEFAULT 'pending', 
+            payment INT NOT NULL,
+            FOREIGN KEY (guide_id) REFERENCES guides(guide_id) ON DELETE CASCADE,
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+            INDEX (guide_id),
+            INDEX (user_id)
+        ) ENGINE=InnoDB;
+        """
+
+        create_guides_chats_table = """
+        CREATE TABLE guides_chats (
+            msg_id INT AUTO_INCREMENT PRIMARY KEY,
+            sender_id INT NOT NULL,
+            receiver_id INT NOT NULL,
+            message TEXT NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB;
+        """
+
 
         # Execute table creation queries
         cursor.execute(create_users_table)
@@ -471,10 +496,17 @@ def create_tables():
         cursor.execute(create_suggestionss_table)
         print("✅ Suggestions table created or already exists.")
 
-        cursor.execute(create_booking_hotel_table)
-        print("✅ booking_hotels table created or already exists.")
+       
 
-        
+        cursor.execute(create_guides_table)
+        print("✅ Guides table created or already exists.")
+
+        cursor.execute(create_guides_bookings_table)
+        print("✅ Guides Bookings table created or already exists.")
+
+        cursor.execute(create_guides_chats_table)
+        print("✅ Guides Chats table created or already exists.")
+
         # Commit changes
         connection.commit()
 

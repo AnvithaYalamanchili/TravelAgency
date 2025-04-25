@@ -12,7 +12,6 @@ const Layout = ({ children }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
-
   useEffect(() => {
     // Get data from localStorage when the component mounts
     const storedUserId = localStorage.getItem("user_id");
@@ -89,7 +88,7 @@ const Layout = ({ children }) => {
         <nav>
           <img
             style={{ height: '120px', backgroundColor: "transparent" }}
-            src="./logo.png"
+            src="./mylogo.jpeg"
             alt="logo"
           />
           <FaInfoCircle />
