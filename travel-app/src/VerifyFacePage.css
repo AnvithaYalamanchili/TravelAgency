@@ -1,80 +1,108 @@
-.container {
-  max-width: 600px;
-  margin: 3rem auto;
+/* Main container */
+.containers {
+  max-width: 800px;
+  margin: 2rem auto;
   padding: 2rem;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
   text-align: center;
-  font-family: 'Segoe UI', sans-serif;
 }
 
-h1 {
+.containers h1 {
+  color: #2c3e50;
   margin-bottom: 2rem;
-  color: #222;
   font-size: 2rem;
 }
 
-.upload-section,
-.camera-section {
-  margin-bottom: 1.5rem;
+/* File input styling */
+.containers input[type="file"] {
+  margin: 1rem auto;
+  padding: 0.5rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: block;
 }
 
-input[type="file"] {
-  margin-top: 1rem;
+/* Video element styling */
+.containers video {
+  display: block;
+  margin: 1rem auto;
+  border-radius: 8px;
+  background-color: #000;
 }
 
-p {
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-  color: #555;
-}
-
-.start-btn,
-.verification-button {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+/* Button styles */
+.containers button {
+  padding: 0.8rem 1.5rem;
+  margin: 0.5rem;
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 5px;
+  background-color: #3498db;
   color: white;
-  margin-top: 1rem;
-  transition: background-color 0.3s ease;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.start-btn {
-  background-color: #007bff;
+.containers button:hover {
+  background-color: #2980b9;
 }
 
-.start-btn:hover {
-  background-color: #0056b3;
-}
-
-.verify-btn {
-  background-color: #28a745;
-}
-
-.verify-btn:hover {
-  background-color: #1e7e34;
-}
-
-.video-preview {
+/* Specific verification button styles */
+.verification-button, .verification-buttons {
+  background-color: #2ecc71;
+  padding: 1rem 2rem;
+  font-weight: bold;
   margin-top: 1.5rem;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  padding: 1rem;
-  min-height: 200px;
 }
 
-/* Responsive layout */
-@media (max-width: 600px) {
-  .container {
-    margin: 1rem;
-    padding: 1.5rem;
-  }
+.verification-button:hover, .verification-buttons:hover {
+  background-color: #27ae60;
+}
 
-  .start-btn,
-  .verify-btn {
+/* Status message styles */
+.success {
+  color: #27ae60;
+  font-weight: bold;
+  margin-top: 1.5rem;
+  padding: 0.8rem;
+  background-color: #e8f8f0;
+  border-radius: 5px;
+}
+
+.error {
+  color: #e74c3c;
+  font-weight: bold;
+  margin-top: 1.5rem;
+  padding: 0.8rem;
+  background-color: #fdedec;
+  border-radius: 5px;
+}
+
+/* Paragraph styling */
+.containers p {
+  margin: 1rem 0;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .containers {
+    padding: 1rem;
+    margin: 1rem;
+  }
+  
+  .containers video {
     width: 100%;
+    height: auto;
+  }
+  
+  .verification-button, .verification-buttons {
+    width: 100%;
+    margin: 1rem 0;
   }
 }

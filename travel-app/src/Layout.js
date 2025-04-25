@@ -91,7 +91,7 @@ const Layout = ({ children }) => {
             src="./mylogo.jpeg"
             alt="logo"
           />
-          <FaInfoCircle />
+          
           <Link
             to="/about"
             style={{
@@ -100,7 +100,9 @@ const Layout = ({ children }) => {
               textDecoration: 'none',
               marginLeft: '-50px'
             }}
+            
           >
+          <FaInfoCircle />
             About Us
           </Link>
 
@@ -115,15 +117,17 @@ const Layout = ({ children }) => {
 </button>
 
 <form onSubmit={handleSearch} style={{ marginLeft: "20px", display: "flex", alignItems: "center" }}>
-  <input
-    type="text"
-    placeholder="Search trips..."
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-    className="navbar-search-input"
-  />
-  <button type="submit" className="navbar-search-btn">Search</button>
+  <div style={{ display:"flex", width: "100%" }}>
+    <input
+      type="text"
+      placeholder="Search trips..."
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="navbar-search-input"
+    />
+  </div>
 </form>
+
 
 
           </div>

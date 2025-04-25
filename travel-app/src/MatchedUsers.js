@@ -129,7 +129,7 @@ const MatchedUsers = () => {
         </header>
 
         {loading ? (
-          <div className="loading-spinner">
+          <div className="loading-spinners">
             <div className="spinner"></div>
             <p>Finding your perfect matches...</p>
           </div>

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "./BookingPage.css";
 import { FaHome } from "react-icons/fa";
 import logo from "./logo.jpg";
+import Layout from "./Layout";
 
 const currencySymbols = {
   USD: "$",
@@ -173,13 +174,9 @@ const BookingPage = () => {
   };
 
   return (
+    <Layout>
     <div className="booking-page">
-      <div className="top-bar">
-        <img src={logo} alt="Logo" className="logo" />
-        <button className="home-btn" onClick={() => navigate("/home")}>
-          <FaHome /> Home
-        </button>
-        <div className="currency-selector">
+      <div className="currency-selector">
           <label>Currency:</label>
           <select value={selectedCurrency} onChange={(e) => setSelectedCurrency(e.target.value)}>
             {Object.keys(currencySymbols).map((curr) => (
@@ -189,7 +186,6 @@ const BookingPage = () => {
             ))}
           </select>
         </div>
-      </div>
 
       <div className="booking-content">
         <div className="booking-container">
@@ -340,6 +336,7 @@ const BookingPage = () => {
         </div>
       )}
     </div>
+    </Layout>
   );
 };
 

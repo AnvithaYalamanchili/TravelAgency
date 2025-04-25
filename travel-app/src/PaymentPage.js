@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "./PaymentPage.css";
 import { FaLock, FaHome } from "react-icons/fa";
 import logo from "./logo.jpg";
+import { jwtDecode } from "jwt-decode";
+import Layout from './Layout';
 
 const currencySymbols = {
   USD: "$",
@@ -97,6 +99,7 @@ const PaymentPage = () => {
   };
 
   return (
+    <Layout>
     <div className="payment-page">
       <div className="top-bar">
         <img src={logo} alt="Logo" className="logo" />
@@ -104,6 +107,7 @@ const PaymentPage = () => {
           <FaHome /> Home
         </button>
       </div>
+      
 
       <div className="payment-content">
         <div className="payment-container">
@@ -119,6 +123,36 @@ const PaymentPage = () => {
           <div className="card-payment">
             <label>Card Number</label>
             <input type="text" placeholder="1234 1234 1234 1234" />
+            <div className="form-group">
+  <label>Full Name</label>
+  <input
+    type="text"
+    placeholder="John Doe"
+    value={fullName}
+    onChange={(e) => setFullName(e.target.value)}
+  />
+</div>
+
+<div className="form-group">
+  <label>Email</label>
+  <input
+    type="email"
+    placeholder="john.doe@example.com"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+  />
+</div>
+
+<div className="form-group">
+  <label>Phone</label>
+  <input
+    type="text"
+    placeholder="1234567890"
+    value={phone}
+    onChange={(e) => setPhone(e.target.value)}
+  />
+</div>
+
 
             <div className="card-details">
               <div>
@@ -209,6 +243,7 @@ const PaymentPage = () => {
         </div>
       )}
     </div>
+    </Layout>
   );
 };
 

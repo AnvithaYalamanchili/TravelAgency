@@ -125,17 +125,24 @@ const HomePage = () => {
     fetchInternationalTrips();
   }, []);
 
-  const handleLike = (title) => {
-    const updatedLikes = likedTrips.includes(title)
-      ? likedTrips.filter((trip) => trip !== title)
-      : [...likedTrips, title];
+  const handleLike = (trip) => {
+  const isLiked = likedTrips.some(likedTrip => 
+    (likedTrip.place_id && likedTrip.place_id === trip.place_id) || 
+    (likedTrip.location_id && likedTrip.location_id === trip.location_id)
+  );
 
-    // Save liked trips for the specific user
-    if (userId) {
-      localStorage.setItem(`${userId}_likedTrips`, JSON.stringify(updatedLikes));
-    }
-    setLikedTrips(updatedLikes);
-  };
+  const updatedLikes = isLiked
+    ? likedTrips.filter(likedTrip => 
+        (likedTrip.place_id !== trip.place_id) && 
+        (likedTrip.location_id !== trip.location_id)
+      )
+    : [...likedTrips, trip];
+
+  if (userId) {
+    localStorage.setItem(`${userId}_likedTrips`, JSON.stringify(updatedLikes));
+  }
+  setLikedTrips(updatedLikes);
+};
 
   return (
     <Layout>
@@ -148,16 +155,17 @@ const HomePage = () => {
           <div className="trip-container">
             {popularTrips.length > 0 ? (
               popularTrips.map((trip) => (
-                <TripCard 
-                  key={trip.place_id} 
-                  title={trip.place_name} 
-                  image={trip.image} 
-                  place_id={trip.place_id} 
-                  isLocation={false} 
-                  onLike={() => handleLike(trip.place_name)}
-                  isLiked={likedTrips.includes(trip.place_name)}
-                />
-              ))
+  <TripCard 
+    key={trip.place_id} 
+    title={trip.place_name} 
+    image={trip.image} 
+    place_id={trip.place_id}
+    isLocation={false}
+    onLike={() => handleLike(trip)}
+    isLiked={likedTrips.some(likedTrip => likedTrip.place_id === trip.place_id)}
+    place_overview={trip.place_overview}
+  />
+))
             ) : (
               <p>Loading popular trips...</p>
             )}
@@ -170,17 +178,18 @@ const HomePage = () => {
           <div className="trip-container">
             {internationalTrips.length > 0 ? (
   internationalTrips.slice(0, 6).map((trip) => (
-    <TripCard
-  key={trip.location_id}
-  title={trip.location_name}
-  image={trip.image}
-  location_id={trip.location_id}
-  isLocation={true}
-  place_overview={trip.place_overview} // ✅ Correct prop name
-  onLike={() => handleLike(trip.location_name)}
-  isLiked={likedTrips.includes(trip.location_name)}
-/>
-  ))
+  <TripCard
+    key={trip.location_id}
+    title={trip.location_name}
+    image={trip.image}
+    location_id={trip.location_id}
+    isLocation={true}
+    place_overview={trip.place_overview}
+    onLike={() => handleLike(trip)}
+    isLiked={likedTrips.some(likedTrip => likedTrip.location_id === trip.location_id)}
+  />
+))
+
 ) : (
   <p>Loading international trips...</p>
 )}

@@ -27,7 +27,7 @@
   color: white;
 }
 
-.loading-spinner {
+.loading-spinners {
   display: flex;
   flex-direction: column;
   align-items: center;

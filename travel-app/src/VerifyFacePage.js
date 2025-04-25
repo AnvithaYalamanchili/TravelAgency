@@ -116,14 +116,14 @@ const VerifyFacePage = () => {
   }, [isCameraActive]); // Only run effect when isCameraActive changes
 
   return (
-    <div className="container">
+    <div className="containers">
       <h1>Face Verification</h1>
 
       {/* Passport Image Upload */}
       <div>
         <input type="file" accept="image/*" onChange={handleFileChange} />
         <p>Upload your Passport/ID Photo</p>
-        <button className="verification-button" onClick={handleVerify}>Verify</button>
+        <button className="verification-buttons" onClick={handleVerify}>Verify</button>
       </div>
 
       {/* Camera Stream for Live Selfie */}
