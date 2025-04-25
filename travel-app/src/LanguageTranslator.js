@@ -125,7 +125,7 @@ const LanguageTranslator = () => {
   return (
     <Layout>
       <div className="language-translator-container">
-        <h2>Language Translator</h2>
+        <h2 className="lan">Language Translator</h2>
 
         {/* Language selection dropdowns */}
         <div className="dropdown-container">

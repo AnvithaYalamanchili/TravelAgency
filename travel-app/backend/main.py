@@ -2363,6 +2363,439 @@ async def exact_search_place(
         cursor.close()
         connection.close()
 
+class Guide(BaseModel):
+    place_id: int
+    guide_name: str
+    guide_image: str
+    email: str
+    phone: Optional[str]
+    bio: Optional[str]
+    languages_spoken: str
+    experience_years: int
+    rating: float
+    password: str
+
+class GuideLogin(BaseModel):
+    email: str
+    password: str
+
+class GuideBooking(BaseModel):
+    guide_id: int
+    user_id: int
+    booking_date: str
+    trip_end_date: str
+    trip_status: Optional[str] = "pending"
+    payment: int
+
+
+
+
+@app.get("/guides")
+async def get_guides():
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+    try:
+        cur.execute("SELECT * FROM guides")
+        return {"guides": cur.fetchall()}
+    finally:
+        cur.close()
+        conn.close()
+
+@app.get("/guides/{guide_id}")
+async def get_guide_by_id(guide_id: int):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM guides WHERE guide_id = %s", (guide_id,))
+        guide = cursor.fetchone()
+        if not guide:
+            raise HTTPException(status_code=404, detail="Guide not found")
+        return guide
+    finally:
+        cursor.close()
+        connection.close()
+
+# Get a guides by place ID
+@app.get("/guides/by/{place_id}")
+async def get_guides(place_id: int):
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+    try:
+        cur.execute("SELECT * FROM guides WHERE place_id = %s", (place_id,))
+        guides = cur.fetchall()  # Fetch ALL results to avoid unread buffer
+
+        if not guides:
+            raise HTTPException(status_code=404, detail="Guides not found")
+        return guides
+
+    finally:
+        cur.close()
+        conn.close()
+
+# Register new guide
+@app.post("/guides/register")
+async def register_guide(guide: Guide):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("""
+            INSERT INTO guides (
+                place_id, guide_name, guide_image, email, phone, bio, 
+                languages_spoken, experience_years, rating, password
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            guide.place_id, guide.guide_name, guide.guide_image, guide.email,
+            guide.phone, guide.bio, guide.languages_spoken,
+            guide.experience_years, guide.rating, guide.password
+        ))
+        conn.commit()
+        return {"message": "Guide registered successfully!"}
+    except mysql.connector.errors.IntegrityError:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    finally:
+        cur.close()
+        conn.close()
+
+# Guide login
+@app.post("/guides/login")
+async def login_guide(login_data: GuideLogin):
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+    try:
+        cur.execute("SELECT * FROM guides WHERE email = %s AND password = %s", 
+                    (login_data.email, login_data.password))
+        guide = cur.fetchone()
+        if not guide:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+        return {"message": "Login successful", "guide_id": guide["guide_id"]}
+    finally:
+        cur.close()
+        conn.close()
+
+# Update a guide
+@app.put("/guides/{guide_id}")
+async def update_guide(guide_id: int, guide: Guide):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT * FROM guides WHERE guide_id = %s", (guide_id,))
+        if not cur.fetchone():
+            raise HTTPException(status_code=404, detail="Guide not found")
+
+        cur.execute("""
+            UPDATE guides SET 
+            place_id=%s, guide_name=%s, guide_image=%s, email=%s, phone=%s,
+            bio=%s, languages_spoken=%s, experience_years=%s, rating=%s, password=%s
+            WHERE guide_id=%s
+        """, (
+            guide.place_id, guide.guide_name, guide.guide_image, guide.email,
+            guide.phone, guide.bio, guide.languages_spoken,
+            guide.experience_years, guide.rating, guide.password, guide_id
+        ))
+        conn.commit()
+        return {"message": "Guide updated successfully!"}
+    finally:
+        cur.close()
+        conn.close()
+
+# Delete a guide
+@app.delete("/guides/{guide_id}")
+async def delete_guide(guide_id: int):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT * FROM guides WHERE guide_id = %s", (guide_id,))
+        if not cur.fetchone():
+            raise HTTPException(status_code=404, detail="Guide not found")
+        cur.execute("DELETE FROM guides WHERE guide_id = %s", (guide_id,))
+        conn.commit()
+        return {"message": "Guide deleted successfully!"}
+    finally:
+        cur.close()
+        conn.close()
+
+# Guides Booking
+# GET all bookings
+@app.get("/guide_bookings")
+async def get_guide_bookings():
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM guide_bookings")
+        bookings = cursor.fetchall()
+        return {"guide_bookings": bookings}
+    finally:
+        cursor.close()
+        connection.close()
+
+# GET bookings by guide_id
+@app.get("/guide_bookings/{guide_id}")
+async def get_guide_booking(guide_id: int):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM guide_bookings WHERE guide_id = %s", (guide_id,))
+        bookings = cursor.fetchall()
+        if not bookings:
+            raise HTTPException(status_code=404, detail="Guide booking not found")
+        return bookings
+    finally:
+        cursor.close()
+        connection.close()
+
+@app.get("/guide_bookings/user/{user_id}")
+async def get_user_bookings(user_id: int):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM guide_bookings WHERE user_id = %s", (user_id,))
+        bookings = cursor.fetchall()
+        if not bookings:
+            return []  # Return empty list instead of 404
+        return bookings
+    finally:
+        cursor.close()
+        connection.close()
+
+# POST new booking
+@app.post("/guide_bookings")
+async def create_guide_booking(booking: GuideBooking):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute(
+            """
+            INSERT INTO guide_bookings (guide_id, user_id, booking_date, trip_end_date, trip_status, payment)
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """,
+            (
+                booking.guide_id,
+                booking.user_id,
+                booking.booking_date,
+                booking.trip_end_date,
+                booking.trip_status,
+                booking.payment
+            )
+        )
+        connection.commit()
+        return {"message": "Guide booking created successfully!"}
+    finally:
+        cursor.close()
+        connection.close()
+
+# DELETE booking
+@app.delete("/guide_bookings/{booking_id}")
+async def delete_guide_booking(booking_id: int):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute("SELECT * FROM guide_bookings WHERE booking_id = %s", (booking_id,))
+        if not cursor.fetchone():
+            raise HTTPException(status_code=404, detail="Booking not found")
+        cursor.execute("DELETE FROM guide_bookings WHERE booking_id = %s", (booking_id,))
+        connection.commit()
+        return {"message": "Guide booking deleted successfully!"}
+    finally:
+        cursor.close()
+        connection.close()
+
+# Update a specific booking
+@app.put("/guide_bookings/{booking_id}")
+async def update_guide_booking(booking_id: int, booking: GuideBooking):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute("SELECT * FROM guide_bookings WHERE booking_id = %s", (booking_id,))
+        if not cursor.fetchone():
+            raise HTTPException(status_code=404, detail="Booking not found")
+
+        cursor.execute("""
+            UPDATE guide_bookings 
+            SET guide_id=%s, user_id=%s, booking_date=%s, trip_end_date=%s, trip_status=%s, payment=%s 
+            WHERE booking_id=%s
+        """, (
+            booking.guide_id,
+            booking.user_id,
+            booking.booking_date,
+            booking.trip_end_date,
+            booking.trip_status,
+            booking.payment,
+            booking_id
+        ))
+        connection.commit()
+        return {"message": "Booking updated successfully!"}
+    finally:
+        cursor.close()
+        connection.close()
+
+
+@app.get("/unavailable_guides")
+async def get_unavailable_guides(date: date):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute("""
+            SELECT DISTINCT guide_id FROM guide_bookings
+            WHERE %s BETWEEN booking_date AND trip_end_date
+        """, (date,))
+        guides = cursor.fetchall()
+        return [g["guide_id"] for g in guides]
+    finally:
+        cursor.close()
+        connection.close()
+
+
+@app.get("/user/{user_id}")
+async def get_user(user_id: int):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    try:
+        cursor.execute("SELECT user_id, first_name, last_name, email, username, dob, passport_number, created_at FROM users WHERE user_id = %s", (user_id,))
+        user = cursor.fetchone()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
+    finally:
+        cursor.close()
+        connection.close()
+
+
+# Guide User messages
+@app.post("/guidechat/messages")
+def send_message(msg: ChatMessage):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        timestamp = datetime.now().isoformat()
+        cursor.execute("""
+            INSERT INTO guides_chats (sender_id, receiver_id, message, timestamp)
+            VALUES (%s, %s, %s, %s)
+        """, (msg.sender_id, msg.receiver_id, msg.message, timestamp))
+        conn.commit()
+        return {"status": "success", "message": "Message sent"}
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def get_display_name(user_id: int, cursor) -> str:
+    if user_id < 1000:
+        cursor.execute("SELECT first_name FROM users WHERE user_id = %s", (user_id,))
+    else:
+        cursor.execute("SELECT guide_name FROM guides WHERE guide_id = %s", (user_id,))
+    
+    result = cursor.fetchone()
+    return result.get("first_name") or result.get("guide_name") or "Unknown" if result else "Unknown"
+
+
+@app.get("/guidechat/messages/{user1_id}/{user2_id}")
+def get_chat(user1_id: int, user2_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("""
+            SELECT * FROM guides_chats
+            WHERE (sender_id = %s AND receiver_id = %s)
+            OR (sender_id = %s AND receiver_id = %s)
+            ORDER BY timestamp ASC
+        """, (user1_id, user2_id, user2_id, user1_id))
+
+        messages = cursor.fetchall()
+
+        for msg in messages:
+            msg["sender_name"] = get_display_name(msg["sender_id"], cursor)
+            msg["receiver_name"] = get_display_name(msg["receiver_id"], cursor)
+
+        return {"messages": messages}
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.get("/guidechat/conversations/{user_id}")
+def get_conversations(user_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("""
+            SELECT 
+                CASE WHEN sender_id = %s THEN receiver_id ELSE sender_id END AS other_user_id,
+                MAX(timestamp) AS last_timestamp,
+                SUBSTRING_INDEX(GROUP_CONCAT(message ORDER BY timestamp DESC), ',', 1) AS last_message
+            FROM guides_chats
+            WHERE sender_id = %s OR receiver_id = %s
+            GROUP BY other_user_id
+            ORDER BY last_timestamp DESC
+        """, (user_id, user_id, user_id))
+
+        rows = cursor.fetchall()
+        conversations = []
+
+        for row in rows:
+            other_user_id = row["other_user_id"]
+            cursor.execute(
+                "SELECT first_name, last_name FROM users WHERE user_id = %s" if other_user_id < 1000 else
+                "SELECT guide_name FROM guides WHERE guide_id = %s",
+                (other_user_id,)
+            )
+            user = cursor.fetchone()
+            if user:
+                conversations.append({
+                    "other_user_id": other_user_id,
+                    "first_name": user.get("first_name", "") if "first_name" in user else user["guide_name"],
+                    "last_name": user.get("last_name", "") if "last_name" in user else "",
+                    "last_timestamp": row["last_timestamp"],
+                    "last_message": row["last_message"]
+                })
+
+        return {"conversations": conversations}
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.get("/guidechat/user-info/{user_id}")
+def get_user_info(user_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        if user_id < 1000:
+            cursor.execute("SELECT first_name, last_name FROM users WHERE user_id = %s", (user_id,))
+        else:
+            cursor.execute("SELECT guide_name FROM guides WHERE guide_id = %s", (user_id,))
+        result = cursor.fetchone()
+        if not result:
+            return {"name": "Unknown"}
+        return {
+            "name": f"{result.get('first_name', '')} {result.get('last_name', '')}".strip() if 'first_name' in result else result["guide_name"]
+        }
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@app.get("/guidechat/has-new-messages/{user1_id}/{user2_id}/{last_message_id}")
+def has_new_messages(user1_id: int, user2_id: int, last_message_id: int):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT COUNT(*) FROM guides_chats
+            WHERE ((sender_id = %s AND receiver_id = %s)
+                OR (sender_id = %s AND receiver_id = %s))
+              AND message_id > %s
+        """, (user1_id, user2_id, user2_id, user1_id, last_message_id))
+        count = cursor.fetchone()[0]
+        return 1 if count > 0 else 0
+    finally:
+        cursor.close()
+        conn.close()
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, log_level="debug", reload=True)

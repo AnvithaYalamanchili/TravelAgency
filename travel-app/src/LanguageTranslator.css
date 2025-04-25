@@ -145,6 +145,11 @@
   margin-top: 20px;
 }
 
+.lan{
+  font-family: 'Playwrite AU SA', cursive; /* Changed to Playwrite AU SA */
+  font-weight: 400;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .text-box-container {

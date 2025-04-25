@@ -31,6 +31,11 @@ import ExplorePage from "./ExplorePage";
 import Search from "./Search";
 import UserSettings from "./UserSettings";
 import 'leaflet/dist/leaflet.css';
+import GuideLogin from "./GuideLogin";
+import GuideHome from "./GuideHomePage";
+import GuidesChatPage from "./GuidesChatPage";
+import UserGuideBookingsPage from "./UserGuideBookingsPage";
+
 
 
 const App = () => {
@@ -68,6 +73,10 @@ const App = () => {
         <Route path="/explore" element={<ExplorePage />} />
         <Route path="/search" element={<Search />} />
         <Route path="/user-settings" element={<UserSettings />} />
+        <Route path="/guide-login" element={<GuideLogin />} />
+        <Route path="/guideshome" element={<GuideHome />} />
+        <Route path="/guidechat/:userId/:otherUserId?" element={<GuidesChatPage />} />
+        <Route path="/local-guide" element={<UserGuideBookingsPage />} />
 
       </Routes>
     </Router>

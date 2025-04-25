@@ -12,7 +12,6 @@ const Layout = ({ children }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
-
   useEffect(() => {
     // Get data from localStorage when the component mounts
     const storedUserId = localStorage.getItem("user_id");

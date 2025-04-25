@@ -29,7 +29,6 @@ const LoginPage = () => {
 
   try {
     const response = await axios.post('http://127.0.0.1:8000/login', { email, password });
-    alert('Login Successful!');
 
     // Assuming the response contains the access_token, user_id, and first_name
     const { access_token, user_id, first_name } = response.data; // Modify your backend to return access_token
