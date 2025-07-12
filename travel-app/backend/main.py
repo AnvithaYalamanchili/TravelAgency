@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import date, time
 import mysql.connector
-from database import get_db_connection  # Ensure this function is correctly implemented
+from database import get_db_connection  
 import bcrypt
 import uvicorn
 import face_recognition
@@ -51,7 +51,7 @@ logging.basicConfig(level=logging.INFO)
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Update if needed
+    allow_origins=["http://localhost:3000"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -139,15 +139,15 @@ class Spot(BaseModel):
     price: float
     activities: str
     accommodation: str
-    packing_list: list  # This will be stored as JSON in the database
+    packing_list: list  
 
 
 # Pydantic model for interaction input
 class InteractionInput(BaseModel):
     user_id: int
     place_id: int
-    interaction_type: str  # 'like', 'book', or 'rate'
-    interaction_value: float = None  # Optional (only for ratings)
+    interaction_type: str  
+    interaction_value: float = None  
 
 
 class Booking(BaseModel):
@@ -159,19 +159,17 @@ class Booking(BaseModel):
     status: str
 
 
-# Add these to your existing models
 class ChatMessage(BaseModel):
     sender_id: int
     receiver_id: int
     message: str
-    timestamp: str = None  # Will be set server-side
+    timestamp: str = None  
 
 class ChatRoom(BaseModel):
     user1_id: int
     user2_id: int
 
-# Add these endpoints to your FastAPI app
-# Add these models
+
 class InterestRequest(BaseModel):
     sender_id: int
     receiver_id: int
@@ -222,7 +220,7 @@ class ReviewResponse(BaseModel):
     rating: int
     review: str
     created_at: datetime
-    place_name: str  # changed from location_name
+    place_name: str  
 
 class Hotel1(BaseModel):
     name: str
@@ -238,7 +236,7 @@ class SuggestionResponse(BaseModel):
     hours: str
     image: str
     local_event: str
-    weather_conditions: Optional[str] = None  # Weather condition might be added dynamically
+    weather_conditions: Optional[str] = None  
     average_review_rating: float
     attractions: Optional[List[str]] = []  # List of attraction names or descriptions
     hotels: Optional[List[Hotel1]] = []   # List of hotel names
@@ -398,7 +396,6 @@ async def update_profile(
     cursor = connection.cursor()
 
     try:
-        # Validate required fields
         required_fields = ["first_name", "last_name", "email", "dob"]
         for field in required_fields:
             if field not in user_update:
@@ -407,7 +404,6 @@ async def update_profile(
                     detail=f"Missing required field: {field}"
                 )
 
-        # Check if email is being changed to one that already exists
         if user_update["email"] != email:
             cursor.execute(
                 "SELECT email FROM users WHERE email = %s AND user_id != %s",
@@ -419,7 +415,6 @@ async def update_profile(
                     detail="Email already in use by another account"
                 )
 
-        # Update user profile
         cursor.execute(
             """UPDATE users 
             SET first_name = %s, 
@@ -437,7 +432,6 @@ async def update_profile(
         )
         connection.commit()
 
-        # Return updated profile
         cursor.execute(
             "SELECT first_name, last_name, email, dob, username FROM users WHERE user_id = %s",
             (user_id,)
@@ -456,7 +450,6 @@ async def update_profile(
         }
 
     except HTTPException:
-        # Re-raise HTTP exceptions
         raise
     except Exception as e:
         connection.rollback()
@@ -476,13 +469,12 @@ class StatusEnum(str, Enum):
 @app.put("/interest-requests/{request_id}")
 async def update_interest_request(
     request_id: int, 
-    status: StatusEnum = Body(..., embed=True)  # Expects {"status": "accepted/declined"}
+    status: StatusEnum = Body(..., embed=True)  
 ):
     connection = get_db_connection()
     cursor = connection.cursor()
     
     try:
-        # Get the original request details with FOR UPDATE lock
         cursor.execute("""
             SELECT sender_id, receiver_id, status 
             FROM interest_requests 
@@ -496,21 +488,18 @@ async def update_interest_request(
             
         sender_id, receiver_id, current_status = request
         
-        # Only proceed if current status is pending
         if current_status != 'pending':
             raise HTTPException(
                 status_code=400, 
                 detail=f"Cannot modify already {current_status} request"
             )
         
-        # Update the original request
         cursor.execute("""
             UPDATE interest_requests 
             SET status = %s 
             WHERE request_id = %s
         """, (status, request_id))
         
-        # ONLY create reverse record if status is accepted
         if status == "accepted":
             try:
                 cursor.execute("""
@@ -569,7 +558,6 @@ async def get_request_status(user1_id: int, user2_id: int):
     cursor = connection.cursor(dictionary=True)
 
     try:
-        # Check for any accepted connection between these users
         cursor.execute("""
             SELECT * FROM interest_requests 
             WHERE ((sender_id = %s AND receiver_id = %s)
@@ -591,7 +579,6 @@ async def get_request_status(user1_id: int, user2_id: int):
                 }
             }
         
-        # Check for pending or other requests
         cursor.execute("""
             SELECT * FROM interest_requests 
             WHERE (sender_id = %s AND receiver_id = %s)
@@ -619,7 +606,6 @@ async def send_message(message: ChatMessage):
     cursor = connection.cursor()
     
     try:
-        # Set current timestamp
         from datetime import datetime
         message.timestamp = datetime.now().isoformat()
         
@@ -664,7 +650,6 @@ async def get_conversations(user_id: int):
     cursor = connection.cursor(dictionary=True)
     
     try:
-        # Get distinct users the current user has chatted with
         cursor.execute("""
             SELECT DISTINCT 
                 CASE 
@@ -709,7 +694,6 @@ async def get_user(user_id: int):
         cursor.close()
         connection.close()
 
-# Add this new endpoint for efficient message checking
 from datetime import datetime
 
 @app.get("/chat/has-new-messages/{user1_id}/{user2_id}/{last_message_id}")
@@ -748,7 +732,6 @@ async def register(user: User):
     cursor = connection.cursor()
 
     try:
-        # Check if user already exists
         cursor.execute("SELECT user_id FROM users WHERE email = %s OR username = %s", (user.email, user.username))
         if cursor.fetchone():
             raise HTTPException(status_code=400, detail="User already exists.")
