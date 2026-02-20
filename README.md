@@ -2,8 +2,7 @@
 
 ## 📌 Overview
 
-Voyagers is a full-stack travel planning platform developed as part of
-the Advanced Software Engineering course.
+Voyagers is a full-stack travel planning platform.
 
 The goal of this project was to design and build a connected,
 personalized travel experience that goes beyond simple booking systems.
